@@ -13,9 +13,23 @@ env:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
+    - name: Start PostgreSQL on Windows
+      run: |
+        $pgService = Get-Service -Name postgresql*
+        Set-Service -InputObject $pgService -Status running -StartupType automatic
+        Start-Process -FilePath "$env:PGBIN\pg_isready" -Wait -PassThru
+
+    - name: Set up PostgreSQL test user
+      env:
+        PGUSER: postgres
+        PGPASSWORD: root
+      run: |
+        & $env:PGBIN\psql -c "CREATE USER npgsql_tests SUPERUSER PASSWORD 'npgsql_tests'"
+
+
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
