@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Zomp.EFCore.WindowFunctions.SqlServer\Zomp.EFCore.WindowFunctions.SqlServer.csproj" />
+    <ProjectReference Include="..\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Zomp.EFCore.WindowFunctions.SqlServer" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,33 @@
+{
+  "solution": "Zomp.EFCore.WindowFunctions.sln",
+  "mappings": {
+    "Microsoft.EntityFrameworkCore": [
+      "../efcore/src/EFCore/EFCore.csproj",
+      "../efcore/src/EFCore.Abstractions/EFCore.Abstractions.csproj",
+      "../efcore/src/EFCore.Analyzers/EFCore.Analyzers.csproj"
+    ],
+    "Microsoft.EntityFrameworkCore.Relational": [
+      "../efcore/src/EFCore.Relational/EFCore.Relational.csproj"
+    ],
+    "Microsoft.EntityFrameworkCore.Sqlite": [
+      "../efcore/src/EFCore.Sqlite.Core/EFCore.Sqlite.Core.csproj",
+      "../efcore/src/EFCore.Abstractions/EFCore.Abstractions.csproj"
+    ],
+    "Microsoft.EntityFrameworkCore.Sqlite.Core": [
+      "../efcore/src/EFCore.Sqlite.Core/EFCore.Sqlite.Core.csproj",
+      "../efcore/src/EFCore.Abstractions/EFCore.Abstractions.csproj",
+      "../efcore/src/Microsoft.Data.Sqlite.Core/Microsoft.Data.Sqlite.Core.csproj"
+    ],
+    "Microsoft.EntityFrameworkCore.SqlServer": [
+      "../efcore/src/EFCore.SqlServer/EFCore.SqlServer.csproj"
+    ],
+    "Npgsql.EntityFrameworkCore.PostgreSQL": [
+      "../efcore.pg/src/EFCore.PG/EFCore.PG.csproj",
+      "../efcore/src/EFCore.Abstractions/EFCore.Abstractions.csproj"
+    ],
+    "Npgsql": [
+      "../npgsql/src/Npgsql/Npgsql.csproj",
+      "../npgsql/src/Npgsql.SourceGenerators/Npgsql.SourceGenerators.csproj"
+    ]
+  }
+}

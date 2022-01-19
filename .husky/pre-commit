@@ -1,0 +1,11 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+formatLevel=minimal
+if [ -n "$1" ]; then
+  formatLevel=$1
+fi
+
+EXIT_STATUS=0
+dotnet.exe format --verify-no-changes Zomp.EFCore.WindowFunctions.sln -v $formatLevel whitespace || EXIT_STATUS=$?
+exit $EXIT_STATUS

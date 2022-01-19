@@ -1,0 +1,34 @@
+root = true
+
+# All files
+[*]
+indent_style = space
+
+# Xml files
+[*.xml]
+indent_size = 2
+
+# Xml project files
+[*.{csproj,props}]
+indent_size = 2
+
+# C# files
+[*.cs]
+csharp_style_namespace_declarations = file_scoped
+end_of_line = crlf
+
+#### Core EditorConfig Options ####
+
+# Indentation and spacing
+indent_size = 4
+tab_width = 4
+
+[src/**/Extensions/**.cs]
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.NamingRules.severity = none
+
+[tests/**.cs]
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = none
+
+[{src/**/Internal/**.cs,tests/**.cs}]
+dotnet_diagnostic.CA1062.severity = none

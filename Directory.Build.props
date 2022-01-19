@@ -1,0 +1,45 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <NetCoreVersion>6.0.1</NetCoreVersion>
+    <MECVersion>6.0.0</MECVersion>
+    <Copyright>Copyright © $([System.DateTime]::Now.ToString(`yyyy`))</Copyright>
+    <Company>Zomp</Company>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <LangVersion>preview</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsCLSCompliant>false</IsCLSCompliant>
+    <EnablePackageValidation>true</EnablePackageValidation>
+    <Nullable>enable</Nullable>
+    <TsaUrl>http://timestamp.digicert.com</TsaUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <!-- <PublishRepositoryUrl>true</PublishRepositoryUrl> -->
+    <!-- <PackageProjectUrl></PackageProjectUrl> -->
+
+    <!-- Don't enforce file header -->
+    <NoWarn>$(NoWarn);SA1633</NoWarn>
+
+    <!-- Don't enforce prefixing local calls with this -->
+    <NoWarn>$(NoWarn);SA1101</NoWarn>
+
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.*" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.*-*" PrivateAssets="all" IncludeAssets="runtime;build;native;contentfiles;analyzers;buildtransitive" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="CLSCompliantAttribute" Condition="'$(IsCLSCompliant)' != ''">
+      <_Parameter1>$(IsCLSCompliant)</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+</Project>
