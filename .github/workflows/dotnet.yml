@@ -7,6 +7,7 @@ on:
     branches: [ master ]
 
 env:
+  Configuration: Release
   dotnet_sdk_version: '6.0.x'
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
 
