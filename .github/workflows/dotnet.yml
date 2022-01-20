@@ -1,4 +1,4 @@
-name: .NET
+name: Build
 
 on:
   push:
@@ -37,8 +37,6 @@ jobs:
     - uses: dotnet/nbgv@master
       id: nbgv
 
-    - run: nbgv cloud
-
     - run: yarn install
 
     - name: 'Run pre-commit hooks'
@@ -55,3 +53,11 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Test
+      run: dotnet pack --configuration Release -o packages
+    - name: Upload artifacts (.nupkg)
+      uses: actions/upload-artifact@v2
+      with:
+        name: nupkg
+        path: packages
+
