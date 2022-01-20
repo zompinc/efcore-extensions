@@ -5,6 +5,8 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+    branches: [master]
 
 env:
   Configuration: Release
@@ -36,6 +38,8 @@ jobs:
 
     - uses: dotnet/nbgv@master
       id: nbgv
+      with:
+        setAllVars: true
 
     - run: yarn install
 
@@ -58,6 +62,17 @@ jobs:
     - name: Upload artifacts (.nupkg)
       uses: actions/upload-artifact@v2
       with:
-        name: nupkg
+        name: ${{ github.event.repository.name }}-${{ env.NBGV_SemVer2 }}
         path: packages
 
+  publish:
+    #if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+      - name: Download Package artifact
+        uses: actions/download-artifact@v2 
+
+      - name: Display structure of downloaded files
+        run: ls -R
