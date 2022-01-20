@@ -68,7 +68,7 @@ jobs:
   publish:
     #if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     needs: build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Download Package artifact
@@ -76,3 +76,10 @@ jobs:
 
       - name: Display structure of downloaded files
         run: ls -R
+
+      #- run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg --source "Source" -k ${{ secrets.GITHUB_TOKEN }}
+      #- run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
+
+      # Must use \ if run on Windows
+      - name: Push to MyGet
+        run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg -s https://www.myget.org/F/zomp-test/api/v3/index.json -k ${{ secrets.MYGET_PUSH_KEY }}
