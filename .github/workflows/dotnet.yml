@@ -11,6 +11,7 @@ env:
   Configuration: Release
   dotnet_sdk_version: '6.0.x'
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
 jobs:
   build:
@@ -39,6 +40,8 @@ jobs:
       id: nbgv
       with:
         setAllVars: true
+
+    - run: nbgv cloud
 
     - run: yarn install
 

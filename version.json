@@ -7,5 +7,10 @@
   "publicReleaseRefSpec": [
     "^refs/heads/master$",
     "^refs/heads/v\\d+\\.\\d+$"
-  ]
+  ],
+  "cloudBuild": {
+    "buildNumber": {
+      "enabled": true
+    }
+  }
 }
