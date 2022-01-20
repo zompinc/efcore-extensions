@@ -33,6 +33,11 @@ jobs:
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
+    - uses: dotnet/nbgv@master
+      id: nbgv
+
+    - run: echo 'SemVer2=${{ steps.nbgv.outputs.SemVer2 }}'
+
     - run: yarn install
 
     - name: 'Run pre-commit hooks'
