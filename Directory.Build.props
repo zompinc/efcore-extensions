@@ -13,9 +13,9 @@
     <Nullable>enable</Nullable>
     <TsaUrl>http://timestamp.digicert.com</TsaUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-
-    <!-- <PublishRepositoryUrl>true</PublishRepositoryUrl> -->
-    <!-- <PackageProjectUrl></PackageProjectUrl> -->
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/zompinc/efcore-window-functions.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/zompinc/efcore-window-functions</PackageProjectUrl>
 
     <!-- Don't enforce file header -->
     <NoWarn>$(NoWarn);SA1633</NoWarn>
