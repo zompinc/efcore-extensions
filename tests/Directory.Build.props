@@ -1,7 +1,9 @@
 <Project>
   <Import Project="../Directory.Build.props" />
 
-  <PropertyGroup Condition="$(MsBuildProjectName.EndsWith('.Tests'))">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+
     <NoWarn>$(NoWarn);CA1810</NoWarn>
 
     <!-- Slow logger is just fine -->

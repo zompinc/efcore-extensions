@@ -53,7 +53,7 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Test
+    - name: Pack
       run: dotnet pack --configuration Release -o packages
     - name: Upload artifacts (.nupkg)
       uses: actions/upload-artifact@v2
