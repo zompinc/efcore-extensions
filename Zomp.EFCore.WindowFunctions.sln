@@ -4,10 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.1.31911.260
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F71F1DAC-BD40-4112-8829-FCCFF65A8A23}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.WindowFunctions", "src\Zomp.EFCore.WindowFunctions\Zomp.EFCore.WindowFunctions.csproj", "{C8334CC7-29F2-48A2-BD76-75406E59C46F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{941686A1-8DDE-4D64-AA18-3AC347935CAF}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Directory.Build.props = tests\Directory.Build.props
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.WindowFunctions.SqlServer.Tests", "tests\Zomp.EFCore.WindowFunctions.SqlServer.Tests\Zomp.EFCore.WindowFunctions.SqlServer.Tests.csproj", "{DFB5C7D7-00FD-421C-BA2D-93A739E8ADB2}"
 EndProject
