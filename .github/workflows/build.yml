@@ -1,0 +1,87 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+env:
+  Configuration: Release
+  dotnet_sdk_version: '6.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+jobs:
+  build:
+
+    runs-on: windows-2022
+
+    steps:
+    - name: Start PostgreSQL on Windows
+      run: |
+        $pgService = Get-Service -Name postgresql*
+        Set-Service -InputObject $pgService -Status running -StartupType automatic
+        Start-Process -FilePath "$env:PGBIN\pg_isready" -Wait -PassThru
+
+    - name: Set up PostgreSQL test user
+      env:
+        PGUSER: postgres
+        PGPASSWORD: root
+      run: |
+        & $env:PGBIN\psql -c "CREATE USER npgsql_tests SUPERUSER PASSWORD 'npgsql_tests'"
+
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+
+    - uses: dotnet/nbgv@master
+      id: nbgv
+      with:
+        setAllVars: true
+
+    - run: nbgv cloud
+
+    - run: yarn install
+
+    - name: 'Run pre-commit hooks'
+      shell: bash
+      run: sh $(git config core.hooksPath)/pre-commit normal
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.dotnet_sdk_version }}
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Pack
+      run: dotnet pack --configuration Release -o packages
+    - name: Upload artifacts (.nupkg)
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ github.event.repository.name }}-${{ env.NBGV_SemVer2 }}
+        path: packages
+
+  publish:
+    #if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Package artifact
+        uses: actions/download-artifact@v2 
+
+      - name: Display structure of downloaded files
+        run: ls -R
+
+      #- run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg --source "Source" -k ${{ secrets.GITHUB_TOKEN }}
+      #- run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
+
+      # Must use \ if run on Windows
+      - name: Push to MyGet
+        run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg -s https://www.myget.org/F/efcore-window-functions/api/v3/index.json -k ${{ secrets.MYGET_PUSH_KEY }}
