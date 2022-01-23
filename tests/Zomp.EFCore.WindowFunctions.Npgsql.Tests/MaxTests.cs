@@ -1,15 +1,14 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Npgsql.Tests;
 
 [Collection(nameof(NpgsqlCollection))]
-public class MaxTests : IDisposable
+public class MaxTests : TestBase
 {
-    private readonly NpgsqlTestDbContext dbContext;
     private readonly Testing.MaxTests maxTests;
 
     public MaxTests(ITestOutputHelper output)
+        : base(output)
     {
-        dbContext = new(output.ToLoggerFactory());
-        maxTests = new Testing.MaxTests(dbContext);
+        maxTests = new Testing.MaxTests(DbContext);
     }
 
     [Fact]
@@ -41,30 +40,4 @@ public class MaxTests : IDisposable
 
     [Fact]
     public void MaxWith2Partitions() => maxTests.MaxWith2Partitions();
-
-    [Fact(Skip = "Can't max over bit(n) or bytea in postgres")]
-    public void LastNonNull() => maxTests.LastNonNull();
-
-    [Fact(Skip = "Can't max over bit(n) or bytea in postgres")]
-    public void LastNonNullShorthand() => maxTests.LastNonNullShorthand();
-
-    [Fact]
-    public void LastNonNullArithmetic() => maxTests.LastNonNullArithmetic();
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            if (dbContext != null)
-            {
-                dbContext.Dispose();
-            }
-        }
-    }
 }

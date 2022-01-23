@@ -1,15 +1,14 @@
 namespace Zomp.EFCore.WindowFunctions.SqlServer.Tests;
 
 [Collection(nameof(SqlServerCollection))]
-public class MaxTests : IDisposable
+public class MaxTests : TestBase
 {
-    private readonly TestDbContext dbContext;
     private readonly Testing.MaxTests maxTests;
 
     public MaxTests(ITestOutputHelper output)
+        : base(output)
     {
-        dbContext = new SqlServerTestDbContext(output.ToLoggerFactory());
-        maxTests = new Testing.MaxTests(dbContext);
+        maxTests = new Testing.MaxTests(DbContext);
     }
 
     [Fact]
@@ -41,30 +40,4 @@ public class MaxTests : IDisposable
 
     [Fact]
     public void MaxWith2Partitions() => maxTests.MaxWith2Partitions();
-
-    [Fact]
-    public void LastNonNull() => maxTests.LastNonNull();
-
-    [Fact]
-    public void LastNonNullShorthand() => maxTests.LastNonNullShorthand();
-
-    [Fact]
-    public void LastNonNullArithmetic() => maxTests.LastNonNullArithmetic();
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            if (dbContext != null)
-            {
-                dbContext.Dispose();
-            }
-        }
-    }
 }

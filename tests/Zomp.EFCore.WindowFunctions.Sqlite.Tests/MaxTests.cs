@@ -42,15 +42,6 @@ public class MaxTests : IDisposable
     [Fact]
     public void MaxWith2Partitions() => maxTests.MaxWith2Partitions();
 
-    [Fact(Skip = "Depends on byte concatenation, which SQLite doesn't support out of the box")]
-    public void LastNonNull() => maxTests.LastNonNull();
-
-    [Fact(Skip = "Depends on byte concatenation, which SQLite doesn't support out of the box")]
-    public void LastNonNullShorthand() => maxTests.LastNonNullShorthand();
-
-    [Fact]
-    public void LastNonNullArithmetic() => maxTests.LastNonNullArithmetic();
-
     public void Dispose()
     {
         Dispose(true);
