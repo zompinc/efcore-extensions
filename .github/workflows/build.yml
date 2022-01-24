@@ -76,12 +76,12 @@ jobs:
       - name: Download Package artifact
         uses: actions/download-artifact@v2 
 
-      - name: Display structure of downloaded files
-        run: ls -R
-
       #- run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg --source "Source" -k ${{ secrets.GITHUB_TOKEN }}
-      #- run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
 
-      # Must use \ if run on Windows
       - name: Push to MyGet
         run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg -s https://www.myget.org/F/efcore-window-functions/api/v3/index.json -k ${{ secrets.MYGET_PUSH_KEY }}
+
+      - name: Push to NuGet
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
+        run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
+
