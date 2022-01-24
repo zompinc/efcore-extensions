@@ -1,10 +1,14 @@
 # Zomp.EFCore.WindowFunctions
 
+[![Build](https://github.com/zompinc/efcore-window-functions/actions/workflows/build.yml/badge.svg)](https://github.com/zompinc/efcore-window-functions/actions/workflows/build.yml)
+
 These libraries extend [Entity Framework Core](https://github.com/dotnet/efcore) and provide Window functions or analytics functions for providers. Currently supported for:
 
-- [SQL Server](https://docs.microsoft.com/en-us/sql/t-sql/queries/select-over-clause-transact-sql)
-- [PostgreSQL](https://www.postgresql.org/docs/current/tutorial-window.html)
-- [SQLite](https://www.sqlite.org/windowfunctions.html)
+| Provider                                                                                         | Package                                                                                                                                                |
+| ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [SQL Server](https://docs.microsoft.com/en-us/sql/t-sql/queries/select-over-clause-transact-sql) | [![Nuget](https://img.shields.io/nuget/v/Zomp.EFCore.WindowFunctions.SqlServer)](https://www.nuget.org/packages/Zomp.EFCore.WindowFunctions.SqlServer) |
+| [PostgreSQL](https://www.postgresql.org/docs/current/tutorial-window.html)                       | [![Nuget](https://img.shields.io/nuget/v/Zomp.EFCore.WindowFunctions.Npgsql)](https://www.nuget.org/packages/Zomp.EFCore.WindowFunctions.Npgsql)       |
+| [SQLite](https://www.sqlite.org/windowfunctions.html)                                            | [![Nuget](https://img.shields.io/nuget/v/Zomp.EFCore.WindowFunctions.Sqlite)](https://www.nuget.org/packages/Zomp.EFCore.WindowFunctions.Sqlite)       |
 
 Window functions supported:
 
@@ -26,6 +30,17 @@ To add provider-agnostic library use:
 
 ```sh
 dotnet add package Zomp.EFCore.WindowFunctions
+```
+
+Set up your specific provider to use Window Functions with `DbContextOptionsBuilder.UseWindowFunctions`. For example here is the SQL Server syntax:
+
+```cs
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{
+    optionsBuilder.UseSqlServer(
+        myConn,
+        sqlOptions => sqlOptions.UseWindowFunctions());
+}
 ```
 
 ## Basic usage
