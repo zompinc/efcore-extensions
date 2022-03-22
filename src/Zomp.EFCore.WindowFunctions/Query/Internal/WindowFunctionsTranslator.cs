@@ -25,6 +25,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         {
             nameof(DbFunctionsExtensions.Min) => MaxMinOver(arguments, "MIN"),
             nameof(DbFunctionsExtensions.Max) => MaxMinOver(arguments, "MAX"),
+            nameof(DbFunctionsExtensions.Sum) => MaxMinOver(arguments, "SUM"),
             nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
             nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
             nameof(DbFunctionsExtensions.PartitionBy) => new PartitionByExpression(arguments.Skip(1).First()),
