@@ -45,6 +45,8 @@ jobs:
 
     - run: yarn install
 
+    - run: dotnet tool restore
+
     - name: 'Run pre-commit hooks'
       shell: bash
       run: sh $(git config core.hooksPath)/pre-commit normal

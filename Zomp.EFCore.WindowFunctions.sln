@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
+		NuGet.Config = NuGet.Config
 		package.json = package.json
 		stylecop.json = stylecop.json
 		switcher.json = switcher.json
@@ -45,6 +46,18 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".husky", ".husky", "{B384908E-0336-42C2-A7FC-7731326685A3}"
 	ProjectSection(SolutionItems) = preProject
 		.husky\pre-commit = .husky\pre-commit
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{48BD9AB4-212E-4DC5-BE8B-8DE6DC517693}"
+	ProjectSection(SolutionItems) = preProject
+		.config\dotnet-tools.json = .config\dotnet-tools.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{9AB2DDC4-6B47-459A-B85B-21C859955199}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{81943614-4271-4E5F-A7EE-040DA21A12A2}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
 	EndProjectSection
 EndProject
 Global
@@ -99,6 +112,9 @@ Global
 		{F0788EED-5EC7-4235-BCA2-53DC25032F3A} = {F71F1DAC-BD40-4112-8829-FCCFF65A8A23}
 		{F5AA2804-F1A1-45E6-9720-21F45FA12053} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 		{B384908E-0336-42C2-A7FC-7731326685A3} = {528A7E80-5391-4750-B0B4-47B05160E73A}
+		{48BD9AB4-212E-4DC5-BE8B-8DE6DC517693} = {528A7E80-5391-4750-B0B4-47B05160E73A}
+		{9AB2DDC4-6B47-459A-B85B-21C859955199} = {528A7E80-5391-4750-B0B4-47B05160E73A}
+		{81943614-4271-4E5F-A7EE-040DA21A12A2} = {9AB2DDC4-6B47-459A-B85B-21C859955199}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C20B0087-9477-4FC8-A489-4A8627C395B0}
