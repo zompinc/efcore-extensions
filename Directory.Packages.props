@@ -1,6 +1,12 @@
 <Project>
-  <PropertyGroup>
-    <NetRuntime>6.0.7</NetRuntime>
+  <PropertyGroup Condition="$(TargetFramework) == 'net6.0'">
+    <NetRuntime>6.0.0</NetRuntime>
+    <NpgsqlVersion>6.0.5</NpgsqlVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework) == 'net7.0'">
+    <NetRuntime>7.0.0-preview.6.22329.4</NetRuntime>
+    <NpgsqlVersion>7.0.0-preview.6</NpgsqlVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +20,7 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.5.108" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlVersion)" />
     <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.0" />
     <PackageVersion Include="StyleCop.Analyzers" Version=" 1.2.0-beta.435" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />

@@ -5,6 +5,17 @@
 /// </summary>
 public class WindowFunctionsSqlServerQuerySqlGenerator : SqlServerQuerySqlGenerator
 {
+#if NET7_0_OR_GREATER
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerQuerySqlGenerator"/> class.
+    /// </summary>
+    /// <param name="dependencies">Service dependencies.</param>
+    /// <param name="typeMappingSource">Type mapping source.</param>
+    public WindowFunctionsSqlServerQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies, IRelationalTypeMappingSource typeMappingSource)
+        : base(dependencies, typeMappingSource)
+    {
+    }
+#else
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerQuerySqlGenerator"/> class.
     /// </summary>
@@ -13,6 +24,7 @@ public class WindowFunctionsSqlServerQuerySqlGenerator : SqlServerQuerySqlGenera
         : base(dependencies)
     {
     }
+#endif
 
     /// <inheritdoc/>
     protected override Expression VisitExtension(Expression extensionExpression)

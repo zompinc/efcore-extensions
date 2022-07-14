@@ -1,15 +1,14 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <NetCoreVersion>6.0.1</NetCoreVersion>
-    <MECVersion>6.0.0</MECVersion>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <Copyright>Copyright © $([System.DateTime]::Now.ToString(`yyyy`))</Copyright>
     <Company>Zomp</Company>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsCLSCompliant>false</IsCLSCompliant>
-    <EnablePackageValidation>true</EnablePackageValidation>
+    <!--Won't pack-->
+    <!--<EnablePackageValidation>true</EnablePackageValidation>-->
     <Nullable>enable</Nullable>
     <TsaUrl>http://timestamp.digicert.com</TsaUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -17,6 +16,7 @@
     <RepositoryUrl>https://github.com/zompinc/efcore-window-functions.git</RepositoryUrl>
     <PackageProjectUrl>https://github.com/zompinc/efcore-window-functions</PackageProjectUrl>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
 
     <!-- Don't enforce file header -->
     <NoWarn>$(NoWarn);SA1633</NoWarn>
