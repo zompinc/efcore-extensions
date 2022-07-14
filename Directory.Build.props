@@ -1,8 +1,9 @@
 <Project>
   <PropertyGroup>
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
-    <Copyright>Copyright © $([System.DateTime]::Now.ToString(`yyyy`))</Copyright>
+    <Copyright>© Zomp Inc. All rights reserved.</Copyright>
     <Company>Zomp</Company>
+    <Authors>Victor Irzak</Authors>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>

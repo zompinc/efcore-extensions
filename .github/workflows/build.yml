@@ -15,7 +15,7 @@ env:
 jobs:
   build:
 
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     steps:
     - name: Start PostgreSQL on Windows
@@ -64,25 +64,36 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Pack
-      run: dotnet pack --configuration Release -o packages
+      run: dotnet pack --configuration Release -o packages --no-build
     - name: Upload artifacts (.nupkg)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: ${{ github.event.repository.name }}-${{ env.NBGV_SemVer2 }}
-        path: packages
+        name: packages
+        path: packages/
 
   publish:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-      - name: Download Package artifact
-        uses: actions/download-artifact@v2 
+    - name: Download Package artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: packages
+        path: packages
 
-      - name: Push to MyGet
-        run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg -s https://www.myget.org/F/efcore-window-functions/api/v3/index.json -k ${{ secrets.MYGET_PUSH_KEY }}
+    - run: dotnet tool install nugetkeyvaultsigntool --tool-path . --version 3.2.2
 
-      - name: Push to NuGet
-        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
-        run: dotnet nuget push ./${{ github.event.repository.name }}*/Zomp.EFCore.WindowFunctions.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
+    - name: Sign Nuget Files
+      run: .\NuGetKeyVaultSignTool sign packages\*.nupkg -kvt ${{ secrets.AZURE_TENANT_ID }} -kvu ${{ secrets.AZURE_KEY_VAULT_URL }} -kvi ${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }} -kvs ${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }} -kvc ${{ secrets.AZURE_KEY_VAULT_CERTIFICATE }} -tr ${{ secrets.TIMESTAMP_RFC3161 }}
+
+    - name: Verify signatures
+      run: .\NuGetKeyVaultSignTool verify packages\*.nupkg
+
+    - name: Push to MyGet
+      run: dotnet nuget push packages\*.nupkg -s https://www.myget.org/F/efcore-window-functions/api/v3/index.json -k ${{ secrets.MYGET_PUSH_KEY }}
+
+    - name: Push to NuGet
+      if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
+      run: dotnet nuget push packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
 
