@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <NetRuntime>6.0.7</NetRuntime>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="coverlet.collector" Version="3.1.2" />
+    <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(NetRuntime)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(NetRuntime)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="$(NetRuntime)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(NetRuntime)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(NetRuntime)" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.5.108" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.5" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.0" />
+    <PackageVersion Include="StyleCop.Analyzers" Version=" 1.2.0-beta.435" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
+    <PackageVersion Include="xunit" Version="2.4.1" />
+  </ItemGroup>
+</Project>

@@ -12,7 +12,7 @@ public class BinaryNpgsqlTypeMappingSource : NpgsqlTypeMappingSource
     /// <param name="relationalDependencies">Relational type mapping source dependencies.</param>
     /// <param name="sqlGenerationHelper">sqlGenerationHelper.</param>
     /// <param name="npgsqlOptions">Npgsql Options.</param>
-    public BinaryNpgsqlTypeMappingSource(TypeMappingSourceDependencies dependencies, RelationalTypeMappingSourceDependencies relationalDependencies, ISqlGenerationHelper sqlGenerationHelper, INpgsqlSingletonOptions? npgsqlOptions = null)
+    public BinaryNpgsqlTypeMappingSource(TypeMappingSourceDependencies dependencies, RelationalTypeMappingSourceDependencies relationalDependencies, ISqlGenerationHelper sqlGenerationHelper, INpgsqlSingletonOptions npgsqlOptions)
         : base(dependencies, relationalDependencies, sqlGenerationHelper, npgsqlOptions)
     {
     }

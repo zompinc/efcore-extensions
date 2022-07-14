@@ -8,11 +8,4 @@
     <ProjectReference Include="..\..\src\Zomp.EFCore.WindowFunctions.Npgsql\Zomp.EFCore.WindowFunctions.Npgsql.csproj" />
     <ProjectReference Include="..\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Update="MartinCostello.Logging.XUnit" Version="0.3.0" />
-    <PackageReference Update="xunit.runner.visualstudio" Version="2.4.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
 </Project>
