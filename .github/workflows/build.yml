@@ -64,7 +64,9 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Pack
-      run: dotnet pack --configuration Release -o packages
+      run: dotnet pack --configuration Release -o packages --no-build
+    - name: Sign
+      run: dotnet tool run NuGetKeyVaultSignTool sign packages\*.nupkg -kvt ${{ secrets.AZURE_TENANT_ID }} -kvu ${{ secrets.AZURE_KEY_VAULT_URL }} -kvi ${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }} -kvs ${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }} -kvc ${{ secrets.AZURE_KEY_VAULT_CERTIFICATE }} -tr ${{ secrets.TIMESTAMP_RFC3161 }}
     - name: Upload artifacts (.nupkg)
       uses: actions/upload-artifact@v2
       with:
