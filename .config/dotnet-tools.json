@@ -7,12 +7,6 @@
       "commands": [
         "dotnet-format"
       ]
-    },
-    "nugetkeyvaultsigntool": {
-      "version": "3.2.2",
-      "commands": [
-        "NuGetKeyVaultSignTool"
-      ]
     }
   }
 }
