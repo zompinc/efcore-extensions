@@ -57,6 +57,8 @@ jobs:
           6.0.x
           7.0.x
         include-prerelease: true
+    # Run it again, since a new framework was just installed
+    - run: dotnet tool restore
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
