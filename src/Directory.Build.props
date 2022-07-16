@@ -10,8 +10,13 @@
     <Feature>nullablePublicOnly</Feature>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageIcon>icon.png</PackageIcon>
+    <Deterministic>true</Deterministic>
     <NoWarn>$(NoWarn);EF1001</NoWarn>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup> 
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)images\icon.png" Pack="true" PackagePath="\"/>
