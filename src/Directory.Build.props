@@ -2,6 +2,10 @@
   <Import Project="..\Directory.Build.props" />
 
   <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/zompinc/efcore-window-functions.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/zompinc/efcore-window-functions</PackageProjectUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -11,6 +15,8 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageIcon>icon.png</PackageIcon>
     <Deterministic>true</Deterministic>
+    <!--Won't pack-->
+    <!--<EnablePackageValidation>true</EnablePackageValidation>-->
     <NoWarn>$(NoWarn);EF1001</NoWarn>
   </PropertyGroup>
 

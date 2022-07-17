@@ -8,14 +8,7 @@
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsCLSCompliant>false</IsCLSCompliant>
-    <!--Won't pack-->
-    <!--<EnablePackageValidation>true</EnablePackageValidation>-->
     <Nullable>enable</Nullable>
-    <TsaUrl>http://timestamp.digicert.com</TsaUrl>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/zompinc/efcore-window-functions.git</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/zompinc/efcore-window-functions</PackageProjectUrl>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
 
