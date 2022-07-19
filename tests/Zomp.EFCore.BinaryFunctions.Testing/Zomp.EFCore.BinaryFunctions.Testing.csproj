@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Zomp.EFCore.BinaryFunctions\Zomp.EFCore.BinaryFunctions.csproj" />
+    <ProjectReference Include="..\..\tests\Zomp.EFCore.Testing\Zomp.EFCore.Testing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="System.Buffers.Binary" />
+    <Using Include="System.Collections.Immutable" />
+    <Using Include="System.Globalization" />
+    <Using Include="System.Runtime.CompilerServices" />
+    <Using Include="System.Runtime.InteropServices" />
+    <Using Include="Xunit" />
+    <Using Include="Zomp.EFCore.BinaryFunctions" />
+    <Using Include="Zomp.EFCore.Testing" />
+  </ItemGroup>
+
+</Project>

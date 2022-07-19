@@ -1,19 +1,19 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Npgsql.Query.Internal;
 
 /// <summary>
-/// Factory for generating <see cref="BinaryNpgsqlQuerySqlGenerator"/>.
+/// Factory for generating <see cref="WindowFunctionsNpgsqlQuerySqlGenerator"/>.
 /// </summary>
-public class BinaryNpgsqlQuerySqlGeneratorFactory : NpgsqlQuerySqlGeneratorFactory
+public class WindowFunctionsNpgsqlQuerySqlGeneratorFactory : NpgsqlQuerySqlGeneratorFactory
 {
     private readonly QuerySqlGeneratorDependencies dependencies;
     private readonly INpgsqlSingletonOptions npgsqlOptions;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BinaryNpgsqlQuerySqlGeneratorFactory"/> class.
+    /// Initializes a new instance of the <see cref="WindowFunctionsNpgsqlQuerySqlGeneratorFactory"/> class.
     /// </summary>
     /// <param name="dependencies">Service dependencies.</param>
     /// <param name="npgsqlOptions">Options for Npgsql.</param>
-    public BinaryNpgsqlQuerySqlGeneratorFactory(QuerySqlGeneratorDependencies dependencies, INpgsqlSingletonOptions npgsqlOptions)
+    public WindowFunctionsNpgsqlQuerySqlGeneratorFactory(QuerySqlGeneratorDependencies dependencies, INpgsqlSingletonOptions npgsqlOptions)
         : base(dependencies, npgsqlOptions)
     {
         this.dependencies = dependencies;
@@ -22,5 +22,5 @@ public class BinaryNpgsqlQuerySqlGeneratorFactory : NpgsqlQuerySqlGeneratorFacto
 
     /// <inheritdoc/>
     public override QuerySqlGenerator Create()
-        => new BinaryNpgsqlQuerySqlGenerator(dependencies, npgsqlOptions.ReverseNullOrderingEnabled, npgsqlOptions.PostgresVersion);
+        => new WindowFunctionsNpgsqlQuerySqlGenerator(dependencies, npgsqlOptions.ReverseNullOrderingEnabled, npgsqlOptions.PostgresVersion);
 }

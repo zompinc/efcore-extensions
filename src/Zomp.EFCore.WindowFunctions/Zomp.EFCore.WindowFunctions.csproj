@@ -11,17 +11,14 @@
     <Using Include="Microsoft.EntityFrameworkCore.Query.SqlExpressions" />
     <Using Include="Microsoft.EntityFrameworkCore.Storage" />
     <Using Include="Microsoft.Extensions.DependencyInjection" />
-    <Using Include="Microsoft.Extensions.DependencyInjection.Extensions" />
     <Using Include="System.Linq.Expressions" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="System.Globalization" />
     <Using Include="System.Reflection" />
-    <Using Include="System.Runtime.InteropServices" />
     <Using Include="Zomp.EFCore.WindowFunctions" />
     <Using Include="Zomp.EFCore.WindowFunctions.Clauses" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.SqlExpressions" />
-    <Using Include="Zomp.EFCore.WindowFunctions.Storage.Internal" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />

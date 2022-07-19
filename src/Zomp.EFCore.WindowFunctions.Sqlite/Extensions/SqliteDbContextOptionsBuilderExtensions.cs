@@ -27,9 +27,7 @@ public static class SqliteDbContextOptionsBuilderExtensions
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
         coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowRelationalParameterBasedSqlProcessorFactory>();
         coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowQuerySqlGeneratorFactory>();
-        coreOptionsBuilder.ReplaceService<IRelationalTypeMappingSource, BinarySqliteTypeMappingSource>();
         coreOptionsBuilder.ReplaceService<IWindowFunctionsTranslatorPluginFactory, SqliteWindowFunctionsTranslatorPluginFactory>();
-        coreOptionsBuilder.ReplaceService<IBinaryTranslatorPluginFactory, SqliteBinaryTranslatorPluginFactory>();
 
         return sqliteOptionsBuilder;
     }

@@ -1,4 +1,6 @@
-﻿namespace Zomp.EFCore.WindowFunctions.Npgsql;
+﻿using Zomp.EFCore.WindowFunctions.Npgsql.Query.Internal;
+
+namespace Zomp.EFCore.WindowFunctions.Npgsql;
 
 /// <summary>
 /// Window function extension methods for <see cref="NpgsqlDbContextOptionsBuilder" />.
@@ -26,9 +28,7 @@ public static class NpgsqlDbContextOptionsBuilderExtensions
 
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
         coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowRelationalParameterBasedSqlProcessorFactory>();
-        coreOptionsBuilder.ReplaceService<IRelationalTypeMappingSource, BinaryNpgsqlTypeMappingSource>();
-        coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, BinaryNpgsqlQuerySqlGeneratorFactory>();
-        coreOptionsBuilder.ReplaceService<IBinaryTranslatorPluginFactory, NpgsqlBinaryTranslatorPluginFactory>();
+        coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsNpgsqlQuerySqlGeneratorFactory>();
 
         return builder;
     }

@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Zomp.EFCore.BinaryFunctions.Npgsql\Zomp.EFCore.BinaryFunctions.Npgsql.csproj" />
+    <ProjectReference Include="..\Zomp.EFCore.BinaryFunctions.Testing\Zomp.EFCore.BinaryFunctions.Testing.csproj" />
+  </ItemGroup>
+</Project>

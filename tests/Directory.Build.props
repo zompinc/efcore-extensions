@@ -32,6 +32,6 @@
     <Using Include="Microsoft.Extensions.Logging" />
     <Using Include="Xunit" />
     <Using Include="Xunit.Abstractions" />
-    <Using Include="Zomp.EFCore.WindowFunctions.Testing" />
+    <Using Include="Zomp.EFCore.Testing" />
   </ItemGroup>
 </Project>
