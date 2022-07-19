@@ -1,4 +1,6 @@
-﻿namespace Zomp.EFCore.Combined.Npgsql.Tests;
+﻿using Microsoft.EntityFrameworkCore.Query;
+
+namespace Zomp.EFCore.Combined.Npgsql.Tests;
 public class NpgsqlTestDbContext : TestDbContext
 {
     public NpgsqlTestDbContext(ILoggerFactory? loggerFactory = null)
@@ -12,7 +14,10 @@ public class NpgsqlTestDbContext : TestDbContext
 
         optionsBuilder.UseNpgsql(
             $"Host=localhost;Database=Zomp_Efcore_WindowFunctions_Tests;Username=npgsql_tests;Password=npgsql_tests",
-            o => o.UseWindowFunctions().UseBinaryFunctions());
+            o => o.UseWindowFunctions().UseBinaryFunctions())
+
+            // Fixme: Find a way to remove this line.
+            .ReplaceService<IQuerySqlGeneratorFactory, CombinedNpgsqlQuerySqlGeneratorFFactory>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
