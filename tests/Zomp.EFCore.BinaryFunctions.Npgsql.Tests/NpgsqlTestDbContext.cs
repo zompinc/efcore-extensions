@@ -11,7 +11,7 @@ public class NpgsqlTestDbContext : TestDbContext
         base.OnConfiguring(optionsBuilder);
 
         optionsBuilder.UseNpgsql(
-            $"Host=localhost;Database=Zomp_Efcore_WindowFunctions_Tests;Username=npgsql_tests;Password=npgsql_tests",
+            $"Host=localhost;Database=Zomp_Efcore_BinaryFunctions_Tests;Username=npgsql_tests;Password=npgsql_tests",
             o => o.UseBinaryFunctions());
     }
 

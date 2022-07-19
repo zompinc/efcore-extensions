@@ -8,7 +8,6 @@
   <ItemGroup>
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.EntityFrameworkCore.Infrastructure" />
-    <Using Include="Microsoft.EntityFrameworkCore.Metadata" />
     <Using Include="Microsoft.EntityFrameworkCore.Query" />
     <Using Include="Microsoft.EntityFrameworkCore.Query.SqlExpressions" />
     <Using Include="Microsoft.EntityFrameworkCore.SqlServer.Query.Internal" />

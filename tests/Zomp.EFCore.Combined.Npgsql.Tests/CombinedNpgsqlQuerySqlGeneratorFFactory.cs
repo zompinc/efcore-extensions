@@ -17,7 +17,7 @@ public class CombinedNpgsqlQuerySqlGeneratorFFactory : BinaryNpgsqlQuerySqlGener
     /// Initializes a new instance of the <see cref="CombinedNpgsqlQuerySqlGeneratorFFactory"/> class.
     /// </summary>
     /// <param name="dependencies">Service dependencies.</param>
-    /// <param name="npgsqlOptions">Options for Npgsql.</param>
+    /// <param name="npgsqlSingletonOptions">Options for Npgsql.</param>
     public CombinedNpgsqlQuerySqlGeneratorFFactory(QuerySqlGeneratorDependencies dependencies, INpgsqlSingletonOptions npgsqlSingletonOptions)
         : base(dependencies, npgsqlSingletonOptions)
     {

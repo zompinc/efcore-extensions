@@ -15,6 +15,7 @@
     <Using Include="System.Runtime.InteropServices" />
     <Using Include="Zomp.EFCore.WindowFunctions.Infrastructure.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Npgsql.Infrastructure.Internal" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Npgsql.Query.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.SqlExpressions" />
   </ItemGroup>

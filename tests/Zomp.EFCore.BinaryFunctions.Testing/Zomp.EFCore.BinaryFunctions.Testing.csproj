@@ -1,18 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <IsTestProject>false</IsTestProject>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="xunit" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\Zomp.EFCore.BinaryFunctions\Zomp.EFCore.BinaryFunctions.csproj" />
     <ProjectReference Include="..\..\tests\Zomp.EFCore.Testing\Zomp.EFCore.Testing.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.Extensions.Logging" />
@@ -25,5 +18,4 @@
     <Using Include="Zomp.EFCore.BinaryFunctions" />
     <Using Include="Zomp.EFCore.Testing" />
   </ItemGroup>
-
 </Project>

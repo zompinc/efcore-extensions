@@ -1,9 +1,9 @@
 ﻿namespace Zomp.EFCore.BinaryFunctions.Sqlite;
 
 /// <summary>
-/// Window function extension methods for <see cref="NpgsqlDbContextOptionsBuilder" />.
+/// Window function extension methods for <see cref="SqliteDbContextOptionsBuilderExtensions" />.
 /// </summary>
-public static class NpgsqlDbContextOptionsBuilderExtensions
+public static class SqliteDbContextOptionsBuilderExtensions
 {
     /// <summary>
     /// Use window functions.
