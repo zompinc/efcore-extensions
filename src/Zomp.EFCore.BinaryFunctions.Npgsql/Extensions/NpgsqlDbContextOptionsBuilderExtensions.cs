@@ -1,4 +1,4 @@
-﻿namespace Zomp.EFCore.BinaryFunctions.Npgsql.Infrastructure.Extensions;
+﻿namespace Zomp.EFCore.BinaryFunctions.Npgsql;
 
 /// <summary>
 /// Window function extension methods for <see cref="NpgsqlDbContextOptionsBuilder" />.

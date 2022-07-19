@@ -1,6 +1,4 @@
-﻿using Zomp.EFCore.BinaryFunctions.Npgsql.Infrastructure.Extensions;
-
-namespace Zomp.EFCore.BinaryFunctions.Npgsql.Tests;
+﻿namespace Zomp.EFCore.BinaryFunctions.Npgsql.Tests;
 public class NpgsqlTestDbContext : TestDbContext
 {
     public NpgsqlTestDbContext(ILoggerFactory? loggerFactory = null)

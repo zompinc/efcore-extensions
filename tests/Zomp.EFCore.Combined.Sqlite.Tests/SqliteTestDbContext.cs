@@ -16,7 +16,7 @@ public class SqliteTestDbContext : TestDbContext
 
         optionsBuilder.UseSqlite(
             Connection,
-            sqlOptions => sqlOptions.UseWindowFunctions());
+            sqlOptions => sqlOptions.UseWindowFunctions().UseBinaryFunctions());
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
