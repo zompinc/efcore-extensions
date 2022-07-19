@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Zomp.EFCore.BinaryFunctions.Sqlite\Zomp.EFCore.BinaryFunctions.Sqlite.csproj" />
+    <ProjectReference Include="..\..\src\Zomp.EFCore.WindowFunctions.Sqlite\Zomp.EFCore.WindowFunctions.Sqlite.csproj" />
+    <ProjectReference Include="..\Zomp.EFCore.Combined.Testing\Zomp.EFCore.Combined.Testing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Microsoft.Data.Sqlite"/>
+    <Using Include="Zomp.EFCore.BinaryFunctions.Sqlite"/>
+    <Using Include="Zomp.EFCore.WindowFunctions.Sqlite"/>
+  </ItemGroup>
+</Project>

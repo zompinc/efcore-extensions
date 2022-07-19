@@ -19,6 +19,10 @@
     <NoWarn>$(NoWarn);SA1600</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="$(AssemblyName.EndsWith('.Testing'))">
+    <IsTestProject>false</IsTestProject>
+  </PropertyGroup>
+
   <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">
     <PackageReference Include="coverlet.collector" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
     <PackageReference Include="MartinCostello.Logging.XUnit" />

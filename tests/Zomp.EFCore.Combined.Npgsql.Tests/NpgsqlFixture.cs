@@ -1,0 +1,18 @@
+﻿namespace Zomp.EFCore.Combined.Npgsql.Tests;
+public class NpgsqlFixture : TestFixture
+{
+    public async override Task InitializeAsync()
+    {
+        TestDBContext = new NpgsqlTestDbContext();
+        await base.InitializeAsync();
+    }
+
+    public async override Task DisposeAsync()
+    {
+        await base.DisposeAsync();
+        if (TestDBContext is not null)
+        {
+            await TestDBContext.DisposeAsync();
+        }
+    }
+}

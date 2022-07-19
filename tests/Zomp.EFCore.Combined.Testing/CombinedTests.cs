@@ -1,4 +1,4 @@
-﻿namespace Zomp.EFCore.WindowFunctions.Testing;
+﻿namespace Zomp.EFCore.Combined.Testing;
 public class CombinedTests
 {
     private readonly TestDbContext dbContext;

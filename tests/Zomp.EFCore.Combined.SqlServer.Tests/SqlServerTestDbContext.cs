@@ -1,4 +1,4 @@
-﻿namespace Zomp.EFCore.WindowFunctions.SqlServer.Tests;
+﻿namespace Zomp.EFCore.Combined.SqlServer.Tests;
 
 public class SqlServerTestDbContext : TestDbContext
 {
@@ -13,6 +13,6 @@ public class SqlServerTestDbContext : TestDbContext
 
         optionsBuilder.UseSqlServer(
             $@"Server=(localdb)\mssqllocaldb;Database=Zomp_Efcore_WindowFunctions_Tests;Trusted_Connection=True",
-            sqlOptions => sqlOptions.UseWindowFunctions());
+            sqlOptions => sqlOptions.UseWindowFunctions().UseBinaryFunctions());
     }
 }

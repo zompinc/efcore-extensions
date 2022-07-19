@@ -4,12 +4,6 @@
     <ProjectReference Include="..\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="CombinedTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CombinedTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Using Include="Microsoft.Data.Sqlite" />
   </ItemGroup>
 </Project>

@@ -13,8 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Zomp.EFCore.WindowFunctions\Zomp.EFCore.WindowFunctions.csproj" />
-    <ProjectReference Include="..\..\src\Zomp.EFCore.BinaryFunctions\Zomp.EFCore.BinaryFunctions.csproj" />
-    <ProjectReference Include="..\..\tests\Zomp.EFCore.Testing\Zomp.EFCore.Testing.csproj" />
+    <ProjectReference Include="..\Zomp.EFCore.Testing\Zomp.EFCore.Testing.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,7 +25,6 @@
     <Using Include="System.Runtime.CompilerServices" />
     <Using Include="System.Runtime.InteropServices" />
     <Using Include="Xunit" />
-    <Using Include="Zomp.EFCore.BinaryFunctions" />
     <Using Include="Zomp.EFCore.Testing" />
     <Using Include="Zomp.EFCore.WindowFunctions" />
   </ItemGroup>

@@ -1,6 +1,6 @@
-﻿namespace Zomp.EFCore.WindowFunctions.Npgsql.Tests;
+﻿namespace Zomp.EFCore.Combined.Sqlite.Tests;
 
-[Collection(nameof(NpgsqlCollection))]
+[Collection(nameof(SqliteCollection))]
 public class CombinedTests : TestBase
 {
     private readonly Testing.CombinedTests combinedTests;
@@ -11,10 +11,10 @@ public class CombinedTests : TestBase
         combinedTests = new Testing.CombinedTests(DbContext);
     }
 
-    [Fact(Skip = "Can't max over bit(n) or bytea in postgres")]
+    [Fact(Skip = "Depends on byte concatenation, which SQLite doesn't support out of the box")]
     public void LastNonNull() => combinedTests.LastNonNull();
 
-    [Fact(Skip = "Can't max over bit(n) or bytea in postgres")]
+    [Fact(Skip = "Depends on byte concatenation, which SQLite doesn't support out of the box")]
     public void LastNonNullShorthand() => combinedTests.LastNonNullShorthand();
 
     [Fact]

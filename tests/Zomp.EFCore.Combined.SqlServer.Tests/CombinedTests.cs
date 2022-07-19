@@ -1,6 +1,6 @@
-﻿namespace Zomp.EFCore.WindowFunctions.Sqlite.Tests;
+﻿namespace Zomp.EFCore.Combined.SqlServer.Tests;
 
-[Collection(nameof(SqliteCollection))]
+[Collection(nameof(SqlServerCollection))]
 public class CombinedTests : TestBase
 {
     private readonly Testing.CombinedTests combinedTests;
@@ -11,10 +11,10 @@ public class CombinedTests : TestBase
         combinedTests = new Testing.CombinedTests(DbContext);
     }
 
-    [Fact(Skip = "Depends on byte concatenation, which SQLite doesn't support out of the box")]
+    [Fact]
     public void LastNonNull() => combinedTests.LastNonNull();
 
-    [Fact(Skip = "Depends on byte concatenation, which SQLite doesn't support out of the box")]
+    [Fact]
     public void LastNonNullShorthand() => combinedTests.LastNonNullShorthand();
 
     [Fact]

@@ -79,6 +79,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.BinaryFunctions
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.BinaryFunctions.Sqlite.Tests", "tests\Zomp.EFCore.BinaryFunctions.Sqlite.Tests\Zomp.EFCore.BinaryFunctions.Sqlite.Tests.csproj", "{26510426-A698-4CD6-B58E-8A08DBFB0EB9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zomp.EFCore.Combined.Npgsql.Tests", "tests\Zomp.EFCore.Combined.Npgsql.Tests\Zomp.EFCore.Combined.Npgsql.Tests.csproj", "{1EA3139E-35BF-43BA-BAA5-1ED2D6248E4C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zomp.EFCore.Combined.SqlServer.Tests", "tests\Zomp.EFCore.Combined.SqlServer.Tests\Zomp.EFCore.Combined.SqlServer.Tests.csproj", "{242C14CE-EFC5-4582-A761-B78207111CD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zomp.EFCore.Combined.Sqlite.Tests", "tests\Zomp.EFCore.Combined.Sqlite.Tests\Zomp.EFCore.Combined.Sqlite.Tests.csproj", "{E723EBB7-E77A-482D-B862-A86BD6CECC8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zomp.EFCore.Combined.Testing", "tests\Zomp.EFCore.Combined.Testing\Zomp.EFCore.Combined.Testing.csproj", "{BCF7993C-2B7D-43A3-B99B-1E32072031FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +161,22 @@ Global
 		{26510426-A698-4CD6-B58E-8A08DBFB0EB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26510426-A698-4CD6-B58E-8A08DBFB0EB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26510426-A698-4CD6-B58E-8A08DBFB0EB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EA3139E-35BF-43BA-BAA5-1ED2D6248E4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EA3139E-35BF-43BA-BAA5-1ED2D6248E4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EA3139E-35BF-43BA-BAA5-1ED2D6248E4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EA3139E-35BF-43BA-BAA5-1ED2D6248E4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{242C14CE-EFC5-4582-A761-B78207111CD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{242C14CE-EFC5-4582-A761-B78207111CD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{242C14CE-EFC5-4582-A761-B78207111CD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{242C14CE-EFC5-4582-A761-B78207111CD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E723EBB7-E77A-482D-B862-A86BD6CECC8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E723EBB7-E77A-482D-B862-A86BD6CECC8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E723EBB7-E77A-482D-B862-A86BD6CECC8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E723EBB7-E77A-482D-B862-A86BD6CECC8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCF7993C-2B7D-43A3-B99B-1E32072031FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCF7993C-2B7D-43A3-B99B-1E32072031FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCF7993C-2B7D-43A3-B99B-1E32072031FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCF7993C-2B7D-43A3-B99B-1E32072031FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -179,6 +203,10 @@ Global
 		{A0910646-19DD-438D-B674-C53F9CBE2A7F} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 		{49B737C9-3468-40B3-ABA1-F5E25A48790A} = {F71F1DAC-BD40-4112-8829-FCCFF65A8A23}
 		{26510426-A698-4CD6-B58E-8A08DBFB0EB9} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
+		{1EA3139E-35BF-43BA-BAA5-1ED2D6248E4C} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
+		{242C14CE-EFC5-4582-A761-B78207111CD9} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
+		{E723EBB7-E77A-482D-B862-A86BD6CECC8B} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
+		{BCF7993C-2B7D-43A3-B99B-1E32072031FB} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C20B0087-9477-4FC8-A489-4A8627C395B0}

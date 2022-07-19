@@ -1,6 +1,6 @@
-﻿namespace Zomp.EFCore.WindowFunctions.SqlServer.Tests;
+﻿namespace Zomp.EFCore.Combined.Npgsql.Tests;
 
-[Collection(nameof(SqlServerCollection))]
+[Collection(nameof(NpgsqlCollection))]
 public class CombinedTests : TestBase
 {
     private readonly Testing.CombinedTests combinedTests;
@@ -11,10 +11,10 @@ public class CombinedTests : TestBase
         combinedTests = new Testing.CombinedTests(DbContext);
     }
 
-    [Fact]
+    [Fact(Skip = "Can't max over bit(n) or bytea in postgres")]
     public void LastNonNull() => combinedTests.LastNonNull();
 
-    [Fact]
+    [Fact(Skip = "Can't max over bit(n) or bytea in postgres")]
     public void LastNonNullShorthand() => combinedTests.LastNonNullShorthand();
 
     [Fact]
