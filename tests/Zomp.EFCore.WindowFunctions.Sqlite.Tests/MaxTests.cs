@@ -1,15 +1,14 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Sqlite.Tests;
 
 [Collection(nameof(SqliteCollection))]
-public class MaxTests : IDisposable
+public class MaxTests : TestBase
 {
-    private readonly SqliteTestDbContext dbContext;
     private readonly Testing.MaxTests maxTests;
 
     public MaxTests(ITestOutputHelper output)
+        : base(output)
     {
-        dbContext = new(output.ToLoggerFactory());
-        maxTests = new Testing.MaxTests(dbContext);
+        maxTests = new Testing.MaxTests(DbContext);
     }
 
     [Fact]
@@ -44,21 +43,4 @@ public class MaxTests : IDisposable
 
     [Fact]
     public void MaxBinary() => maxTests.MaxBinary();
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            if (dbContext != null)
-            {
-                dbContext.Dispose();
-            }
-        }
-    }
 }
