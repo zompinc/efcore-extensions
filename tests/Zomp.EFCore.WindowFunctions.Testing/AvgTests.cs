@@ -60,4 +60,23 @@ public class AvgTests
         var expectedSequence = TestFixture.TestRows.Select(r => (double?)groups[r.Id / 10]);
         Assert.Equal(expectedSequence, result.Select(r => r.Avg));
     }
+
+    public void AvgNullableWithPartition()
+    {
+        var query = dbContext.TestRows
+        .Select(r => new
+        {
+            Avg = EF.Functions.Avg(
+                (double?)r.Col1,
+                EF.Functions.Over().PartitionBy(r.Id / 10)),
+        });
+
+        var result = query.ToList();
+
+        var groups = TestFixture.TestRows.GroupBy(r => r.Id / 10)
+            .ToDictionary(r => r.Key, r => r.Average(s => s.Col1));
+
+        var expectedSequence = TestFixture.TestRows.Select(r => groups[r.Id / 10]);
+        Assert.Equal(expectedSequence, result.Select(r => r.Avg));
+    }
 }

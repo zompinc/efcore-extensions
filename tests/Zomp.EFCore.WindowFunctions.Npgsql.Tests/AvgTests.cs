@@ -51,4 +51,7 @@ public class AvgTests : TestBase
 
     [Fact]
     public void AvgDoubleWithPartition() => sumTests.AvgDoubleWithPartition();
+
+    [Fact]
+    public void AvgNullableWithPartition() => sumTests.AvgNullableWithPartition();
 }
