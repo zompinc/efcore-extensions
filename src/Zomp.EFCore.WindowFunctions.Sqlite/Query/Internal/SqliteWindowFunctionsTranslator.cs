@@ -16,9 +16,9 @@ public class SqliteWindowFunctionsTranslator : WindowFunctionsTranslator
     }
 
     /// <inheritdoc/>
-    protected override SqlExpression MaxMinOver(IReadOnlyList<SqlExpression> arguments, string functionName)
+    protected override SqlExpression Over(IReadOnlyList<SqlExpression> arguments, string functionName)
     {
-        var retval = base.MaxMinOver(arguments, functionName);
+        var retval = base.Over(arguments, functionName);
 
         // SQLite returns int64 even when int32 is expected
         // This is a workaround until a better solution is found

@@ -23,9 +23,10 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
     public SqlExpression? Translate(SqlExpression? instance, MethodInfo method, IReadOnlyList<SqlExpression> arguments, IDiagnosticsLogger<DbLoggerCategory.Query> logger)
         => method.Name switch
         {
-            nameof(DbFunctionsExtensions.Min) => MaxMinOver(arguments, "MIN"),
-            nameof(DbFunctionsExtensions.Max) => MaxMinOver(arguments, "MAX"),
-            nameof(DbFunctionsExtensions.Sum) => MaxMinOver(arguments, "SUM"),
+            nameof(DbFunctionsExtensions.Min) => Over(arguments, "MIN"),
+            nameof(DbFunctionsExtensions.Max) => Over(arguments, "MAX"),
+            nameof(DbFunctionsExtensions.Sum) => Over(arguments, "SUM"),
+            nameof(DbFunctionsExtensions.Avg) => Over(arguments, "AVG"),
             nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
             nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
             nameof(DbFunctionsExtensions.PartitionBy) => new PartitionByExpression(arguments.Skip(1).First()),
@@ -54,7 +55,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
     /// <param name="arguments">SQL representations of <see cref="MethodCallExpression.Arguments" />.</param>
     /// <param name="functionName">Function name.</param>
     /// <returns>A SQL translation of the <see cref="MethodCallExpression" />.</returns>
-    protected virtual SqlExpression MaxMinOver(IReadOnlyList<SqlExpression> arguments, string functionName)
+    protected virtual SqlExpression Over(IReadOnlyList<SqlExpression> arguments, string functionName)
     {
         var expression = arguments[1];
         OrderingSqlExpression? orderingSqlExpression = null;
