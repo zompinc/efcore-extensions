@@ -2,7 +2,6 @@
   <Import Project="..\Directory.Build.props" />
 
   <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/zompinc/efcore-window-functions.git</RepositoryUrl>
     <PackageProjectUrl>https://github.com/zompinc/efcore-window-functions</PackageProjectUrl>
@@ -26,6 +25,16 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)images\icon.png" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="Microsoft.EntityFrameworkCore.Infrastructure" />
+    <Using Include="Microsoft.EntityFrameworkCore.Query" />
+    <Using Include="Microsoft.EntityFrameworkCore.Query.SqlExpressions" />
+    <Using Include="Microsoft.EntityFrameworkCore.Storage" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="System.Linq.Expressions" />
   </ItemGroup>
 
   <ItemGroup>

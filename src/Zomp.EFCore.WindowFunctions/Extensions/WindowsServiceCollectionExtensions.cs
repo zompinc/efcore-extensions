@@ -16,8 +16,7 @@ public static class WindowsServiceCollectionExtensions
         new EntityFrameworkRelationalServicesBuilder(serviceCollection)
             .TryAdd<IMethodCallTranslatorPlugin, WindowFunctionsTranslatorPlugin>()
             .TryAddProviderSpecificServices(b => b
-                .TryAddScoped<IWindowFunctionsTranslatorPluginFactory, WindowFunctionsTranslatorPluginFactory>()
-                .TryAddScoped<IBinaryTranslatorPluginFactory, BinaryTranslatorPluginFactory>());
+                .TryAddScoped<IWindowFunctionsTranslatorPluginFactory, WindowFunctionsTranslatorPluginFactory>());
 
         return serviceCollection;
     }

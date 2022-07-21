@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Zomp.EFCore.BinaryFunctions.SqlServer\Zomp.EFCore.BinaryFunctions.SqlServer.csproj" />
+    <ProjectReference Include="..\..\src\Zomp.EFCore.WindowFunctions.SqlServer\Zomp.EFCore.WindowFunctions.SqlServer.csproj" />
+    <ProjectReference Include="..\Zomp.EFCore.Combined.Testing\Zomp.EFCore.Combined.Testing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Zomp.EFCore.BinaryFunctions.SqlServer"/>
+    <Using Include="Zomp.EFCore.WindowFunctions.SqlServer"/>
+  </ItemGroup>
+</Project>

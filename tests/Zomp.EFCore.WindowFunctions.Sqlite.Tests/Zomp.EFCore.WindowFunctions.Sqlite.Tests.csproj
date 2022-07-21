@@ -1,8 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Zomp.EFCore.WindowFunctions.Sqlite\Zomp.EFCore.WindowFunctions.Sqlite.csproj" />
     <ProjectReference Include="..\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.csproj" />

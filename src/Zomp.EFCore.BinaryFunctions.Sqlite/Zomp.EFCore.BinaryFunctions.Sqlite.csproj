@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Binary functions for SQLite database provider for Entity Framework Core</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Zomp.EFCore.BinaryFunctions\Zomp.EFCore.BinaryFunctions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal" />
+    <Using Include="System.Runtime.InteropServices" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Infrastructure.Internal" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Query.Internal" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Sqlite.Infrastructure.Internal" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Sqlite.Query.Internal" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Sqlite.Storage.Internal" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Storage.Internal" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" />
+
+    <!-- Need this for switcher -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" />
+  </ItemGroup>
+</Project>

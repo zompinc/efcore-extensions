@@ -9,13 +9,11 @@ public class WindowFunctionsTranslatorPlugin : IMethodCallTranslatorPlugin
     /// Initializes a new instance of the <see cref="WindowFunctionsTranslatorPlugin"/> class.
     /// </summary>
     /// <param name="windowFunctionsTranslatorPluginFactory">Window Functions Translator Plugin Factory.</param>
-    /// <param name="binaryTranslatorPluginFactory">Binary Translator Plugin Factory.</param>
-    public WindowFunctionsTranslatorPlugin(IWindowFunctionsTranslatorPluginFactory windowFunctionsTranslatorPluginFactory, IBinaryTranslatorPluginFactory binaryTranslatorPluginFactory)
+    public WindowFunctionsTranslatorPlugin(IWindowFunctionsTranslatorPluginFactory windowFunctionsTranslatorPluginFactory)
     {
         var list = new List<IMethodCallTranslator>
         {
             windowFunctionsTranslatorPluginFactory.Create(),
-            binaryTranslatorPluginFactory.Create(),
         };
         Translators = list;
     }

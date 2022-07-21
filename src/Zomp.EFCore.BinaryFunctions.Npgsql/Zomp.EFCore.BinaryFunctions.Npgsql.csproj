@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Binary functions for PostgreSQL/Npgsql database provider for Entity Framework Core</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Zomp.EFCore.BinaryFunctions\Zomp.EFCore.BinaryFunctions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure" />
+    <Using Include="Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal" />
+    <Using Include="Npgsql.EntityFrameworkCore.PostgreSQL.Query.Internal" />
+    <Using Include="Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal" />
+    <Using Include="System.Collections" />
+    <Using Include="System.Linq.Expressions" />
+    <Using Include="System.Runtime.InteropServices" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Infrastructure.Internal" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Npgsql.Infrastructure.Internal" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Npgsql.Query.Internal" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Npgsql.Storage.Internal" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Query.Internal" />
+    <Using Include="Zomp.EFCore.BinaryFunctions.Storage.Internal" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+</Project>

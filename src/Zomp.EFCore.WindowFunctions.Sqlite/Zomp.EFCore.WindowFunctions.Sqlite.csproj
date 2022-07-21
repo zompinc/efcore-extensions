@@ -6,23 +6,13 @@
     <ProjectReference Include="..\Zomp.EFCore.WindowFunctions\Zomp.EFCore.WindowFunctions.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Using Include="Microsoft.EntityFrameworkCore.Infrastructure" />
-    <Using Include="Microsoft.EntityFrameworkCore.Query" />
-    <Using Include="Microsoft.EntityFrameworkCore.Query.Internal" />
-    <Using Include="Microsoft.EntityFrameworkCore.Query.SqlExpressions" />
     <Using Include="Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal" />
-    <Using Include="Microsoft.EntityFrameworkCore.Storage" />
-    <Using Include="Microsoft.Extensions.DependencyInjection" />
-    <Using Include="Microsoft.Extensions.DependencyInjection.Extensions" />
-    <Using Include="System.Linq.Expressions" />
     <Using Include="System.Runtime.InteropServices" />
     <Using Include="Zomp.EFCore.WindowFunctions.Infrastructure.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.SqlExpressions" />
     <Using Include="Zomp.EFCore.WindowFunctions.Sqlite.Infrastructure.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Sqlite.Query.Internal" />
-    <Using Include="Zomp.EFCore.WindowFunctions.Sqlite.Storage.Internal" />
-    <Using Include="Zomp.EFCore.WindowFunctions.Storage.Internal" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />

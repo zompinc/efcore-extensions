@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Zomp.EFCore.BinaryFunctions.Npgsql\Zomp.EFCore.BinaryFunctions.Npgsql.csproj" />
+    <ProjectReference Include="..\..\src\Zomp.EFCore.WindowFunctions.Npgsql\Zomp.EFCore.WindowFunctions.Npgsql.csproj" />
+    <ProjectReference Include="..\Zomp.EFCore.Combined.Testing\Zomp.EFCore.Combined.Testing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Zomp.EFCore.BinaryFunctions.Npgsql" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Npgsql" />
+  </ItemGroup>
+</Project>
