@@ -40,4 +40,7 @@ public class MaxTests : TestBase
 
     [Fact]
     public void MaxWith2Partitions() => maxTests.MaxWith2Partitions();
+
+    [Fact]
+    public void MaxBinary() => maxTests.MaxBinary();
 }

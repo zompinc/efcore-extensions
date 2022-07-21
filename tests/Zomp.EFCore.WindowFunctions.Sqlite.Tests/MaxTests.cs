@@ -42,6 +42,9 @@ public class MaxTests : IDisposable
     [Fact]
     public void MaxWith2Partitions() => maxTests.MaxWith2Partitions();
 
+    [Fact]
+    public void MaxBinary() => maxTests.MaxBinary();
+
     public void Dispose()
     {
         Dispose(true);

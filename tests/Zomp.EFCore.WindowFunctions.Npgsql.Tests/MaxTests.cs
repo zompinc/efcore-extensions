@@ -40,4 +40,7 @@ public class MaxTests : TestBase
 
     [Fact]
     public void MaxWith2Partitions() => maxTests.MaxWith2Partitions();
+
+    [Fact(Skip = "Can't max over bit(n) or bytea in postgres")]
+    public void MaxBinary() => maxTests.MaxBinary();
 }

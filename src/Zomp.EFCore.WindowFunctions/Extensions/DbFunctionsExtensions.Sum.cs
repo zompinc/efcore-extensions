@@ -39,17 +39,6 @@ public static partial class DbFunctionsExtensions
     /// <param name="over">over clause.</param>
     /// <returns>Sum for the selected window frame.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
-    public static byte[]? Sum(this DbFunctions _, byte[]? expression, OverClause over)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Sum)));
-
-    /// <summary>
-    /// The SUM() window function returns the sumimum value of the expression across all input values.
-    /// </summary>
-    /// <param name="_">The <see cref="DbFunctions"/> instance.</param>
-    /// <param name="expression">Expression to run window function on.</param>
-    /// <param name="over">over clause.</param>
-    /// <returns>Sum for the selected window frame.</returns>
-    /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static string? Sum(this DbFunctions _, string? expression, OverClause over)
         => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Sum)));
 }

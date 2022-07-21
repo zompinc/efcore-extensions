@@ -182,4 +182,19 @@ public class MaxTests
         var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => max);
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
+
+    public void MaxBinary()
+    {
+        var query = dbContext.TestRows
+        .Select(r => new
+        {
+            Max = EF.Functions.Max(r.IdBytes, EF.Functions.Over()),
+        });
+
+        var result = query.ToList();
+
+        var maxId = TestFixture.TestRows.Max(r => BitConverter.ToInt16(r.IdBytes));
+        var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => BitConverter.GetBytes(maxId));
+        Assert.Equal(expectedSequence, result.Select(r => r.Max));
+    }
 }
