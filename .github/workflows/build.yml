@@ -57,12 +57,21 @@ jobs:
           6.0.x
           7.0.x
         include-prerelease: true
+    # Must do this again, since a new dotnet network was just installed
+    - run: dotnet tool restore
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --settings tests/coverlet.runsettings
+    - name: Generate code coverage report
+      run: dotnet tool run reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
+    - name: Upload artifacts (code coverage)
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage
+        path: reports/coverage
     - name: Pack
       run: dotnet pack --configuration Release -o packages --no-build
     - name: Upload artifacts (.nupkg)
