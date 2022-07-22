@@ -1,4 +1,4 @@
-# Zomp EFCore Extensions
+# Zomp EF Core Extensions
 
 [![Build](https://github.com/zompinc/efcore-extensions/actions/workflows/build.yml/badge.svg)](https://github.com/zompinc/efcore-extensions/actions/workflows/build.yml)
 ![Support .net 6.0, .net 7.0](https://img.shields.io/badge/dotnet%20version-net6.0,%20net7.0-blue)
@@ -146,7 +146,6 @@ translates into the following SQL on SQL Server:
 SELECT CAST([t].[Id] AS binary(4))
 FROM [TestRows] AS [t]
 ```
-
 
 ## Applications
 
