@@ -30,6 +30,7 @@
   <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="System.Globalization" />
     <Using Include="Xunit" />
     <Using Include="Xunit.Abstractions" />
     <Using Include="Zomp.EFCore.Testing" />

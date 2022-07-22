@@ -27,6 +27,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
             nameof(DbFunctionsExtensions.Max) => Over(arguments, "MAX"),
             nameof(DbFunctionsExtensions.Sum) => Over(arguments, "SUM"),
             nameof(DbFunctionsExtensions.Avg) => Over(arguments, "AVG"),
+            nameof(DbFunctionsExtensions.Count) => Over(arguments, "COUNT"),
             nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
             nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
             nameof(DbFunctionsExtensions.PartitionBy) => new PartitionByExpression(arguments.Skip(1).First()),
@@ -57,6 +58,8 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
     /// <returns>A SQL translation of the <see cref="MethodCallExpression" />.</returns>
     protected virtual SqlExpression Over(IReadOnlyList<SqlExpression> arguments, string functionName)
     {
+        //// For count there needs to be an option to call for
+        //// new SqlConstantExpression(Expression.Constant("*"), null)
         var expression = arguments[1];
         OrderingSqlExpression? orderingSqlExpression = null;
         PartitionByExpression? partitionBySqlExpression = null;

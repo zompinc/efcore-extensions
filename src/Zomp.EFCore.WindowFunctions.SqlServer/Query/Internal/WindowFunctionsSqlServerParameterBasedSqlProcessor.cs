@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-
-namespace Zomp.EFCore.WindowFunctions.SqlServer.Query.Internal;
+﻿namespace Zomp.EFCore.WindowFunctions.SqlServer.Query.Internal;
 
 /// <summary>
 /// A class that processes the <see cref="SelectExpression" /> including  window functions.
