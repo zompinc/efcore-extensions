@@ -1,8 +1,16 @@
-# Zomp.EFCore.WindowFunctions
+# Zomp EFCore Extensions
 
-[![Build](https://github.com/zompinc/efcore-window-functions/actions/workflows/build.yml/badge.svg)](https://github.com/zompinc/efcore-window-functions/actions/workflows/build.yml)
+[![Build](https://github.com/zompinc/efcore-extensions/actions/workflows/build.yml/badge.svg)](https://github.com/zompinc/efcore-extensions/actions/workflows/build.yml)
+![Support .net 6.0, .net 7.0](https://img.shields.io/badge/dotnet%20version-net6.0,%20net7.0-blue)
 
-These libraries extend [Entity Framework Core](https://github.com/dotnet/efcore) and provide Window functions or analytics functions for providers. Currently supported for:
+This repository is home to two packages which extend [Entity Framework Core](https://github.com/dotnet/efcore):
+
+- Zomp.EFCore.WindowFunctions
+- Zomp.EFCore.BinaryFunctions
+
+## Zomp.EFCore.WindowFunctions
+
+Provides Window functions or analytics functions for providers. Currently supported for:
 
 | Provider                                                                                         | Package                                                                                                                                                |
 | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -14,9 +22,11 @@ Window functions supported:
 
 - Min
 - Max
-- (more to be added)
+- Sum
+- Avg
+- Count
 
-## Installation
+### Installation
 
 To add provider-specific library use:
 
@@ -43,7 +53,7 @@ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 }
 ```
 
-## Basic usage
+### Basic usage
 
 LINQ query
 
@@ -59,7 +69,7 @@ var query = dbContext.TestRows
 });
 ```
 
-translates into the following SQL:
+translates into the following SQL on SQL Server:
 
 ```sql
 SELECT MAX([t].[Col1]) OVER(ORDER BY [t].[Col2]) AS [Max]
@@ -67,7 +77,7 @@ FROM [TestRows] AS [t]
 ORDER BY [t].[Id]
 ```
 
-## Advanced usage
+### Advanced usage
 
 This example shows:
 
@@ -91,7 +101,15 @@ var query = dbContext.TestRows
 });
 ```
 
-## Binary functions
+## Zomp.EFCore.BinaryFunctions
+
+Provides Window functions or analytics functions for providers. Currently supported for:
+
+| Provider   | Package                                                                                                                                                |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| SQL Server | [![Nuget](https://img.shields.io/nuget/v/Zomp.EFCore.BinaryFunctions.SqlServer)](https://www.nuget.org/packages/Zomp.EFCore.BinaryFunctions.SqlServer) |
+| PostgreSQL | [![Nuget](https://img.shields.io/nuget/v/Zomp.EFCore.BinaryFunctions.Npgsql)](https://www.nuget.org/packages/Zomp.EFCore.BinaryFunctions.Npgsql)       |
+| SQLite     | [![Nuget](https://img.shields.io/nuget/v/Zomp.EFCore.BinaryFunctions.Sqlite)](https://www.nuget.org/packages/Zomp.EFCore.BinaryFunctions.Sqlite)       |
 
 The following extension methods are available
 
@@ -100,6 +118,35 @@ The following extension methods are available
 - `DbFunctions.BinaryCast<TFrom, TTo>` - Converts one type to another by taking least significant bytes when overflow occurs.
 - `DbFunctions.Concat` - concatenates two binary expressions
 - `DbFunctions.Substring` - Returns part of a binary expression
+
+### Usage
+
+Set up your specific provider to use Binary Functions with `DbContextOptionsBuilder.UseWindowFunctions`. For example here is the SQL Server syntax:
+
+```cs
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{
+    optionsBuilder.UseSqlServer(
+        myConn,
+        sqlOptions => sqlOptions.UseBinaryFunctions());
+}
+```
+
+LINQ query
+
+```cs
+using var dbContext = new MyDbContext();
+var query = dbContext.TestRows
+    .Select(r => EF.Functions.GetBytes(r.Id));
+```
+
+translates into the following SQL on SQL Server:
+
+```sql
+SELECT CAST([t].[Id] AS binary(4))
+FROM [TestRows] AS [t]
+```
+
 
 ## Applications
 
@@ -142,4 +189,10 @@ var query = dbContext.TestRows
 
 ## Examples
 
-See the `Zomp.EFCore.WindowFunctions.Testing` project for more examples.
+See the
+
+- Zomp.EFCore.WindowFunctions.Testing
+- Zomp.EFCore.BinaryFunctions.Testing
+- Zomp.EFCore.Combined.Testing
+
+projects for more examples.

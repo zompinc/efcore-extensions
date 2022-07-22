@@ -3,8 +3,8 @@
 
   <PropertyGroup>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/zompinc/efcore-window-functions.git</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/zompinc/efcore-window-functions</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/zompinc/efcore-extensions.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/zompinc/efcore-extensions</PackageProjectUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
