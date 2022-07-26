@@ -24,6 +24,17 @@ public class MaxTests
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    public void MaxWithOrder()
+    {
+        var query = dbContext.TestRows
+        .Select(r => new
+        {
+            Max = EF.Functions.Max(r.Id, EF.Functions.Over().OrderBy(r.Col1 / 10)),
+        });
+
+        var result = query.ToList();
+    }
+
     public void SimpleMaxNullable()
     {
         var query = dbContext.TestRows

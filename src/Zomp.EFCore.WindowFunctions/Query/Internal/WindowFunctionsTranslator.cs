@@ -28,6 +28,11 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
             nameof(DbFunctionsExtensions.Sum) => Over(arguments, "SUM"),
             nameof(DbFunctionsExtensions.Avg) => Over(arguments, "AVG"),
             nameof(DbFunctionsExtensions.Count) => Over(arguments, "COUNT"),
+            nameof(DbFunctionsExtensions.RowNumber) => Over(arguments, "ROW_NUMBER", 0),
+            nameof(DbFunctionsExtensions.Rank) => Over(arguments, "RANK", 0),
+            nameof(DbFunctionsExtensions.DenseRank) => Over(arguments, "DENSE_RANK", 0),
+            nameof(DbFunctionsExtensions.PercentRank) => Over(arguments, "PERCENT_RANK", 0),
+
             nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
             nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
             nameof(DbFunctionsExtensions.PartitionBy) => PartitionBy(arguments),
@@ -55,22 +60,24 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
     /// </summary>
     /// <param name="arguments">SQL representations of <see cref="MethodCallExpression.Arguments" />.</param>
     /// <param name="functionName">Function name.</param>
+    /// <param name="startIndex">0-based index of the first over parameter.</param>
     /// <returns>A SQL translation of the <see cref="MethodCallExpression" />.</returns>
-    protected virtual SqlExpression Over(IReadOnlyList<SqlExpression> arguments, string functionName)
+    protected virtual SqlExpression Over(IReadOnlyList<SqlExpression> arguments, string functionName, int startIndex = 1)
     {
         //// For count there needs to be an option to call for
         //// new SqlConstantExpression(Expression.Constant("*"), null)
-        var expression = arguments[1];
+
+        var expression = startIndex == 1 ? arguments[startIndex] : null;
         OrderingSqlExpression? orderingSqlExpression = null;
         PartitionByExpression? partitionBySqlExpression = null;
 
-        if (arguments.Count > 1 && arguments[2] is OverExpression over)
+        if (arguments.Count > 1 && arguments[startIndex + 1] is OverExpression over)
         {
             orderingSqlExpression = over.OrderingExpression;
             partitionBySqlExpression = over.PartitionByExpression;
         }
 
-        return new WindowFunctionExpression(functionName, sqlExpressionFactory.ApplyDefaultTypeMapping(expression), partitionBySqlExpression?.List, orderingSqlExpression?.List, orderingSqlExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
+        return new WindowFunctionExpression(functionName, expression is not null ? sqlExpressionFactory.ApplyDefaultTypeMapping(expression) : null, partitionBySqlExpression?.List, orderingSqlExpression?.List, orderingSqlExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
     }
 
     private static OverExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments)

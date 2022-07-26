@@ -20,11 +20,15 @@ Provides Window functions or analytics functions for providers. Currently suppor
 
 Window functions supported:
 
-- Min
-- Max
-- Sum
-- Avg
-- Count
+- MIN
+- MAX
+- SUM
+- AVG
+- COUNT
+- ROW_NUMBER
+- RANK
+- DENSE_RANK
+- PERCENT_RANK
 
 ### Installation
 

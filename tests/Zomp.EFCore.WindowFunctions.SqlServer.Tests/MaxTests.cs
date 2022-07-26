@@ -15,6 +15,9 @@ public class MaxTests : TestBase
     public void SimpleMax() => maxTests.SimpleMax();
 
     [Fact]
+    public void MaxWithOrder() => maxTests.MaxWithOrder();
+
+    [Fact]
     public void SimpleMaxNullable() => maxTests.SimpleMaxNullable();
 
     [Fact]

@@ -16,12 +16,12 @@ public class WindowFunctionExpression : SqlExpression
     /// <param name="typeMapping">The <see cref="RelationalTypeMapping" /> associated with the expression.</param>
     public WindowFunctionExpression(
         string function,
-        SqlExpression expression,
+        SqlExpression? expression,
         IReadOnlyList<SqlExpression>? partitions,
         IReadOnlyList<OrderingExpression>? orderings,
         RowOrRangeExpression? rowOrRange,
         RelationalTypeMapping? typeMapping)
-        : base((expression ?? throw new ArgumentNullException(nameof(expression), "Can't be null")).Type, typeMapping)
+        : base(expression != null ? expression.Type : typeof(long), typeMapping)
     {
         Expression = expression;
         Partitions = partitions ?? Array.Empty<SqlExpression>();
@@ -33,7 +33,7 @@ public class WindowFunctionExpression : SqlExpression
     /// <summary>
     /// Gets the expression of the window function.
     /// </summary>
-    public virtual SqlExpression Expression { get; }
+    public virtual SqlExpression? Expression { get; }
 
     /// <summary>
     /// Gets the list of expressions used in partitioning.
@@ -108,7 +108,7 @@ public class WindowFunctionExpression : SqlExpression
             orderings.Add(newOrdering);
         }
 
-        var expression = (SqlExpression)visitor.Visit(Expression);
+        var expression = Expression is not null ? (SqlExpression)visitor.Visit(Expression) : null;
         changed |= expression != Expression;
 
         return changed
