@@ -1,5 +1,5 @@
 {
-  "solution": "Zomp.EFCore.WindowFunctions.sln",
+  "solution": "Zomp.EFCore.Extensions.sln",
   "mappings": {
     "Microsoft.EntityFrameworkCore": [
       "../efcore/src/EFCore/EFCore.csproj",
