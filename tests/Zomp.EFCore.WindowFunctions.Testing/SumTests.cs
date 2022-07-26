@@ -41,4 +41,28 @@ public class SumTests
         var expectedSequence = TestFixture.TestRows.Select(r => (int?)groups[r.Id / 10]);
         Assert.Equal(expectedSequence, result.Select(r => r.Sum));
     }
+
+    public void SumWithPartitionAndOrder()
+    {
+        var query = dbContext.TestRows
+        .Select(r => new
+        {
+            Sum = EF.Functions.Sum(
+                r.Id,
+                EF.Functions.Over().OrderBy(r.Id).PartitionBy(r.Id / 10)),
+        });
+
+        var result = query.ToList();
+
+        var groups = TestFixture.TestRows.GroupBy(r => r.Id / 10);
+
+        var expectedSequence = TestFixture.TestRows
+            .Select(r => groups
+                .Where(g => g.Key == r.Id / 10)
+                .SelectMany(g => g)
+                .Where(z => z.Id <= r.Id)
+                .Sum(s => s.Id));
+
+        Assert.Equal(expectedSequence, result.Select(r => r.Sum!.Value));
+    }
 }

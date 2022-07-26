@@ -16,4 +16,7 @@ public class SumTests : TestBase
 
     [Fact]
     public void SumWithPartition() => sumTests.SumWithPartition();
+
+    [Fact]
+    public void SumWithPartitionAndOrder() => sumTests.SumWithPartitionAndOrder();
 }

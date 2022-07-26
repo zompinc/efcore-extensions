@@ -30,7 +30,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
             nameof(DbFunctionsExtensions.Count) => Over(arguments, "COUNT"),
             nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
             nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
-            nameof(DbFunctionsExtensions.PartitionBy) => new PartitionByExpression(arguments.Skip(1).First()),
+            nameof(DbFunctionsExtensions.PartitionBy) => PartitionBy(arguments),
             nameof(DbFunctionsExtensions.ThenBy) => ThenBy(arguments, true),
             nameof(DbFunctionsExtensions.ThenByDescending) => ThenBy(arguments, false),
 
@@ -63,26 +63,20 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         var expression = arguments[1];
         OrderingSqlExpression? orderingSqlExpression = null;
         PartitionByExpression? partitionBySqlExpression = null;
-        foreach (var arg in arguments.Skip(2))
-        {
-            if (arg is OrderingSqlExpression ose)
-            {
-                orderingSqlExpression = ose;
-            }
 
-            if (arg is PartitionByExpression pbe)
-            {
-                partitionBySqlExpression = pbe;
-            }
+        if (arguments.Count > 1 && arguments[2] is OverExpression over)
+        {
+            orderingSqlExpression = over.OrderingExpression;
+            partitionBySqlExpression = over.PartitionByExpression;
         }
 
         return new WindowFunctionExpression(functionName, sqlExpressionFactory.ApplyDefaultTypeMapping(expression), partitionBySqlExpression?.List, orderingSqlExpression?.List, orderingSqlExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
     }
 
-    private static OrderingSqlExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments)
+    private static OverExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments)
     {
-        return arguments is not { Count: > 0 } || arguments[0] is not OrderingSqlExpression orderingSqlExpression
-            ? throw new InvalidOperationException($"Must be applied to {nameof(OrderingSqlExpression)}")
+        return arguments is not { Count: > 0 } || arguments[0] is not OverExpression orderingSqlExpression
+            ? throw new InvalidOperationException($"Must be applied to {nameof(OverExpression)}")
             : orderingSqlExpression;
     }
 
@@ -95,30 +89,30 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
 
     private static SqlExpression RowsOrRange(IReadOnlyList<SqlExpression> arguments, bool isRows)
     {
-        var orderingSqlExpression = GetOrderingSqlExpression(arguments);
+        var overExpression = GetOrderingSqlExpression(arguments);
 
-        orderingSqlExpression.RowOrRangeClause = new(isRows, WindowFrame.Unbounded, WindowFrame.CurrentRow);
+        overExpression.OrderingExpression!.RowOrRangeClause = new(isRows, WindowFrame.Unbounded, WindowFrame.CurrentRow);
 
-        return orderingSqlExpression;
+        return overExpression;
     }
 
     private static SqlExpression From(IReadOnlyList<SqlExpression> arguments, bool isFollowingForBounded)
     {
-        var orderingSqlExpression = GetOrderingSqlExpression(arguments);
+        var overExpression = GetOrderingSqlExpression(arguments);
         var windowFrame = GetWindowFrame(arguments[1], isFollowingForBounded);
 
-        return FromWindowFrame(orderingSqlExpression, windowFrame);
+        return FromWindowFrame(overExpression, windowFrame);
     }
 
-    private static SqlExpression FromWindowFrame(OrderingSqlExpression orderingSqlExpression, WindowFrame windowFrame)
+    private static SqlExpression FromWindowFrame(OverExpression overExpression, WindowFrame windowFrame)
     {
-        if (orderingSqlExpression.RowOrRangeClause is null)
+        if (overExpression.OrderingExpression!.RowOrRangeClause is null)
         {
             throw new InvalidOperationException("Ensure Rows or Range is called first");
         }
 
-        orderingSqlExpression.RowOrRangeClause = new(orderingSqlExpression.RowOrRangeClause.IsRows, windowFrame);
-        return orderingSqlExpression;
+        overExpression.OrderingExpression!.RowOrRangeClause = new(overExpression.OrderingExpression!.RowOrRangeClause.IsRows, windowFrame);
+        return overExpression;
     }
 
     private static SqlExpression To(IReadOnlyList<SqlExpression> arguments, bool isFollowingForBounded)
@@ -129,35 +123,44 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         return ToWindowFrame(orderingSqlExpression, windowFrame);
     }
 
-    private static SqlExpression ToWindowFrame(OrderingSqlExpression orderingSqlExpression, WindowFrame windowFrame)
+    private static SqlExpression ToWindowFrame(OverExpression overExpression, WindowFrame windowFrame)
     {
-        if (orderingSqlExpression.RowOrRangeClause is null)
+        if (overExpression.OrderingExpression!.RowOrRangeClause is null)
         {
             throw new InvalidOperationException("Ensure Rows or Range is called first");
         }
 
-        orderingSqlExpression.RowOrRangeClause = new(orderingSqlExpression.RowOrRangeClause.IsRows, orderingSqlExpression.RowOrRangeClause.Start, windowFrame);
-        return orderingSqlExpression;
+        overExpression.OrderingExpression!.RowOrRangeClause = new(overExpression.OrderingExpression!.RowOrRangeClause.IsRows, overExpression.OrderingExpression!.RowOrRangeClause.Start, windowFrame);
+        return overExpression;
     }
 
-    private OrderingSqlExpression OrderBy(IReadOnlyList<SqlExpression> arguments, bool ascending)
-        => new(new OrderingExpression(sqlExpressionFactory.ApplyDefaultTypeMapping(arguments[1]), ascending));
+    private OverExpression OrderBy(IReadOnlyList<SqlExpression> arguments, bool ascending)
+    {
+        var p = (arguments[0] as OverExpression)?.PartitionByExpression;
+        return new(new OrderingSqlExpression(new OrderingExpression(sqlExpressionFactory.ApplyDefaultTypeMapping(arguments[1]), ascending)), p, false);
+    }
+
+    private OverExpression PartitionBy(IReadOnlyList<SqlExpression> arguments)
+    {
+        var o = (arguments[0] as OverExpression)?.OrderingExpression;
+        return new OverExpression(o, new PartitionByExpression(sqlExpressionFactory.ApplyDefaultTypeMapping(arguments[1])), true);
+    }
 
     private SqlExpression ThenBy(IReadOnlyList<SqlExpression> arguments, bool ascending)
     {
         var arr = arguments.ToList();
-        var list = arr[0];
+        var over = arr[0] as OverExpression ?? throw new InvalidOperationException("Must be over expression");
         var chained = sqlExpressionFactory.ApplyDefaultTypeMapping(arr[1]);
 
-        if (list is OrderingSqlExpression orderingSqlExpression)
+        if (over.IsLatestPartitionBy)
         {
-            orderingSqlExpression.Add(new OrderingExpression(chained, ascending));
+            over.PartitionByExpression!.Add(chained);
         }
-        else if (list is PartitionByExpression partitionByExpression)
+        else
         {
-            partitionByExpression.Add(chained);
+            over.OrderingExpression!.Add(new OrderingExpression(chained, ascending));
         }
 
-        return list;
+        return over;
     }
 }
