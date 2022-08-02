@@ -2,7 +2,6 @@ name: Build
 
 on:
   push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
   workflow_dispatch:
@@ -15,21 +14,45 @@ env:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
+
+    services:
+      if: startsWith(matrix.os, 'ubuntu')
+      mssql:
+        image: mcr.microsoft.com/mssql/server:latest
+        ports:
+          - 1433:1433
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_PID: "Developer"
+# [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="False positive")]
+          SA_PASSWORD: "yourWeak(!)Password"
 
     steps:
     - name: Start PostgreSQL on Windows
+      if: startsWith(matrix.os, 'windows')
       run: |
         $pgService = Get-Service -Name postgresql*
         Set-Service -InputObject $pgService -Status running -StartupType automatic
         Start-Process -FilePath "$env:PGBIN\pg_isready" -Wait -PassThru
 
     - name: Set up PostgreSQL test user
+      if: startsWith(matrix.os, 'windows')
       env:
         PGUSER: postgres
         PGPASSWORD: root
       run: |
         & $env:PGBIN\psql -c "CREATE USER npgsql_tests SUPERUSER PASSWORD 'npgsql_tests'"
+
+    - name: Set up PostgreSQL test user
+      if: startsWith(matrix.os, 'ubuntu')
+      run: |
+        sudo systemctl start postgresql.service
+        sudo -u postgres psql -c "CREATE USER npgsql_tests SUPERUSER PASSWORD 'npgsql_tests'"
 
     - uses: actions/checkout@v3
       with:
@@ -56,6 +79,7 @@ jobs:
 
     - name: 'Run pre-commit hooks'
       shell: bash
+      if: startsWith(matrix.os, 'windows')
       run: sh $(git config core.hooksPath)/pre-commit normal
 
     - name: Restore dependencies

@@ -12,7 +12,7 @@ public class SqlServerTestDbContext : TestDbContext
         base.OnConfiguring(optionsBuilder);
 
         optionsBuilder.UseSqlServer(
-            $@"Server=(localdb)\mssqllocaldb;Database=Zomp_Efcore_BinaryFunctions_Tests;Trusted_Connection=True",
+            $@"Server=.\SqlExpress;Database=Zomp_Efcore_BinaryFunctions_Tests;Trusted_Connection=True;TrustServerCertificate=True",
             sqlOptions => sqlOptions.UseBinaryFunctions());
     }
 }

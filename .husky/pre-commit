@@ -7,5 +7,5 @@ if [ -n "$1" ]; then
 fi
 
 EXIT_STATUS=0
-dotnet.exe tool run dotnet-format --verify-no-changes Zomp.EFCore.Extensions.sln -v $formatLevel whitespace || EXIT_STATUS=$?
+dotnet tool run dotnet-format --verify-no-changes Zomp.EFCore.Extensions.sln -v $formatLevel whitespace || EXIT_STATUS=$?
 exit $EXIT_STATUS
