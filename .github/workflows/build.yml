@@ -31,7 +31,7 @@ jobs:
       run: |
         & $env:PGBIN\psql -c "CREATE USER npgsql_tests SUPERUSER PASSWORD 'npgsql_tests'"
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
@@ -44,21 +44,20 @@ jobs:
 
     - run: yarn install
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: | 
+          6.0.x
+          7.0.x
+        include-prerelease: true
+
     - run: dotnet tool restore
 
     - name: 'Run pre-commit hooks'
       shell: bash
       run: sh $(git config core.hooksPath)/pre-commit normal
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: | 
-          6.0.x
-          7.0.x
-        include-prerelease: true
-    # Must do this again, since a new dotnet network was just installed
-    - run: dotnet tool restore
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
