@@ -144,6 +144,7 @@ public class WindowFunctionExpression : SqlExpression
 
     private bool Equals(WindowFunctionExpression windowFunctionsExpression)
         => base.Equals(windowFunctionsExpression)
+            && ((Expression is null && windowFunctionsExpression.Expression is null) || (Expression?.Equals(windowFunctionsExpression.Expression) ?? false))
             && Function.Equals(windowFunctionsExpression.Function, StringComparison.Ordinal)
             && (Partitions == null ? windowFunctionsExpression.Partitions == null : Partitions.SequenceEqual(windowFunctionsExpression.Partitions))
             && Orderings.SequenceEqual(windowFunctionsExpression.Orderings)

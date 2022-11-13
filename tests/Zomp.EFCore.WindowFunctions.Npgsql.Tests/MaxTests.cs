@@ -15,6 +15,9 @@ public class MaxTests : TestBase
     public void SimpleMax() => maxTests.SimpleMax();
 
     [Fact]
+    public void MaxDifferByExpressionOnly() => maxTests.MaxDifferByExpressionOnly();
+
+    [Fact]
     public void SimpleMaxNullable() => maxTests.SimpleMaxNullable();
 
     [Fact]

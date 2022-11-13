@@ -24,6 +24,25 @@ public class MaxTests
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    public void MaxDifferByExpressionOnly()
+    {
+        var query = dbContext.TestRows
+        .Select(r => new
+        {
+            Max = EF.Functions.Max(r.Id, EF.Functions.Over()),
+            MaxTimesTwo = EF.Functions.Max(r.Id * 2, EF.Functions.Over()),
+        });
+
+        var result = query.ToList();
+
+        var expectedMax = TestFixture.TestRows.Max(r => r.Id);
+        var expectedMaxTimesTwo = TestFixture.TestRows.Max(r => r.Id * 2);
+
+        var distinctResults = result.Distinct().Single();
+        Assert.Equal(expectedMax, distinctResults.Max);
+        Assert.Equal(expectedMaxTimesTwo, distinctResults.MaxTimesTwo);
+    }
+
     public void MaxWithOrder()
     {
         var query = dbContext.TestRows
