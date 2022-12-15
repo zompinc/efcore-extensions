@@ -1,6 +1,6 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Query.SqlExpressions;
 
-internal class OrderingSqlExpression : ChainedSqlExpression<OrderingExpression>
+internal sealed class OrderingSqlExpression : ChainedSqlExpression<OrderingExpression>
 {
     public OrderingSqlExpression(OrderingExpression ordering)
         : base(ordering)

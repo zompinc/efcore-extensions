@@ -28,6 +28,6 @@ public class DecimalRoundingEqualityComparer : IEqualityComparer<decimal?>
 
     public int GetHashCode([DisallowNull] decimal? obj)
     {
-        throw new NotImplementedException();
+        return obj.GetHashCode();
     }
 }

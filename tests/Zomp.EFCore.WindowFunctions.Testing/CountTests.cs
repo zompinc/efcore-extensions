@@ -202,7 +202,7 @@ public class CountTests
 
         var result = query.ToList();
 
-        var count = TestRows.Count();
+        var count = TestRows.Length;
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => count);
 
         Assert.Equal(expectedSequence, result.Select(r => r.Count));

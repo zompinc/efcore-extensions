@@ -1,10 +1,12 @@
 namespace Zomp.EFCore.BinaryFunctions.SqlServer.Tests;
 
 [Collection(nameof(SqlServerCollection))]
-public class BinaryTests
+public class BinaryTests : IDisposable
 {
     private readonly SqlServerTestDbContext dbContext;
     private readonly Testing.BinaryTests binaryTests;
+
+    private bool disposed;
 
     public BinaryTests(ITestOutputHelper output)
     {
@@ -41,4 +43,24 @@ public class BinaryTests
 
     [Fact]
     public void BinaryCastFromDoubleToLong() => binaryTests.BinaryCastFromDoubleToLong();
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                dbContext.Dispose();
+                binaryTests.Dispose();
+            }
+
+            disposed = true;
+        }
+    }
 }

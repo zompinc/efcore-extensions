@@ -79,13 +79,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.BinaryFunctions
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.BinaryFunctions.Sqlite.Tests", "tests\Zomp.EFCore.BinaryFunctions.Sqlite.Tests\Zomp.EFCore.BinaryFunctions.Sqlite.Tests.csproj", "{26510426-A698-4CD6-B58E-8A08DBFB0EB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zomp.EFCore.Combined.Npgsql.Tests", "tests\Zomp.EFCore.Combined.Npgsql.Tests\Zomp.EFCore.Combined.Npgsql.Tests.csproj", "{1EA3139E-35BF-43BA-BAA5-1ED2D6248E4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.Combined.Npgsql.Tests", "tests\Zomp.EFCore.Combined.Npgsql.Tests\Zomp.EFCore.Combined.Npgsql.Tests.csproj", "{1EA3139E-35BF-43BA-BAA5-1ED2D6248E4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zomp.EFCore.Combined.SqlServer.Tests", "tests\Zomp.EFCore.Combined.SqlServer.Tests\Zomp.EFCore.Combined.SqlServer.Tests.csproj", "{242C14CE-EFC5-4582-A761-B78207111CD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.Combined.SqlServer.Tests", "tests\Zomp.EFCore.Combined.SqlServer.Tests\Zomp.EFCore.Combined.SqlServer.Tests.csproj", "{242C14CE-EFC5-4582-A761-B78207111CD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zomp.EFCore.Combined.Sqlite.Tests", "tests\Zomp.EFCore.Combined.Sqlite.Tests\Zomp.EFCore.Combined.Sqlite.Tests.csproj", "{E723EBB7-E77A-482D-B862-A86BD6CECC8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.Combined.Sqlite.Tests", "tests\Zomp.EFCore.Combined.Sqlite.Tests\Zomp.EFCore.Combined.Sqlite.Tests.csproj", "{E723EBB7-E77A-482D-B862-A86BD6CECC8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zomp.EFCore.Combined.Testing", "tests\Zomp.EFCore.Combined.Testing\Zomp.EFCore.Combined.Testing.csproj", "{BCF7993C-2B7D-43A3-B99B-1E32072031FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.Combined.Testing", "tests\Zomp.EFCore.Combined.Testing\Zomp.EFCore.Combined.Testing.csproj", "{BCF7993C-2B7D-43A3-B99B-1E32072031FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

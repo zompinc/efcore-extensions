@@ -3,7 +3,7 @@
 /// <summary>
 /// Contains OrderBy and PartitionBy clauses.
 /// </summary>
-internal class OverExpression : SqlExpression
+internal sealed class OverExpression : SqlExpression
 {
     public OverExpression(OrderingSqlExpression? orderingExpression, PartitionByExpression? partitionByExpression, bool isLatestPartitionBy)
         : base(typeof(OverExpression), null)

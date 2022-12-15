@@ -1,6 +1,6 @@
 ﻿namespace Zomp.EFCore.BinaryFunctions.Testing;
 
-public class BinaryTests
+public class BinaryTests : IDisposable
 {
     private readonly TestDbContext dbContext;
 
@@ -134,6 +134,16 @@ public class BinaryTests
             .Select(r => MemoryMarshal.GetReference(MemoryMarshal.Cast<double, long>(MemoryMarshal.CreateSpan(ref Unsafe.AsRef((r.Id / 2d) + shortOverflow), 1))));
 
         Assert.Equal(expectedSequence, result);
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
     }
 
     private static byte[] ReverseEndianAndCombine(Guid x, int y)
