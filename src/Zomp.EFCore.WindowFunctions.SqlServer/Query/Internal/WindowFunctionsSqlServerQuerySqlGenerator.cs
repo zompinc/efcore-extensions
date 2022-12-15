@@ -5,7 +5,7 @@
 /// </summary>
 public class WindowFunctionsSqlServerQuerySqlGenerator : SqlServerQuerySqlGenerator
 {
-#if NET7_0_OR_GREATER
+#if EF7
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerQuerySqlGenerator"/> class.
     /// </summary>

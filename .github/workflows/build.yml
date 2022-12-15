@@ -2,7 +2,6 @@ name: Build
 
 on:
   push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
   workflow_dispatch:
@@ -16,6 +15,9 @@ jobs:
   build:
 
     runs-on: windows-latest
+    strategy:
+      matrix:
+        ef-version: [6, 7]
 
     steps:
     - name: Start PostgreSQL on Windows
@@ -59,9 +61,9 @@ jobs:
       run: sh $(git config core.hooksPath)/pre-commit normal
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore /p:DefineConstants=EF${{ matrix.ef-version }}
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore /p:DefineConstants=EF${{ matrix.ef-version }}
     - name: Test
       run: dotnet test --no-build --verbosity normal --settings tests/coverlet.runsettings
     - name: Generate code coverage report
