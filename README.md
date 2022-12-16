@@ -1,7 +1,7 @@
 # Zomp EF Core Extensions
 
 [![Build](https://github.com/zompinc/efcore-extensions/actions/workflows/build.yml/badge.svg)](https://github.com/zompinc/efcore-extensions/actions/workflows/build.yml)
-![Support .net 6.0, .net 7.0](https://img.shields.io/badge/dotnet%20version-net6.0,%20net7.0-blue)
+![Support .NET 6.0](https://img.shields.io/badge/dotnet%20version-net6.0-blue)
 
 This repository is home to two packages which extend [Entity Framework Core](https://github.com/dotnet/efcore):
 

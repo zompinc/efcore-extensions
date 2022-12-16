@@ -5,11 +5,11 @@
 /// </summary>
 public class WindowFunctionsSqlServerQuerySqlGeneratorFactory : SqlServerQuerySqlGeneratorFactory
 {
-#if NET7_0_OR_GREATER
+#if !EF_CORE_6
     private readonly IRelationalTypeMappingSource typeMappingSource;
 #endif
 
-#if NET7_0_OR_GREATER
+#if !EF_CORE_6
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerQuerySqlGeneratorFactory"/> class.
     /// </summary>
@@ -32,7 +32,7 @@ public class WindowFunctionsSqlServerQuerySqlGeneratorFactory : SqlServerQuerySq
 #endif
 
     /// <inheritdoc/>
-#if NET7_0_OR_GREATER
+#if !EF_CORE_6
     public override QuerySqlGenerator Create()
         => new WindowFunctionsSqlServerQuerySqlGenerator(Dependencies, typeMappingSource);
 #else

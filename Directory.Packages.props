@@ -1,10 +1,10 @@
 <Project>
-  <PropertyGroup Condition="$(TargetFramework) == 'net6.0'">
+  <PropertyGroup Condition="$(DefineConstants.Contains(EF_CORE_6))">
     <NetRuntime>6.0.0</NetRuntime>
     <NpgsqlVersion>6.0.5</NpgsqlVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="$(TargetFramework) == 'net7.0'">
+  <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_6))">
     <NetRuntime>7.0.0</NetRuntime>
     <NpgsqlVersion>7.0.0</NpgsqlVersion>
   </PropertyGroup>
