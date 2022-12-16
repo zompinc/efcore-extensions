@@ -1,0 +1,7 @@
+<Project>
+  <Target Name="HackVersion" AfterTargets="GetBuildVersion" Condition="'$(OverridePackageVersion)'!=''">
+    <PropertyGroup>
+      <PackageVersion>$(OverridePackageVersion)</PackageVersion>
+    </PropertyGroup>
+  </Target>
+</Project>

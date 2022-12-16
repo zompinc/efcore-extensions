@@ -44,6 +44,9 @@ jobs:
 
     - run: nbgv cloud
 
+    - name: Set pack version
+      run: echo "PACK_VERSION=$((echo $env:NBGV_SimpleVersion) -replace '^[0-9]+','${{ matrix.ef-version }}')" >> $env:GITHUB_ENV
+
     - run: yarn install
 
     - name: Setup .NET
@@ -74,7 +77,7 @@ jobs:
         name: coverage
         path: reports/coverage
     - name: Pack
-      run: dotnet pack --configuration Release -o packages --no-build
+      run: dotnet pack --configuration Release -o packages --no-build /p:OverridePackageVersion=$env:PACK_VERSION
     - name: Upload artifacts (.nupkg)
       uses: actions/upload-artifact@v3
       with:
