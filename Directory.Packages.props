@@ -3,20 +3,18 @@
     <NetRuntime>6.0.0</NetRuntime>
     <NpgsqlVersion>6.0.5</NpgsqlVersion>
   </PropertyGroup>
-
   <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_6))">
     <NetRuntime>7.0.0</NetRuntime>
     <NpgsqlVersion>7.0.0</NpgsqlVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="3.2.0" />
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(NetRuntime)" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(NetRuntime)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(NetRuntime)" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(NetRuntime)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.5.119" />

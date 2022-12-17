@@ -19,6 +19,7 @@ public class WindowQuerySqlGenerator : QuerySqlGenerator
         => extensionExpression switch
         {
             WindowFunctionExpression windowFunctionExpression => this.VisitWindowFunction(windowFunctionExpression),
+            MethodCallExpression methodCallExpression => this.TranslateCustomMethods(methodCallExpression)!,
             _ => base.VisitExtension(extensionExpression),
         };
 }

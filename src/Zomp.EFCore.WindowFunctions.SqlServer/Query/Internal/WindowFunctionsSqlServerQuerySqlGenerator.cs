@@ -5,7 +5,6 @@
 /// </summary>
 public class WindowFunctionsSqlServerQuerySqlGenerator : SqlServerQuerySqlGenerator
 {
-#if !EF_CORE_6
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerQuerySqlGenerator"/> class.
     /// </summary>
@@ -15,22 +14,13 @@ public class WindowFunctionsSqlServerQuerySqlGenerator : SqlServerQuerySqlGenera
         : base(dependencies, typeMappingSource)
     {
     }
-#else
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerQuerySqlGenerator"/> class.
-    /// </summary>
-    /// <param name="dependencies">Service dependencies.</param>
-    public WindowFunctionsSqlServerQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies)
-        : base(dependencies)
-    {
-    }
-#endif
 
     /// <inheritdoc/>
     protected override Expression VisitExtension(Expression extensionExpression)
         => extensionExpression switch
         {
             WindowFunctionExpression windowFunctionExpression => this.VisitWindowFunction(windowFunctionExpression),
+            MethodCallExpression methodCallExpression => this.TranslateCustomMethods(methodCallExpression)!,
             _ => base.VisitExtension(extensionExpression),
         };
 }

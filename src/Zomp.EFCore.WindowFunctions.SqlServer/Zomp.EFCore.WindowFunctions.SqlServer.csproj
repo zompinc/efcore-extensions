@@ -1,7 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Window functions for SQL Server database provider for  Entity Framework Core</Description>
+    <TargetFrameworks>net6.0</TargetFrameworks>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Query\Internal\SqlServerQuerySqlGenerator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="microsoft.entityframeworkcore.sqlserver" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Zomp.EFCore.WindowFunctions\Zomp.EFCore.WindowFunctions.csproj" />
   </ItemGroup>
@@ -22,8 +29,5 @@
     <Using Include="Zomp.EFCore.WindowFunctions.Query.SqlExpressions" />
     <Using Include="Zomp.EFCore.WindowFunctions.SqlServer.Infrastructure.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.SqlServer.Query.Internal" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
   </ItemGroup>
 </Project>
