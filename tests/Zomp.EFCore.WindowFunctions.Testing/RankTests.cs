@@ -36,9 +36,8 @@ public class RankTests
 
         var result = query.ToList();
 
-        var expectedSequence = TestFixture.TestRows.GroupBy(r => r.Id / 10)
-            .SelectMany(g =>
-                g.Select((j, i) => (long)(i + 1)));
+        var expectedSequence = TestFixture.TestRows
+            .Select((j, i) => (long)(i + 1));
 
         Assert.Equal(expectedSequence, result.Select(r => r.RowNumber));
     }
