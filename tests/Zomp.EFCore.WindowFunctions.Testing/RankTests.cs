@@ -26,6 +26,23 @@ public class RankTests
         Assert.Equal(expectedSequence, result.Select(r => r.RowNumber));
     }
 
+    public void RowNumberEmptyOver()
+    {
+        var query = dbContext.TestRows
+            .Select(r => new
+            {
+                RowNumber = EF.Functions.RowNumber(EF.Functions.Over()),
+            });
+
+        var result = query.ToList();
+
+        var expectedSequence = TestFixture.TestRows.GroupBy(r => r.Id / 10)
+            .SelectMany(g =>
+                g.Select((j, i) => (long)(i + 1)));
+
+        Assert.Equal(expectedSequence, result.Select(r => r.RowNumber));
+    }
+
     public void RankBasic()
     {
         var query = dbContext.TestRows
