@@ -78,7 +78,7 @@ public class BinaryTranslator : IMethodCallTranslator
     protected virtual SqlExpression ToValue(SqlExpression sqlExpression, Type type)
         => new SqlUnaryExpression(ExpressionType.Convert, sqlExpression, type, null);
 
-    private static SqlExpression Concat(IReadOnlyList<SqlExpression> arguments)
+    private static SqlBinaryExpression Concat(IReadOnlyList<SqlExpression> arguments)
     {
         var left = arguments[1];
         var right = arguments[2];
@@ -91,7 +91,7 @@ public class BinaryTranslator : IMethodCallTranslator
             Substring(sqlExpression, offset, new SqlConstantExpression(Expression.Constant(Marshal.SizeOf(type)), null)),
             type);
 
-    private SqlExpression Substring(SqlExpression bytearray, SqlExpression start, SqlExpression length)
+    private SqlFunctionExpression Substring(SqlExpression bytearray, SqlExpression start, SqlExpression length)
     {
         return sqlExpressionFactory.Function(
             "SUBSTRING",

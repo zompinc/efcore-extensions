@@ -50,7 +50,7 @@ public class SqlServerBinaryTranslator : BinaryTranslator
     /// <remarks>
     /// Use this method to convert: http://multikoder.blogspot.ca/2013/03/converting-varbinary-to-float-in-t-sql.html.
     /// </remarks>
-    private SqlExpression ToDouble(SqlExpression sqlExpression)
+    private SqlBinaryExpression ToDouble(SqlExpression sqlExpression)
     {
         var colNameBigInt = new SqlUnaryExpression(ExpressionType.Convert, sqlExpression, typeof(long), null);
 

@@ -94,7 +94,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
             _ => throw new InvalidOperationException($"Could not parse {sqlExpression}"),
         };
 
-    private static SqlExpression RowsOrRange(IReadOnlyList<SqlExpression> arguments, bool isRows)
+    private static OverExpression RowsOrRange(IReadOnlyList<SqlExpression> arguments, bool isRows)
     {
         var overExpression = GetOrderingSqlExpression(arguments);
 
@@ -103,7 +103,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         return overExpression;
     }
 
-    private static SqlExpression From(IReadOnlyList<SqlExpression> arguments, bool isFollowingForBounded)
+    private static OverExpression From(IReadOnlyList<SqlExpression> arguments, bool isFollowingForBounded)
     {
         var overExpression = GetOrderingSqlExpression(arguments);
         var windowFrame = GetWindowFrame(arguments[1], isFollowingForBounded);
@@ -111,7 +111,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         return FromWindowFrame(overExpression, windowFrame);
     }
 
-    private static SqlExpression FromWindowFrame(OverExpression overExpression, WindowFrame windowFrame)
+    private static OverExpression FromWindowFrame(OverExpression overExpression, WindowFrame windowFrame)
     {
         if (overExpression.OrderingExpression!.RowOrRangeClause is null)
         {
@@ -122,7 +122,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         return overExpression;
     }
 
-    private static SqlExpression To(IReadOnlyList<SqlExpression> arguments, bool isFollowingForBounded)
+    private static OverExpression To(IReadOnlyList<SqlExpression> arguments, bool isFollowingForBounded)
     {
         var orderingSqlExpression = GetOrderingSqlExpression(arguments);
         var windowFrame = GetWindowFrame(arguments[1], isFollowingForBounded);
@@ -130,7 +130,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         return ToWindowFrame(orderingSqlExpression, windowFrame);
     }
 
-    private static SqlExpression ToWindowFrame(OverExpression overExpression, WindowFrame windowFrame)
+    private static OverExpression ToWindowFrame(OverExpression overExpression, WindowFrame windowFrame)
     {
         if (overExpression.OrderingExpression!.RowOrRangeClause is null)
         {
@@ -153,7 +153,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         return new OverExpression(o, new PartitionByExpression(sqlExpressionFactory.ApplyDefaultTypeMapping(arguments[1])), true);
     }
 
-    private SqlExpression ThenBy(IReadOnlyList<SqlExpression> arguments, bool ascending)
+    private OverExpression ThenBy(IReadOnlyList<SqlExpression> arguments, bool ascending)
     {
         var arr = arguments.ToList();
         var over = arr[0] as OverExpression ?? throw new InvalidOperationException("Must be over expression");
