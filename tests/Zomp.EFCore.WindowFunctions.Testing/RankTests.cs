@@ -1,3 +1,5 @@
+using Zomp.EFCore.WindowFunctions.Query.Internal;
+
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
 public class RankTests
@@ -7,6 +9,26 @@ public class RankTests
     public RankTests(TestDbContext dbContext)
     {
         this.dbContext = dbContext;
+    }
+
+    public void RowJoin()
+    {
+        var query =
+            from testRow in dbContext.TestRows
+            join testRow2 in
+                (from subRow in dbContext.TestRows
+                 select new
+                 {
+                     subRow.Id,
+                     RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(subRow.Date).PartitionBy(subRow.Col1)),
+                 }).AsSubQuery()
+            on testRow.Id equals testRow2.Id
+            where testRow.Id > 1 && testRow2.RowNumber <= 2
+            select testRow2;
+
+        var result = query.ToQueryString();
+
+        var items = query.ToArray();
     }
 
     public void RowNumberBasic()

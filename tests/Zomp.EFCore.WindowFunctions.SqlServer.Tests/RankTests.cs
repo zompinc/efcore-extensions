@@ -12,6 +12,9 @@ public class RankTests : TestBase
     }
 
     [Fact]
+    public void RowJoin() => rankTests.RowJoin();
+
+    [Fact]
     public void RowNumberBasic() => rankTests.RowNumberBasic();
 
     [Fact]

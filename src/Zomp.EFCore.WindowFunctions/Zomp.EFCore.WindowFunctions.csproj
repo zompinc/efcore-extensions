@@ -1,7 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Window functions for Entity Framework Core</Description>
+    <TargetFrameworks>net6.0</TargetFrameworks>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="microsoft.entityframeworkcore.relational" />
+  </ItemGroup>
   <ItemGroup>
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.EntityFrameworkCore.Diagnostics" />
@@ -19,9 +23,5 @@
     <Using Include="Zomp.EFCore.WindowFunctions.Clauses" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.SqlExpressions" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
   </ItemGroup>
 </Project>

@@ -5,11 +5,8 @@
 /// </summary>
 public class WindowFunctionsSqlServerQuerySqlGeneratorFactory : SqlServerQuerySqlGeneratorFactory
 {
-#if !EF_CORE_6
     private readonly IRelationalTypeMappingSource typeMappingSource;
-#endif
 
-#if !EF_CORE_6
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerQuerySqlGeneratorFactory"/> class.
     /// </summary>
@@ -20,23 +17,8 @@ public class WindowFunctionsSqlServerQuerySqlGeneratorFactory : SqlServerQuerySq
     {
         this.typeMappingSource = typeMappingSource;
     }
-#else
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerQuerySqlGeneratorFactory"/> class.
-    /// </summary>
-    /// <param name="dependencies">Service dependencies.</param>
-    public WindowFunctionsSqlServerQuerySqlGeneratorFactory(QuerySqlGeneratorDependencies dependencies)
-        : base(dependencies)
-    {
-    }
-#endif
 
     /// <inheritdoc/>
-#if !EF_CORE_6
     public override QuerySqlGenerator Create()
         => new WindowFunctionsSqlServerQuerySqlGenerator(Dependencies, typeMappingSource);
-#else
-    public override QuerySqlGenerator Create()
-        => new WindowFunctionsSqlServerQuerySqlGenerator(Dependencies);
-#endif
 }
