@@ -27,6 +27,7 @@ public static class NpgsqlDbContextOptionsBuilderExtensions
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
         coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowRelationalParameterBasedSqlProcessorFactory>();
         coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsNpgsqlQuerySqlGeneratorFactory>();
+        coreOptionsBuilder.ReplaceService<IEvaluatableExpressionFilter, WindowFunctionsNpgsqlEvaluatableExpressionFilter>();
 
         return builder;
     }
