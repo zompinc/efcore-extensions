@@ -9,6 +9,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="3.2.0" />
+    <PackageVersion Include="Fody" Version="6.6.4" />
+    <PackageVersion Include="InfoOf.Fody" Version="2.1.1" />
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview1.23080.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(NetRuntime)" />

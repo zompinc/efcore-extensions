@@ -32,6 +32,7 @@
     <Using Include="Microsoft.EntityFrameworkCore.Infrastructure" />
     <Using Include="Microsoft.EntityFrameworkCore.Query" />
     <Using Include="Microsoft.EntityFrameworkCore.Query.SqlExpressions" />
+    <Using Include="Microsoft.EntityFrameworkCore.Metadata" />
     <Using Include="Microsoft.EntityFrameworkCore.Storage" />
     <Using Include="Microsoft.Extensions.DependencyInjection" />
     <Using Include="System.Linq.Expressions" />
