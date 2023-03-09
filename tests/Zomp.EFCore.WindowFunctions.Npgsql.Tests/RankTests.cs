@@ -15,6 +15,9 @@ public class RankTests : TestBase
     public void RowNumberBasic() => rankTests.RowNumberBasic();
 
     [Fact]
+    public void RowNumberEmptyOver() => rankTests.RowNumberEmptyOver();
+
+    [Fact]
     public void RankBasic() => rankTests.RankBasic();
 
     [Fact]
