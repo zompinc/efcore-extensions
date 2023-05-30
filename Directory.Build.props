@@ -5,6 +5,7 @@
     <Company>Zomp</Company>
     <Authors>Victor Irzak</Authors>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsCLSCompliant>false</IsCLSCompliant>

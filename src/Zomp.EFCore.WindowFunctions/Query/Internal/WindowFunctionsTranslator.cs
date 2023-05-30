@@ -87,7 +87,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
             : orderingSqlExpression;
     }
 
-    private static WindowFrame GetWindowFrame(SqlExpression sqlExpression, bool isFollowing)
+    private static BoundedWindowFrame GetWindowFrame(SqlExpression sqlExpression, bool isFollowing)
         => (sqlExpression as SqlConstantExpression) switch
         {
             { } sce when sce.Value is uint value => new BoundedWindowFrame(value, isFollowing),
