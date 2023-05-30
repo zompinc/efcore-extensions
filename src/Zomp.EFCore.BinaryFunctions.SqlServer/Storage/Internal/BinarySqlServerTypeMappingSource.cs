@@ -5,6 +5,18 @@
 /// </summary>
 public class BinarySqlServerTypeMappingSource : SqlServerTypeMappingSource
 {
+#if !EF_CORE_6 && !EF_CORE_7
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BinarySqlServerTypeMappingSource"/> class.
+    /// </summary>
+    /// <param name="dependencies">Type mapping source dependencies.</param>
+    /// <param name="relationalDependencies">Relational type mapping source dependencies.</param>
+    /// <param name="sqlServerSingletonOptions">The sqlServerSingletonOptions.</param>
+    public BinarySqlServerTypeMappingSource(TypeMappingSourceDependencies dependencies, RelationalTypeMappingSourceDependencies relationalDependencies, ISqlServerSingletonOptions sqlServerSingletonOptions)
+        : base(dependencies, relationalDependencies, sqlServerSingletonOptions)
+    {
+    }
+#else
     /// <summary>
     /// Initializes a new instance of the <see cref="BinarySqlServerTypeMappingSource"/> class.
     /// </summary>
@@ -14,6 +26,7 @@ public class BinarySqlServerTypeMappingSource : SqlServerTypeMappingSource
         : base(dependencies, relationalDependencies)
     {
     }
+#endif
 
     /// <inheritdoc/>
     protected override RelationalTypeMapping? FindMapping(in RelationalTypeMappingInfo mappingInfo)

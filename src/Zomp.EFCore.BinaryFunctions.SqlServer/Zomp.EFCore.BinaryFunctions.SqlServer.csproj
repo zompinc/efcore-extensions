@@ -6,6 +6,7 @@
     <ProjectReference Include="..\Zomp.EFCore.BinaryFunctions\Zomp.EFCore.BinaryFunctions.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Using Include="Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal" />
     <Using Include="Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal" />
     <Using Include="System.Runtime.InteropServices" />
     <Using Include="Zomp.EFCore.BinaryFunctions.Query.Internal" />
