@@ -1,4 +1,5 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Testing;
+
 public static class ArrayExtensions
 {
     public static int CountNonNulls<T, TZ>(this IList<T> list, Func<T, TZ> func, int startIndex, int endIndex)

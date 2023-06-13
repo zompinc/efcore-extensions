@@ -1,4 +1,5 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Testing;
+
 public class SumTests
 {
     private readonly TestDbContext dbContext;

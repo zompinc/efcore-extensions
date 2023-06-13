@@ -10,6 +10,7 @@
     <Using Include="Microsoft.EntityFrameworkCore.Infrastructure" />
     <Using Include="Microsoft.EntityFrameworkCore.Query" />
     <Using Include="Microsoft.EntityFrameworkCore.Query.SqlExpressions" />
+    <Using Include="Microsoft.EntityFrameworkCore.SqlServer.Infrastructure.Internal" Condition="!$(DefineConstants.Contains(EF_CORE_7)) and !$(DefineConstants.Contains(EF_CORE_6))" />
     <Using Include="Microsoft.EntityFrameworkCore.SqlServer.Query.Internal" />
     <Using Include="Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal" />
     <Using Include="Microsoft.EntityFrameworkCore.Storage" />

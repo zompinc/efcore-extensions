@@ -1,4 +1,5 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Sqlite.Tests;
+
 public class SqliteTestDbContext : TestDbContext
 {
     ////private static readonly SqliteConnection Connection = new("DataSource=:memory:");

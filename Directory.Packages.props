@@ -8,7 +8,7 @@
     <NpgsqlVersion>7.0.0</NpgsqlVersion>
   </PropertyGroup>
   <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_6)) and !$(DefineConstants.Contains(EF_CORE_7))">
-    <NetRuntime>8.0.0-preview.4.23259.3</NetRuntime>
+    <NetRuntime>8.0.0-preview.5.23280.1</NetRuntime>
     <NpgsqlVersion>8.0.0-preview.4</NpgsqlVersion>
   </PropertyGroup>
   <ItemGroup>
@@ -22,12 +22,12 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(NetRuntime)" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.6.133" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlVersion)" />
     <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.5" />
-    <PackageVersion Include="StyleCop.Analyzers" Version=" 1.2.0-beta.435" />
+    <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.507" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageVersion Include="xunit" Version="2.4.2" />
   </ItemGroup>

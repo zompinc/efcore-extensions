@@ -1,4 +1,5 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Testing;
+
 public class AvgTests
 {
     private readonly TestDbContext dbContext;

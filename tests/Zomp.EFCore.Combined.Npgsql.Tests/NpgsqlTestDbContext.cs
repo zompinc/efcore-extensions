@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Query;
 
 namespace Zomp.EFCore.Combined.Npgsql.Tests;
+
 public class NpgsqlTestDbContext : TestDbContext
 {
     public NpgsqlTestDbContext(ILoggerFactory? loggerFactory = null)

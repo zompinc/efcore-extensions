@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/dotnet/Nerdbank.GitVersioning/master/src/NerdBank.GitVersioning/version.schema.json",
-  "version": "8.0-preview4",
+  "version": "8.0.1-preview5",
   "assemblyVersion": {
-    "precision": "revision"
+    "precision": "build"
   },
   "publicReleaseRefSpec": [
     "^refs/heads/master$",

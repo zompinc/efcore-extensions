@@ -1,4 +1,5 @@
 ﻿namespace Zomp.EFCore.BinaryFunctions.Npgsql.Tests;
+
 public class NpgsqlFixture : TestFixture
 {
     public async override Task InitializeAsync()

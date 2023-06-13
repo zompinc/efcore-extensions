@@ -5,7 +5,18 @@
 /// </summary>
 public class WindowFunctionsSqlServerQuerySqlGenerator : SqlServerQuerySqlGenerator
 {
-#if !EF_CORE_6
+#if !EF_CORE_7 && !EF_CORE_6
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerQuerySqlGenerator"/> class.
+    /// </summary>
+    /// <param name="dependencies">Service dependencies.</param>
+    /// <param name="typeMappingSource">Type mapping source.</param>
+    /// <param name="sqlServerSingletonOptions">The singleton option.</param>
+    public WindowFunctionsSqlServerQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies, IRelationalTypeMappingSource typeMappingSource, ISqlServerSingletonOptions sqlServerSingletonOptions)
+        : base(dependencies, typeMappingSource, sqlServerSingletonOptions)
+    {
+    }
+#elif !EF_CORE_6
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerQuerySqlGenerator"/> class.
     /// </summary>

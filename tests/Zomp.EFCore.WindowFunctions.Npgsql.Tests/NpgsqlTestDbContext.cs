@@ -1,4 +1,5 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Npgsql.Tests;
+
 public class NpgsqlTestDbContext : TestDbContext
 {
     public NpgsqlTestDbContext(ILoggerFactory? loggerFactory = null)
