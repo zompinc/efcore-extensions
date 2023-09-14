@@ -8,25 +8,25 @@
     <NpgsqlVersion>7.0.0</NpgsqlVersion>
   </PropertyGroup>
   <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_6)) and !$(DefineConstants.Contains(EF_CORE_7))">
-    <NetRuntime>8.0.0-preview.7.23375.4</NetRuntime>
-    <NpgsqlVersion>8.0.0-preview.7</NpgsqlVersion>
+    <NetRuntime>8.0.0-rc.1.23419.6</NetRuntime>
+    <NpgsqlVersion>8.0.0-rc.1</NpgsqlVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
     <PackageVersion Include="Fody" Version="6.8.0" />
     <PackageVersion Include="InfoOf.Fody" Version="2.1.1" />
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.3.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview1.23165.1" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0-preview.23420.2" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(NetRuntime)" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.6.133" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlVersion)" />
-    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.6-pre20230809203314" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.6" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.507" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.0" />
     <PackageVersion Include="xunit" Version="2.5.0" />

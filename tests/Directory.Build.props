@@ -17,6 +17,9 @@
 
     <!-- Don't need comments -->
     <NoWarn>$(NoWarn);SA1600</NoWarn>
+
+    <!-- Look into ToString soon -->
+    <NoWarn>$(NoWarn);CA1305</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">

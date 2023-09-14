@@ -5,6 +5,9 @@
 /// </summary>
 public class SqlServerBinaryTranslator : BinaryTranslator
 {
+    private static readonly bool[] SignArgumentsPropagateNullability = new[] { true };
+    private static readonly bool[] PowerArgumentsPropagateNullability = new[] { false, false };
+
     // Constants
     private static readonly double TwoToThePowerOfMinus52 = Math.Pow(2d, -52);
     private static readonly SqlExpression TwoToThePowerOfMinus52Sql = new SqlConstantExpression(Expression.Constant(TwoToThePowerOfMinus52), null);
@@ -57,7 +60,7 @@ public class SqlServerBinaryTranslator : BinaryTranslator
         var sql1023 = new SqlConstantExpression(Expression.Constant(1023), null);
 
         // Line 1
-        var l1 = sqlExpressionFactory.Function("SIGN", new[] { colNameBigInt }, true, new[] { true }, colNameBigInt.Type);
+        var l1 = sqlExpressionFactory.Function("SIGN", new[] { colNameBigInt }, true, SignArgumentsPropagateNullability, colNameBigInt.Type);
 
         // Line 2
         var l2e1 = new SqlBinaryExpression(ExpressionType.And, colNameBigInt, X000FFFFFFFFFFFFF, typeof(long), null);
@@ -69,7 +72,7 @@ public class SqlServerBinaryTranslator : BinaryTranslator
         var l3e1 = new SqlBinaryExpression(ExpressionType.And, colNameBigInt, X7ff0000000000000, typeof(long), null);
         var l3e2 = new SqlBinaryExpression(ExpressionType.Divide, l3e1, X0010000000000000, typeof(long), null);
         var l3e3 = new SqlBinaryExpression(ExpressionType.Subtract, l3e2, sql1023, typeof(long), null);
-        var l3 = sqlExpressionFactory.Function("POWER", new SqlExpression[] { TwoFloat, l3e3 }, false, new[] { false, false }, colNameBigInt.Type);
+        var l3 = sqlExpressionFactory.Function("POWER", new SqlExpression[] { TwoFloat, l3e3 }, false, PowerArgumentsPropagateNullability, colNameBigInt.Type);
 
         var l1l2 = new SqlBinaryExpression(ExpressionType.Multiply, l1, l2, typeof(double), null);
         var final = new SqlBinaryExpression(ExpressionType.Multiply, l1l2, l3, typeof(double), null);

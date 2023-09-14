@@ -5,6 +5,10 @@
 /// </summary>
 public class NpgsqlBinaryTranslator : BinaryTranslator
 {
+    private static readonly bool[] LPadArgumentsPropagateNullability = new[] { true, false, false };
+    private static readonly bool[] DecodeArgumentsPropagateNullabilityArray = new[] { true, false };
+    private static readonly bool[] ToHexArgumentsPropagateNullabilityArray = new[] { true };
+
     private readonly ISqlExpressionFactory sqlExpressionFactory;
     private readonly RelationalTypeMapping? byteArrayTypeMapping;
 
@@ -38,7 +42,7 @@ public class NpgsqlBinaryTranslator : BinaryTranslator
     protected override SqlExpression GetBytes(SqlExpression sqlExpression)
     {
         // Generate an expression like this: decode(LPAD(to_hex(r."SomeInt"), 8, '0'), 'hex')::bytea
-        var toHex = sqlExpressionFactory.Function("to_hex", new[] { sqlExpression }, true, new[] { true }, typeof(string));
+        var toHex = sqlExpressionFactory.Function("to_hex", new[] { sqlExpression }, true, ToHexArgumentsPropagateNullabilityArray, typeof(string));
         var type = sqlExpression.Type;
         int sizeOfType;
         if (type == typeof(DateTime))
@@ -56,8 +60,8 @@ public class NpgsqlBinaryTranslator : BinaryTranslator
         var byteSize = new SqlConstantExpression(Expression.Constant(sizeOfType * 2), null);
         var zero = new SqlConstantExpression(Expression.Constant("0"), null);
         var hex = new SqlConstantExpression(Expression.Constant("hex"), null);
-        var lPad = sqlExpressionFactory.Function("LPAD", new SqlExpression[] { toHex, byteSize, zero }, true, new[] { true, false, false }, typeof(string));
-        var decode = sqlExpressionFactory.Function("decode", new SqlExpression[] { lPad, hex }, true, new[] { true, false }, typeof(string), byteArrayTypeMapping);
+        var lPad = sqlExpressionFactory.Function("LPAD", new SqlExpression[] { toHex, byteSize, zero }, true, LPadArgumentsPropagateNullability, typeof(string));
+        var decode = sqlExpressionFactory.Function("decode", new SqlExpression[] { lPad, hex }, true, DecodeArgumentsPropagateNullabilityArray, typeof(string), byteArrayTypeMapping);
         return new SqlUnaryExpression(ExpressionType.Convert, decode, typeof(byte[]), byteArrayTypeMapping);
     }
 }

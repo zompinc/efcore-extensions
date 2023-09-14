@@ -5,6 +5,7 @@
 /// </summary>
 public class BinaryTranslator : IMethodCallTranslator
 {
+    private static readonly bool[] SubstringArgumentsPropagateNullability = new[] { true, true, true };
     private readonly ISqlExpressionFactory sqlExpressionFactory;
     private readonly IRelationalTypeMappingSource relationalTypeMappingSource;
 
@@ -102,7 +103,7 @@ public class BinaryTranslator : IMethodCallTranslator
                     length,
             },
             nullable: true,
-            argumentsPropagateNullability: new[] { true, true, true },
+            argumentsPropagateNullability: SubstringArgumentsPropagateNullability,
             bytearray.Type,
             null);
     }
