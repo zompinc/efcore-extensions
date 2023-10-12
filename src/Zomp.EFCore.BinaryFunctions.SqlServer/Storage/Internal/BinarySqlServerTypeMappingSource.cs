@@ -11,9 +11,8 @@ public class BinarySqlServerTypeMappingSource : SqlServerTypeMappingSource
     /// </summary>
     /// <param name="dependencies">Type mapping source dependencies.</param>
     /// <param name="relationalDependencies">Relational type mapping source dependencies.</param>
-    /// <param name="sqlServerSingletonOptions">The sqlServerSingletonOptions.</param>
-    public BinarySqlServerTypeMappingSource(TypeMappingSourceDependencies dependencies, RelationalTypeMappingSourceDependencies relationalDependencies, ISqlServerSingletonOptions sqlServerSingletonOptions)
-        : base(dependencies, relationalDependencies, sqlServerSingletonOptions)
+    public BinarySqlServerTypeMappingSource(TypeMappingSourceDependencies dependencies, RelationalTypeMappingSourceDependencies relationalDependencies)
+        : base(dependencies, relationalDependencies)
     {
     }
 #else

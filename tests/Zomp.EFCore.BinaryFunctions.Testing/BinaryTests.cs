@@ -120,7 +120,7 @@ public class BinaryTests : IDisposable
             .Select(r =>
             {
                 var @ref = r.Id + shortOverflow;
-                return MemoryMarshal.GetReference(MemoryMarshal.Cast<int, short>(MemoryMarshal.CreateSpan(ref Unsafe.AsRef(ref @ref), 1)));
+                return MemoryMarshal.GetReference(MemoryMarshal.Cast<int, short>(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(ref @ref), 1)));
             });
 
         Assert.Equal(expectedSequence, result);
@@ -138,7 +138,7 @@ public class BinaryTests : IDisposable
             .Select(r =>
             {
                 var @ref = (r.Id / 2d) + shortOverflow;
-                return MemoryMarshal.GetReference(MemoryMarshal.Cast<double, long>(MemoryMarshal.CreateSpan(ref Unsafe.AsRef(ref @ref), 1)));
+                return MemoryMarshal.GetReference(MemoryMarshal.Cast<double, long>(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(ref @ref), 1)));
             });
 
         Assert.Equal(expectedSequence, result);

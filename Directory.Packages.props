@@ -8,8 +8,8 @@
     <NpgsqlVersion>7.0.0</NpgsqlVersion>
   </PropertyGroup>
   <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_6)) and !$(DefineConstants.Contains(EF_CORE_7))">
-    <NetRuntime>8.0.0-rc.1.23419.6</NetRuntime>
-    <NpgsqlVersion>8.0.0-rc.1</NpgsqlVersion>
+    <NetRuntime>8.0.0-rc.2.23480.1</NetRuntime>
+    <NpgsqlVersion>8.0.0-rc.2</NpgsqlVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
@@ -28,7 +28,7 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlVersion)" />
     <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.6" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.507" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.0" />
-    <PackageVersion Include="xunit" Version="2.5.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.1" />
+    <PackageVersion Include="xunit" Version="2.5.1" />
   </ItemGroup>
 </Project>
