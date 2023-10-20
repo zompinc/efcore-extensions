@@ -63,6 +63,23 @@ public class RankTests
         Assert.Equal(expectedSequence, result.Select(r => r.Rank));
     }
 
+    public void RankEmptyOver()
+    {
+        var query = dbContext.TestRows
+            .Select(r => new
+            {
+                Rank = EF.Functions.Rank(EF.Functions.Over()),
+            });
+
+        var result = query.ToList();
+
+        var expectedSequence = TestFixture.TestRows
+            .Select((r, i) => 1L)
+            .ToList();
+
+        Assert.Equal(expectedSequence, result.Select(r => r.Rank));
+    }
+
     public void DenseRankBasic()
     {
         var query = dbContext.TestRows
@@ -76,6 +93,22 @@ public class RankTests
         var expectedSequence = TestFixture.TestRows
             .GroupBy(r => r.Id / 10)
             .SelectMany((g, i) => g.Select(j => (long)(i + 1)));
+
+        Assert.Equal(expectedSequence, result.Select(r => r.DenseRank));
+    }
+
+    public void DenseRankEmptyOver()
+    {
+        var query = dbContext.TestRows
+            .Select(r => new
+            {
+                DenseRank = EF.Functions.DenseRank(EF.Functions.Over()),
+            });
+
+        var result = query.ToList();
+
+        var expectedSequence = TestFixture.TestRows
+            .Select((r, i) => 1L);
 
         Assert.Equal(expectedSequence, result.Select(r => r.DenseRank));
     }
@@ -101,6 +134,23 @@ public class RankTests
                 .Where(g => comparer.Compare(g.Key, v) < 0)
                 .Select(g => g.Count())
                 .Sum() / (double)(TestFixture.TestRows.Length - 1));
+
+        Assert.Equal(expectedSequence, result.Select(r => r.PercentRank));
+    }
+
+    public void PercentRankEmptyOver(bool nullsLast = false)
+    {
+        var query = dbContext.TestRows
+            .Select(r => new
+            {
+                PercentRank = EF.Functions.PercentRank(EF.Functions.Over()),
+            });
+
+        var result = query.ToList();
+
+        var expectedSequence = TestFixture.TestRows
+            .Select(r => 0d)
+            .ToList();
 
         Assert.Equal(expectedSequence, result.Select(r => r.PercentRank));
     }
