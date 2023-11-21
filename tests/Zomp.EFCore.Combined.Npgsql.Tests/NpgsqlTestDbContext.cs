@@ -18,7 +18,7 @@ public class NpgsqlTestDbContext : TestDbContext
             o => o.UseWindowFunctions().UseBinaryFunctions())
 
             // Fixme: Find a way to remove this line.
-            .ReplaceService<IQuerySqlGeneratorFactory, CombinedNpgsqlQuerySqlGeneratorFFactory>();
+            .ReplaceService<IQuerySqlGeneratorFactory, CombinedNpgsqlQuerySqlGeneratorFactory>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
