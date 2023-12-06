@@ -3,6 +3,7 @@ root = true
 # All files
 [*]
 indent_style = space
+spelling_exclusion_path = .vscode/spellright.dict
 
 # Xml files
 [*.xml]

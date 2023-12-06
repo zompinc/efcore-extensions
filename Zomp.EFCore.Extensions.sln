@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE = LICENSE
 		NuGet.Config = NuGet.Config
 		package.json = package.json
+		README.md = README.md
 		stylecop.json = stylecop.json
 		switcher.json = switcher.json
 		version.json = version.json
@@ -86,6 +87,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.Combined.Sqlite.Tests", "tests\Zomp.EFCore.Combined.Sqlite.Tests\Zomp.EFCore.Combined.Sqlite.Tests.csproj", "{E723EBB7-E77A-482D-B862-A86BD6CECC8B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.Combined.Testing", "tests\Zomp.EFCore.Combined.Testing\Zomp.EFCore.Combined.Testing.csproj", "{BCF7993C-2B7D-43A3-B99B-1E32072031FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{61D9540B-9FAE-48BF-8B47-3AC5493586DA}"
+	ProjectSection(SolutionItems) = preProject
+		spellright.dict = spellright.dict
+		.vscode\tasks.json = .vscode\tasks.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -207,6 +214,7 @@ Global
 		{242C14CE-EFC5-4582-A761-B78207111CD9} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 		{E723EBB7-E77A-482D-B862-A86BD6CECC8B} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 		{BCF7993C-2B7D-43A3-B99B-1E32072031FB} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
+		{61D9540B-9FAE-48BF-8B47-3AC5493586DA} = {528A7E80-5391-4750-B0B4-47B05160E73A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C20B0087-9477-4FC8-A489-4A8627C395B0}

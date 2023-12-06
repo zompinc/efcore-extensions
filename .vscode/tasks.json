@@ -61,7 +61,7 @@
       "args": [
         "${workspaceFolder}/reports/coverage/index.html"
       ],
-      "group": "test",
+      "group": "test"
     },
     {
       "label": "coverage:launch:global",
