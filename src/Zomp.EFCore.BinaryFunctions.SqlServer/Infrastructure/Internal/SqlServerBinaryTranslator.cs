@@ -5,8 +5,8 @@
 /// </summary>
 public class SqlServerBinaryTranslator : BinaryTranslator
 {
-    private static readonly bool[] SignArgumentsPropagateNullability = new[] { true };
-    private static readonly bool[] PowerArgumentsPropagateNullability = new[] { false, false };
+    private static readonly bool[] SignArgumentsPropagateNullability = [true];
+    private static readonly bool[] PowerArgumentsPropagateNullability = [false, false];
 
     // Constants
     private static readonly double TwoToThePowerOfMinus52 = Math.Pow(2d, -52);

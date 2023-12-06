@@ -23,6 +23,9 @@
     <!-- Don't enforce prefixing local calls with this -->
     <NoWarn>$(NoWarn);SA1101</NoWarn>
 
+    <!-- Remove when fixed: https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/3687 -->
+    <NoWarn>$(NoWarn);SA1010</NoWarn>
+
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>

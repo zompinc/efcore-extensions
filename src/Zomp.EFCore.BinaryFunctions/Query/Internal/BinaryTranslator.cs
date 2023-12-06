@@ -5,7 +5,7 @@
 /// </summary>
 public class BinaryTranslator : IMethodCallTranslator
 {
-    private static readonly bool[] SubstringArgumentsPropagateNullability = new[] { true, true, true };
+    private static readonly bool[] SubstringArgumentsPropagateNullability = [true, true, true];
     private readonly ISqlExpressionFactory sqlExpressionFactory;
     private readonly IRelationalTypeMappingSource relationalTypeMappingSource;
 
@@ -65,7 +65,7 @@ public class BinaryTranslator : IMethodCallTranslator
     /// </remarks>
     protected SqlExpression GetFixedBytes(SqlExpression sqlExpression, Type toType)
     {
-        Type t = Type.MakeGenericSignatureType(typeof(FixedByteArray<>), new Type[] { toType });
+        Type t = Type.MakeGenericSignatureType(typeof(FixedByteArray<>), [toType]);
         var mapping = relationalTypeMappingSource.FindMapping(t);
         return new SqlUnaryExpression(ExpressionType.Convert, sqlExpressionFactory.ApplyDefaultTypeMapping(sqlExpression), typeof(byte[]), mapping);
     }

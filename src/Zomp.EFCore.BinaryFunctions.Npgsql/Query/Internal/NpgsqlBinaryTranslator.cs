@@ -5,9 +5,9 @@
 /// </summary>
 public class NpgsqlBinaryTranslator : BinaryTranslator
 {
-    private static readonly bool[] LPadArgumentsPropagateNullability = new[] { true, false, false };
-    private static readonly bool[] DecodeArgumentsPropagateNullabilityArray = new[] { true, false };
-    private static readonly bool[] ToHexArgumentsPropagateNullabilityArray = new[] { true };
+    private static readonly bool[] LPadArgumentsPropagateNullability = [true, false, false];
+    private static readonly bool[] DecodeArgumentsPropagateNullabilityArray = [true, false];
+    private static readonly bool[] ToHexArgumentsPropagateNullabilityArray = [true];
 
     private readonly ISqlExpressionFactory sqlExpressionFactory;
     private readonly RelationalTypeMapping? byteArrayTypeMapping;
