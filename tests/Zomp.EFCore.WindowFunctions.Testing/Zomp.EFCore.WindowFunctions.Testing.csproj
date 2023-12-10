@@ -11,6 +11,7 @@
     <Using Include="System.Globalization" />
     <Using Include="Xunit" />
     <Using Include="Zomp.EFCore.Testing" />
+    <Using Include="Zomp.EFCore.Testing.TestFixture" Static="true" />
     <Using Include="Zomp.EFCore.WindowFunctions" />
   </ItemGroup>
 </Project>

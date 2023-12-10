@@ -7,6 +7,7 @@
   </ItemGroup>
   <ItemGroup>
     <Using Include="Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal" />
+    <Using Include="Microsoft.EntityFrameworkCore.Sqlite.Query.Internal" />
     <Using Include="System.Runtime.InteropServices" />
     <Using Include="Zomp.EFCore.WindowFunctions.Infrastructure.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.Internal" />

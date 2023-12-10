@@ -58,6 +58,20 @@ public class WindowFunctionExpression : SqlExpression
     /// </summary>
     public RowOrRangeExpression? RowOrRange { get; }
 
+    /// <summary>
+    /// Updates.
+    /// </summary>
+    /// <param name="expression">The expression of the Window function.</param>
+    /// <param name="partitions">A list of partition expressions to partition by.</param>
+    /// <param name="orderings">A list of ordering expressions to order by.</param>
+    /// <returns>Updated expression.</returns>
+    public WindowFunctionExpression Update(SqlExpression? expression, IReadOnlyList<SqlExpression> partitions, IReadOnlyList<OrderingExpression> orderings)
+        => (ReferenceEquals(expression, Expression) || expression == Expression)
+            && (ReferenceEquals(partitions, Partitions) || partitions.SequenceEqual(Partitions))
+            && (ReferenceEquals(orderings, Orderings) || orderings.SequenceEqual(Orderings))
+                ? this
+                : new(Function, expression, partitions, orderings, RowOrRange, TypeMapping);
+
     /// <inheritdoc />
     public override bool Equals(object? obj)
         => obj != null

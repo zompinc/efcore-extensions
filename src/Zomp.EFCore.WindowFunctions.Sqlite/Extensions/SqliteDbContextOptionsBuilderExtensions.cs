@@ -25,7 +25,14 @@ public static class SqliteDbContextOptionsBuilderExtensions
         var extension = coreOptionsBuilder.Options.FindExtension<SqliteDbContextOptionsExtension>() ?? new SqliteDbContextOptionsExtension();
 
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
-        coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowRelationalParameterBasedSqlProcessorFactory>();
+        coreOptionsBuilder.ReplaceService<
+            IRelationalParameterBasedSqlProcessorFactory,
+#if !EF_CORE_7 && !EF_CORE_6
+            WindowFunctionsSqliteParameterBasedSqlProcessorFactory
+#else
+            WindowFunctionsRelationalParameterBasedSqlProcessorFactory
+#endif
+        >();
         coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowQuerySqlGeneratorFactory>();
         coreOptionsBuilder.ReplaceService<IWindowFunctionsTranslatorPluginFactory, SqliteWindowFunctionsTranslatorPluginFactory>();
         coreOptionsBuilder.ReplaceService<IEvaluatableExpressionFilter, SqliteWindowFunctionsEvaluatableExpressionFilter>();

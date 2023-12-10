@@ -1,5 +1,3 @@
-using static Zomp.EFCore.Testing.TestFixture;
-
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
 public class CountTests
