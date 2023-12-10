@@ -90,7 +90,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.Combined.Testin
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{61D9540B-9FAE-48BF-8B47-3AC5493586DA}"
 	ProjectSection(SolutionItems) = preProject
-		spellright.dict = spellright.dict
+		.vscode\spellright.dict = .vscode\spellright.dict
 		.vscode\tasks.json = .vscode\tasks.json
 	EndProjectSection
 EndProject

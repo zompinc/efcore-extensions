@@ -14,7 +14,7 @@ public class NpgsqlTestDbContext : TestDbContext
         base.OnConfiguring(optionsBuilder);
 
         optionsBuilder.UseNpgsql(
-            $"Host=localhost;Database=Zomp_Efcore_Combined_Tests;Username=npgsql_tests;Password=npgsql_tests",
+            $"Host=localhost;Database=Zomp_EfCore_Combined_Tests;Username=npgsql_tests;Password=npgsql_tests",
             o => o.UseWindowFunctions().UseBinaryFunctions())
 
             // Fixme: Find a way to remove this line.

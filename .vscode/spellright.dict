@@ -1,4 +1,12 @@
+bytea
+evaluatable
+fixme
+ints
 itzik
+npgsql
 nuget
+sqlite
+postgres
 postresql
+retval
 zomp

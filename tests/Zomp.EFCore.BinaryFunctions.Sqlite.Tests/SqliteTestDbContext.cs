@@ -4,7 +4,7 @@ public class SqliteTestDbContext : TestDbContext
 {
     ////private static readonly SqliteConnection Connection = new("DataSource=:memory:");
     private static readonly SqliteConnection Connection
-        = new($"DataSource=Zomp_Efcore_BinaryFunctions_Tests.db");
+        = new($"DataSource=Zomp_EfCore_BinaryFunctions_Tests.db");
 
     public SqliteTestDbContext(ILoggerFactory? loggerFactory = null)
         : base(loggerFactory)
