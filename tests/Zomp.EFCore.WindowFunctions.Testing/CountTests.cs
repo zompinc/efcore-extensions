@@ -1,13 +1,8 @@
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class CountTests
+public class CountTests(TestDbContext dbContext)
 {
-    private readonly TestDbContext dbContext;
-
-    public CountTests(TestDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
+    private readonly TestDbContext dbContext = dbContext;
 
     public void CountBasic()
     {

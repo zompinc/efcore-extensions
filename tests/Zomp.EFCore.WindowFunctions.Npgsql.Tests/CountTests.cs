@@ -25,8 +25,8 @@ public class CountTests : TestBase
 
         var result = query.ToList();
 
-        var maxId = (long)TestFixture.TestRows.Length;
-        var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => maxId);
+        var maxId = (long)TestRows.Length;
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => maxId);
         Assert.Equal(expectedSequence, result.Select(r => r.Count));
     }
 
@@ -41,8 +41,8 @@ public class CountTests : TestBase
 
         var result = query.ToList();
 
-        var countId = TestFixture.TestRows.Count(x => x.Col1 is not null);
-        var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => (long)countId);
+        var countId = TestRows.Count(x => x.Col1 is not null);
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (long)countId);
         Assert.Equal(expectedSequence, result.Select(r => r.Count));
     }
 

@@ -1,14 +1,9 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class NullSensitiveComparer<T> : IComparer<T?>
+public class NullSensitiveComparer<T>(bool nullsLast = false) : IComparer<T?>
     where T : struct
 {
-    private readonly bool nullsLast;
-
-    public NullSensitiveComparer(bool nullsLast = false)
-    {
-        this.nullsLast = nullsLast;
-    }
+    private readonly bool nullsLast = nullsLast;
 
     public int Compare(T? x, T? y)
     {

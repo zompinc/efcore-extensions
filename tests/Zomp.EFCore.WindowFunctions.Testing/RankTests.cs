@@ -1,13 +1,8 @@
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class RankTests
+public class RankTests(TestDbContext dbContext)
 {
-    private readonly TestDbContext dbContext;
-
-    public RankTests(TestDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
+    private readonly TestDbContext dbContext = dbContext;
 
     public void RowNumberBasic()
     {
@@ -19,7 +14,7 @@ public class RankTests
 
         var result = query.ToList();
 
-        var expectedSequence = TestFixture.TestRows.GroupBy(r => r.Id / 10)
+        var expectedSequence = TestRows.GroupBy(r => r.Id / 10)
             .SelectMany(g =>
                 g.Select((j, i) => (long)(i + 1)));
 
@@ -36,7 +31,7 @@ public class RankTests
 
         var result = query.ToList();
 
-        var expectedSequence = TestFixture.TestRows
+        var expectedSequence = TestRows
             .Select((j, i) => (long)(i + 1));
 
         Assert.Equal(expectedSequence, result.Select(r => r.RowNumber));
@@ -52,8 +47,8 @@ public class RankTests
 
         var result = query.ToList();
 
-        var groups = TestFixture.TestRows.GroupBy(r => r.Id / 10);
-        var expectedSequence = TestFixture.TestRows
+        var groups = TestRows.GroupBy(r => r.Id / 10);
+        var expectedSequence = TestRows
             .Select(r => r.Id / 10)
             .Select(v => (long)groups
                 .Where(g => g.Key < v)
@@ -73,7 +68,7 @@ public class RankTests
 
         var result = query.ToList();
 
-        var expectedSequence = TestFixture.TestRows
+        var expectedSequence = TestRows
             .GroupBy(r => r.Id / 10)
             .SelectMany((g, i) => g.Select(j => (long)(i + 1)));
 
@@ -90,17 +85,17 @@ public class RankTests
 
         var result = query.ToList();
 
-        var groups = TestFixture.TestRows.GroupBy(r => r.Col1);
+        var groups = TestRows.GroupBy(r => r.Col1);
 
         var comparer = new NullSensitiveComparer<int>(nullsLast);
 
-        var expectedSequence = TestFixture.TestRows
+        var expectedSequence = TestRows
             .Select(r => r.Col1)
             .OrderBy(x => x, comparer)
             .Select(v => groups
                 .Where(g => comparer.Compare(g.Key, v) < 0)
                 .Select(g => g.Count())
-                .Sum() / (double)(TestFixture.TestRows.Length - 1));
+                .Sum() / (double)(TestRows.Length - 1));
 
         Assert.Equal(expectedSequence, result.Select(r => r.PercentRank));
     }

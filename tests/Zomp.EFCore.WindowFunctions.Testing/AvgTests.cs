@@ -1,13 +1,8 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class AvgTests
+public class AvgTests(TestDbContext dbContext)
 {
-    private readonly TestDbContext dbContext;
-
-    public AvgTests(TestDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
+    private readonly TestDbContext dbContext = dbContext;
 
     public void AvgBasic()
     {
@@ -19,8 +14,8 @@ public class AvgTests
 
         var result = query.ToList();
 
-        var avgId = TestFixture.TestRows.Average(r => r.Id);
-        var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => (int?)avgId);
+        var avgId = TestRows.Average(r => r.Id);
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (int?)avgId);
         Assert.Equal(expectedSequence, result.Select(r => r.Avg));
     }
 
@@ -36,10 +31,10 @@ public class AvgTests
 
         var result = query.ToList();
 
-        var groups = TestFixture.TestRows.GroupBy(r => r.Id / 10)
+        var groups = TestRows.GroupBy(r => r.Id / 10)
             .ToDictionary(r => r.Key, r => r.Average(s => s.Id));
 
-        var expectedSequence = TestFixture.TestRows.Select(r => (int?)groups[r.Id / 10]);
+        var expectedSequence = TestRows.Select(r => (int?)groups[r.Id / 10]);
         Assert.Equal(expectedSequence, result.Select(r => r.Avg));
     }
 
@@ -55,10 +50,10 @@ public class AvgTests
 
         var result = query.ToList();
 
-        var groups = TestFixture.TestRows.GroupBy(r => r.Id / 10)
+        var groups = TestRows.GroupBy(r => r.Id / 10)
             .ToDictionary(r => r.Key, r => r.Average(s => s.Id));
 
-        var expectedSequence = TestFixture.TestRows.Select(r => (double?)groups[r.Id / 10]);
+        var expectedSequence = TestRows.Select(r => (double?)groups[r.Id / 10]);
         Assert.Equal(expectedSequence, result.Select(r => r.Avg));
     }
 
@@ -74,10 +69,10 @@ public class AvgTests
 
         var result = query.ToList();
 
-        var groups = TestFixture.TestRows.GroupBy(r => r.Id / 10)
+        var groups = TestRows.GroupBy(r => r.Id / 10)
             .ToDictionary(r => r.Key, r => r.Average(s => s.Col1));
 
-        var expectedSequence = TestFixture.TestRows.Select(r => groups[r.Id / 10]);
+        var expectedSequence = TestRows.Select(r => groups[r.Id / 10]);
         Assert.Equal(expectedSequence, result.Select(r => r.Avg));
     }
 }

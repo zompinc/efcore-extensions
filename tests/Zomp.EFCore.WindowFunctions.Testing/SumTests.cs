@@ -1,13 +1,8 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class SumTests
+public class SumTests(TestDbContext dbContext)
 {
-    private readonly TestDbContext dbContext;
-
-    public SumTests(TestDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
+    private readonly TestDbContext dbContext = dbContext;
 
     public void SimpleSum()
     {
@@ -19,8 +14,8 @@ public class SumTests
 
         var result = query.ToList();
 
-        var sumId = TestFixture.TestRows.Sum(r => r.Id);
-        var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => (int?)sumId);
+        var sumId = TestRows.Sum(r => r.Id);
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (int?)sumId);
         Assert.Equal(expectedSequence, result.Select(r => r.Sum));
     }
 
@@ -36,10 +31,10 @@ public class SumTests
 
         var result = query.ToList();
 
-        var groups = TestFixture.TestRows.GroupBy(r => r.Id / 10)
+        var groups = TestRows.GroupBy(r => r.Id / 10)
             .ToDictionary(r => r.Key, r => r.Sum(s => s.Id));
 
-        var expectedSequence = TestFixture.TestRows.Select(r => (int?)groups[r.Id / 10]);
+        var expectedSequence = TestRows.Select(r => (int?)groups[r.Id / 10]);
         Assert.Equal(expectedSequence, result.Select(r => r.Sum));
     }
 
@@ -55,9 +50,9 @@ public class SumTests
 
         var result = query.ToList();
 
-        var groups = TestFixture.TestRows.GroupBy(r => r.Id / 10);
+        var groups = TestRows.GroupBy(r => r.Id / 10);
 
-        var expectedSequence = TestFixture.TestRows
+        var expectedSequence = TestRows
             .Select(r => groups
                 .Where(g => g.Key == r.Id / 10)
                 .SelectMany(g => g)

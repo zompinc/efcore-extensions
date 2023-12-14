@@ -2,14 +2,9 @@
 
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class DecimalRoundingEqualityComparer : IEqualityComparer<decimal?>
+public class DecimalRoundingEqualityComparer(int roundingDecimals) : IEqualityComparer<decimal?>
 {
-    private readonly decimal epsilon;
-
-    public DecimalRoundingEqualityComparer(int roundingDecimals)
-    {
-        epsilon = (decimal)Math.Pow(0.1, roundingDecimals);
-    }
+    private readonly decimal epsilon = (decimal)Math.Pow(0.1, roundingDecimals);
 
     public bool Equals(decimal? x, decimal? y)
     {

@@ -1,14 +1,7 @@
 ﻿namespace Zomp.EFCore.BinaryFunctions.Testing;
 
-public class BinaryTests : IDisposable
+public class BinaryTests(TestDbContext dbContext) : IDisposable
 {
-    private readonly TestDbContext dbContext;
-
-    public BinaryTests(TestDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
-
     public void CastDateToByteArray()
     {
         var query = dbContext.TestRows

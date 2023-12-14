@@ -1,13 +1,8 @@
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class MaxTests
+public class MaxTests(TestDbContext dbContext)
 {
-    private readonly TestDbContext dbContext;
-
-    public MaxTests(TestDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
+    private readonly TestDbContext dbContext = dbContext;
 
     public void SimpleMax()
     {
@@ -19,8 +14,8 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var maxId = TestFixture.TestRows.Max(r => r.Id);
-        var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => (int?)maxId);
+        var maxId = TestRows.Max(r => r.Id);
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (int?)maxId);
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
@@ -35,8 +30,8 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var expectedMax = TestFixture.TestRows.Max(r => r.Id);
-        var expectedMaxTimesTwo = TestFixture.TestRows.Max(r => r.Id * 2);
+        var expectedMax = TestRows.Max(r => r.Id);
+        var expectedMaxTimesTwo = TestRows.Max(r => r.Id * 2);
 
         var distinctResults = result.Distinct().Single();
         Assert.Equal(expectedMax, distinctResults.Max);
@@ -64,8 +59,8 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var maxId = TestFixture.TestRows.Max(r => r.Col1);
-        var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => maxId);
+        var maxId = TestRows.Max(r => r.Col1);
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => maxId);
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
@@ -79,12 +74,12 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var maxId = TestFixture.TestRows.Max(r => r.Id);
-        var expectedSequence = TestFixture.TestRows
+        var maxId = TestRows.Max(r => r.Id);
+        var expectedSequence = TestRows
             .Select((_, i)
-            => (int?)(i < TestFixture.TestRows.Length - 1
-            ? Math.Max(TestFixture.TestRows[i].Id, TestFixture.TestRows[i + 1].Id)
-            : TestFixture.TestRows[i].Id));
+            => (int?)(i < TestRows.Length - 1
+            ? Math.Max(TestRows[i].Id, TestRows[i + 1].Id)
+            : TestRows[i].Id));
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
@@ -98,11 +93,11 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var expectedSequence = TestFixture.TestRows
+        var expectedSequence = TestRows
             .Select((_, i)
             => i == 0 ? (int?)null
-            : i == 1 ? TestFixture.TestRows[0].Id
-            : Math.Max(TestFixture.TestRows[i - 2].Id, TestFixture.TestRows[i - 1].Id));
+            : i == 1 ? TestRows[0].Id
+            : Math.Max(TestRows[i - 2].Id, TestRows[i - 1].Id));
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
@@ -116,11 +111,11 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var expectedSequence = TestFixture.TestRows
+        var expectedSequence = TestRows
             .Select((_, i)
-            => i < TestFixture.TestRows.Length - 2
-            ? Math.Max(TestFixture.TestRows[i + 1].Id, TestFixture.TestRows[i + 2].Id)
-            : i < TestFixture.TestRows.Length - 1 ? TestFixture.TestRows[i + 1].Id : (int?)null);
+            => i < TestRows.Length - 2
+            ? Math.Max(TestRows[i + 1].Id, TestRows[i + 2].Id)
+            : i < TestRows.Length - 1 ? TestRows[i + 1].Id : (int?)null);
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
@@ -136,10 +131,10 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var maxId = TestFixture.TestRows.Max(r => r.Id);
-        var expectedSequence = TestFixture.TestRows
+        var maxId = TestRows.Max(r => r.Id);
+        var expectedSequence = TestRows
             .Select((_, i)
-            => i < TestFixture.TestRows.Length - 1 ? maxId : (int?)null);
+            => i < TestRows.Length - 1 ? maxId : (int?)null);
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
@@ -155,10 +150,10 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var groups = TestFixture.TestRows.GroupBy(r => r.Id / 10)
+        var groups = TestRows.GroupBy(r => r.Id / 10)
             .ToDictionary(r => r.Key, r => r.Max(s => s.Id));
 
-        var expectedSequence = TestFixture.TestRows.Select(r => (int?)groups[r.Id / 10]);
+        var expectedSequence = TestRows.Select(r => (int?)groups[r.Id / 10]);
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
@@ -176,10 +171,10 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var groups = TestFixture.TestRows.GroupBy(z => (z.Id / 10, z.Date.DayOfYear % 2))
+        var groups = TestRows.GroupBy(z => (z.Id / 10, z.Date.DayOfYear % 2))
             .ToDictionary(r => r.Key, r => r.Max(s => (int?)s.Id));
 
-        var expectedSequence = TestFixture.TestRows.Select(r => groups[(r.Id / 10, r.Date.DayOfYear % 2)]);
+        var expectedSequence = TestRows.Select(r => groups[(r.Id / 10, r.Date.DayOfYear % 2)]);
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
@@ -193,8 +188,8 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var maxId = TestFixture.TestRows.Max(r => r.Id);
-        var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => (long?)maxId);
+        var maxId = TestRows.Max(r => r.Id);
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (long?)maxId);
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
@@ -208,8 +203,8 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var max = TestFixture.TestRows.Max(r => r.Col1?.ToString(CultureInfo.InvariantCulture));
-        var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => max);
+        var max = TestRows.Max(r => r.Col1?.ToString(CultureInfo.InvariantCulture));
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => max);
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
@@ -223,8 +218,8 @@ public class MaxTests
 
         var result = query.ToList();
 
-        var maxId = TestFixture.TestRows.Max(r => BitConverter.ToInt16(r.IdBytes));
-        var expectedSequence = Enumerable.Range(0, TestFixture.TestRows.Length).Select(_ => BitConverter.GetBytes(maxId));
+        var maxId = TestRows.Max(r => BitConverter.ToInt16(r.IdBytes));
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => BitConverter.GetBytes(maxId));
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 }
