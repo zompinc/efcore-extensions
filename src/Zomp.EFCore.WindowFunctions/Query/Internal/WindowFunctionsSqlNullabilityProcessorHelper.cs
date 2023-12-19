@@ -19,9 +19,25 @@ public static class WindowFunctionsSqlNullabilityProcessorHelper
     {
         nullable = false;
 
-        SqlExpression? visitedExpression = windowFunctionExpression.Expression is not { } expression
-            ? null
-            : visit(expression);
+        SqlExpression[]? arguments = null;
+        for (var i = 0; i < windowFunctionExpression.Expressions.Count; i++)
+        {
+            var visitedArgument = visit(windowFunctionExpression.Expressions[i])!;
+            if (visitedArgument != windowFunctionExpression.Expressions[i] && arguments is null)
+            {
+                arguments = new SqlExpression[windowFunctionExpression.Expressions.Count];
+
+                for (var j = 0; j < i; j++)
+                {
+                    arguments[j] = windowFunctionExpression.Expressions[j];
+                }
+            }
+
+            if (arguments is not null)
+            {
+                arguments[i] = visitedArgument;
+            }
+        }
 
         SqlExpression[]? partitions = null;
         for (var i = 0; i < windowFunctionExpression.Partitions.Count; i++)
@@ -65,9 +81,9 @@ public static class WindowFunctionsSqlNullabilityProcessorHelper
             }
         }
 
-        return visitedExpression is not null || orderings is not null || partitions is not null
+        return arguments is not null || orderings is not null || partitions is not null
             ? windowFunctionExpression.Update(
-                visitedExpression,
+                arguments ?? windowFunctionExpression.Expressions,
                 partitions ?? windowFunctionExpression.Partitions,
                 orderings ?? windowFunctionExpression.Orderings)
             : windowFunctionExpression;

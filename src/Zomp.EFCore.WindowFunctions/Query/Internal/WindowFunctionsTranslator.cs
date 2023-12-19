@@ -77,7 +77,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
             partitionBySqlExpression = over.PartitionByExpression;
         }
 
-        return new WindowFunctionExpression(functionName, expression is not null ? sqlExpressionFactory.ApplyDefaultTypeMapping(expression) : null, partitionBySqlExpression?.List, orderingSqlExpression?.List, orderingSqlExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
+        return new WindowFunctionExpression(functionName, expression is not null ? [sqlExpressionFactory.ApplyDefaultTypeMapping(expression)] : [], partitionBySqlExpression?.List, orderingSqlExpression?.List, orderingSqlExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
     }
 
     private static OverExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments)

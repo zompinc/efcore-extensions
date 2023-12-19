@@ -17,7 +17,7 @@ public static class ExpressionVisitorExtensions
         var fi = typeof(QuerySqlGenerator).GetField("_relationalCommandBuilder", BindingFlags.NonPublic | BindingFlags.Instance);
         IRelationalCommandBuilder relationalCommandBuilder = (IRelationalCommandBuilder)fi!.GetValue(expressionVisitor)!;
         relationalCommandBuilder.Append($"{windowFunctionExpression.Function}(");
-        expressionVisitor.Visit(windowFunctionExpression.Expression);
+        GenerateList(relationalCommandBuilder, windowFunctionExpression.Expressions, e => expressionVisitor.Visit(e));
         relationalCommandBuilder.Append(") OVER(");
         if (windowFunctionExpression.Partitions.Any())
         {
