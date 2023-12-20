@@ -1,4 +1,4 @@
-﻿namespace Zomp.EFCore.WindowFunctions.Extensions;
+﻿namespace Zomp.EFCore.WindowFunctions;
 
 /// <inheritdoc cref="DbFunctionsExtensions"/>
 public static partial class DbFunctionsExtensions
@@ -14,6 +14,6 @@ public static partial class DbFunctionsExtensions
     /// <param name="over">partition clause.</param>
     /// <returns>Lead bla.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
-    public static T? Lead<T>(this DbFunctions _, T? expression, long offset, T @default, OverClause over)
+    public static T? Lead<T>(this DbFunctions _, T? expression, long? offset, T @default, OverClause over)
         => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Lead)));
 }

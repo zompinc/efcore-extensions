@@ -25,6 +25,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         {
             nameof(DbFunctionsExtensions.Min) => Over(arguments, "MIN"),
             nameof(DbFunctionsExtensions.Max) => Over(arguments, "MAX"),
+            nameof(DbFunctionsExtensions.Lead) => Over(arguments, "LEAD", 3),
             nameof(DbFunctionsExtensions.Sum) => Over(arguments, "SUM"),
             nameof(DbFunctionsExtensions.Avg) => Over(arguments, "AVG"),
             nameof(DbFunctionsExtensions.Count) => Over(arguments, "COUNT"),
@@ -67,7 +68,12 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         //// For count there needs to be an option to call for
         //// new SqlConstantExpression(Expression.Constant("*"), null)
 
-        var expression = startIndex == 1 ? arguments[startIndex] : null;
+        var directArgs = new List<SqlExpression>();
+        for (var i = 0; i < startIndex; ++i)
+        {
+            directArgs.Add(sqlExpressionFactory.ApplyDefaultTypeMapping(arguments[i + 1]));
+        }
+
         OrderingSqlExpression? orderingSqlExpression = null;
         PartitionByExpression? partitionBySqlExpression = null;
 
@@ -77,7 +83,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
             partitionBySqlExpression = over.PartitionByExpression;
         }
 
-        return new WindowFunctionExpression(functionName, expression is not null ? [sqlExpressionFactory.ApplyDefaultTypeMapping(expression)] : [], partitionBySqlExpression?.List, orderingSqlExpression?.List, orderingSqlExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
+        return new WindowFunctionExpression(functionName, directArgs, partitionBySqlExpression?.List, orderingSqlExpression?.List, orderingSqlExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
     }
 
     private static OverExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments)

@@ -9,6 +9,7 @@
     <Import_RootNamespace>Zomp.EFCore.WindowFunctions.Testing.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AnalyticTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ArrayExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AvgTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CountTests.cs" />

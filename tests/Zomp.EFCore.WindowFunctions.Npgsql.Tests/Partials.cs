@@ -26,4 +26,7 @@ public partial class CountTests<TResult>(ITestOutputHelper output) : TestBase(ou
 
 [Collection(nameof(NpgsqlCollection))]
 public partial class CountTests(ITestOutputHelper output) : CountTests<long>(output) { }
+
+[Collection(nameof(NpgsqlCollection))]
+public partial class AnalyticTests(ITestOutputHelper output) : TestBase(output) { }
 #pragma warning restore SA1402 // File may only contain a single type
