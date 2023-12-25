@@ -26,4 +26,54 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
   </ItemGroup>
+
+  <Target Name="GenerateFromTemplates" BeforeTargets="CoreCompile" DependsOnTargets="PrepareForBuild">
+    <ItemGroup>
+      <!-- <Parameters Include="Lead|Provides access to a row at a given physical offset that follows the current row." /> -->
+      <Parameters Include="Function=Max|Summary=The MAX() window function returns the maximum value of the expression across all input values." />
+      <Parameters Include="Function=Min|Summary=The MIN() window function returns the minimum value of the expression across all input values." />
+      <Parameters Include="Function=Avg|Summary=The AVG() window function returns the average value of the expression across all input values.|VariationType=StructsOnly|CustomReturnType=true" />
+      <Parameters Include="Function=Sum|Summary=The SUM() window function returns the sum value of the expression across all input values.|VariationType=StructsOnly|CustomReturnType=true" />
+      <Parameters Include="Function=Count|Summary=The COUNT() window function returns the count of the expression across all input values.|VariationType=Generic|CustomReturnType=true|NonNullableReturnType=true|SpecificReturnType=int" />
+      <Parameters Include="Function=RowNumber|Summary=The ROW_NUMBER() window function returns the row number value of the expression across all input values.|FunctionType=NoArguments|VariationType=Generic|NonNullableReturnType=true|SpecificReturnType=long" />
+      <Parameters Include="Function=Rank|Summary=The RANK() window function returns the rank value of the expression across all input values.|FunctionType=NoArguments|VariationType=Generic|NonNullableReturnType=true|SpecificReturnType=long" />
+      <Parameters Include="Function=DenseRank|Summary=The DENSE_RANK() window function returns the dense rank value of the expression across all input values.|FunctionType=NoArguments|VariationType=Generic|NonNullableReturnType=true|SpecificReturnType=long" />
+      <Parameters Include="Function=PercentRank|Summary=The PERCENT_RANK() window function returns the percent rank value of the expression across all input values.|FunctionType=NoArguments|VariationType=Generic|NonNullableReturnType=true|SpecificReturnType=double" />
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" Condition="!Exists('$(IntermediateOutputPath)')" />
+    <MSBuild Projects="$(MSBuildProjectFile)" Targets="GenerateFunction" Properties="Parameters=%(Parameters.Identity)" />
+  </Target>
+  <Target Name="GenerateFunction">
+    <PropertyGroup>
+      <Function>$([System.Text.RegularExpressions.Regex]::Match($(Parameters), `(^|\|)Function=([^\|]*)`).Groups[2].ToString())</Function>
+      <FunctionType>$([System.Text.RegularExpressions.Regex]::Match($(Parameters), `(^|\|)FunctionType=([^\|]*)`).Groups[2].ToString())</FunctionType>
+      <Summary>$([System.Text.RegularExpressions.Regex]::Match($(Parameters), `(^|\|)Summary=([^\|]*)`).Groups[2].ToString())</Summary>
+      <VariationType>$([System.Text.RegularExpressions.Regex]::Match($(Parameters), `(^|\|)VariationType=([^\|]*)`).Groups[2].ToString())</VariationType>
+      <VariationType Condition=" '$(VariationType)' == '' ">All</VariationType>
+      <CustomReturnType>$([System.Text.RegularExpressions.Regex]::Match($(Parameters), `(^|\|)CustomReturnType=([^\|]*)`).Groups[2].ToString())</CustomReturnType>
+      <CustomReturnType Condition=" '$(CustomReturnType)' == '' ">false</CustomReturnType>
+      <NonNullableReturnType>$([System.Text.RegularExpressions.Regex]::Match($(Parameters), `(^|\|)NonNullableReturnType=([^\|]*)`).Groups[2].ToString())</NonNullableReturnType>
+      <NonNullableReturnType Condition=" '$(NonNullableReturnType)' == '' ">false</NonNullableReturnType>
+      <SpecificReturnType>$([System.Text.RegularExpressions.Regex]::Match($(Parameters), `(^|\|)SpecificReturnType=([^\|]*)`).Groups[2].ToString())</SpecificReturnType>
+    </PropertyGroup>
+    <Error Text="Function must be defined" Condition=" '$(Function)' == '' " />
+    <Error Text="Summary must be defined" Condition=" '$(Summary)' == '' " />
+
+    <Message Text="Generate $(Function)" Importance="High" Condition="!Exists('$(IntermediateOutputPath)DbFunctionsExtensions.Function.$(Function).g.cs')" />
+
+    <Exec Command="dotnet tool run t4 Templates/DbFunctionsExtensions.Function.tt -o $(IntermediateOutputPath)DbFunctionsExtensions.Function.$(Function).g.cs -p:function=$(Function) -p:functionType=$(FunctionType) -p:summary=&quot;$(Summary)&quot; -p:variationType=$(VariationType) -p:customReturnType=$(CustomReturnType) -p:nonNullableReturnType=$(NonNullableReturnType) -p:specificReturnType=$(SpecificReturnType)" Condition="!Exists('$(IntermediateOutputPath)DbFunctionsExtensions.Function.$(Function).g.cs')" />
+  </Target>
+
+  <ItemGroup>
+    <Compile Remove="$(IntermediateOutputPath)DbFunctionsExtensions.Function.*.g.cs" />
+    <Compile Include="$(IntermediateOutputPath)DbFunctionsExtensions.Function.Max.g.cs" />
+    <Compile Include="$(IntermediateOutputPath)DbFunctionsExtensions.Function.Min.g.cs" />
+    <Compile Include="$(IntermediateOutputPath)DbFunctionsExtensions.Function.Avg.g.cs" />
+    <Compile Include="$(IntermediateOutputPath)DbFunctionsExtensions.Function.Sum.g.cs" />
+    <Compile Include="$(IntermediateOutputPath)DbFunctionsExtensions.Function.Count.g.cs" />
+    <Compile Include="$(IntermediateOutputPath)DbFunctionsExtensions.Function.RowNumber.g.cs" />
+    <Compile Include="$(IntermediateOutputPath)DbFunctionsExtensions.Function.Rank.g.cs" />
+    <Compile Include="$(IntermediateOutputPath)DbFunctionsExtensions.Function.DenseRank.g.cs" />
+    <Compile Include="$(IntermediateOutputPath)DbFunctionsExtensions.Function.PercentRank.g.cs" />
+  </ItemGroup>
 </Project>

@@ -1,0 +1,49 @@
+﻿﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#+
+public enum ExpressionType
+{
+    NonNullableStruct,
+    NullableStruct,
+    ByteArray,
+    String,
+    Generic
+}
+
+public enum VariationType
+{
+    All,
+    StructsOnly,
+    Generic
+}
+
+public enum FunctionType
+{
+    NoArguments,
+    SingleArgument
+}
+
+public record Configuration(FunctionType FunctionType, ExpressionType ExpressionType, bool CustomReturnType, string SpecificReturnType)
+{
+    string TypeDefinition { get; } = ExpressionType switch
+    {
+        ExpressionType.NonNullableStruct => "T",
+        ExpressionType.NullableStruct or ExpressionType.Generic => "T?",
+        ExpressionType.ByteArray => "byte[]",
+        _ => "string",
+    };
+    public bool IsGeneric => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct or ExpressionType.Generic;
+    public bool IsGenericWithQualifier => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct;
+    public string ReturnType => CustomReturnType ? "TResult" : !string.IsNullOrEmpty(SpecificReturnType) ? SpecificReturnType : IsGeneric ? "T" : TypeDefinition;
+    public string ArgumentType => IsGeneric ? TypeDefinition : TypeDefinition + "?";
+    public string GenericTypeParameters => FunctionType != FunctionType.NoArguments && IsGeneric ? CustomReturnType ? "<T, TResult>" : "<T>" : string.Empty;
+    public string Arguments => FunctionType switch
+    {
+        FunctionType.SingleArgument => $"{ArgumentType} expression, ",
+        _ => "",
+    };
+}
+#>

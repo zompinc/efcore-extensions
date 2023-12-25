@@ -1,0 +1,113 @@
+﻿<#@ parameter name="function" type="string" #>
+<#@ parameter name="summary" type="string" #>
+<#@ parameter name="variationType" type="string" #>
+<#@ parameter name="customReturnType" type="bool" #>
+<#@ parameter name="nonNullableReturnType" type="bool" #>
+<#@ parameter name="specificReturnType" type="string" #>
+<#@ parameter name="functionType" type="string" #>
+<#@ import namespace="System.Linq" #>
+<#@ include file="Includes.ttinclude" #>
+namespace Zomp.EFCore.WindowFunctions;
+
+#nullable enable
+
+/// <summary>
+/// Provides extension methods for window functions.
+/// </summary>
+public static partial class DbFunctionsExtensions
+{
+<#
+    var configurations = new List<Configuration>();
+    var expressionTypes = Enum.GetValues<ExpressionType>();
+    var variationTypeEnum = Enum.Parse<VariationType>(variationType);
+    if (!Enum.TryParse<FunctionType>(functionType, out var functionTypeEnum)) functionTypeEnum = FunctionType.SingleArgument;
+    var structsOnly = variationTypeEnum == VariationType.StructsOnly;
+
+    foreach (var customReturnTypeOption in new bool[] {false, true})
+    {
+        if (!customReturnType && customReturnTypeOption)
+        {
+            continue;
+        }
+    
+        foreach (var expressionType in expressionTypes)
+        {
+            var configuration = new Configuration(functionTypeEnum, expressionType, customReturnTypeOption, specificReturnType);
+
+            if (structsOnly && !configuration.IsGeneric)
+            {
+                continue;
+            }
+
+            if (variationTypeEnum == VariationType.Generic ^ expressionType == ExpressionType.Generic)
+            {
+                continue;
+            }
+
+            configurations.Add(configuration);
+        }
+    }
+
+    for (var i = 0; i < configurations.Count; ++i)
+    {
+        var configuration = configurations[i];
+        var lastLine = i == configurations.Count - 1;
+#>
+    /// <summary>
+    /// <#= summary #>
+    /// </summary>
+<#
+        if (functionTypeEnum != FunctionType.NoArguments)
+        {
+#>
+<#
+            if (configuration.IsGeneric)
+            {
+#>
+    /// <typeparam name="T">Type of object.</typeparam>
+<#
+            }
+#>
+<#
+            if (configuration.CustomReturnType)
+            {
+#>
+    /// <typeparam name="TResult">Type of the result object.</typeparam>
+<#
+            }
+        }
+#>
+    /// <param name="_">The <see cref="DbFunctions"/> instance.</param>
+<#
+        if (functionTypeEnum != FunctionType.NoArguments)
+        {
+#>
+    /// <param name="expression">Expression to run window function on.</param>
+<#
+        }
+#>
+    /// <param name="over">over clause.</param>
+    /// <returns><#= function #> for the selected window frame.</returns>
+    /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
+    public static <#= configuration.ReturnType #><#= nonNullableReturnType ? "" : "?" #> <#= function #><#= configuration.GenericTypeParameters #>(this DbFunctions _, <#= configuration.Arguments #>OverClause over)
+<#
+        if (configuration.IsGenericWithQualifier)
+        {
+#>
+        where T : struct
+<#
+        }
+#>
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(<#= function #>)));
+<#
+        if (!lastLine)
+        {
+#>
+
+<#
+        }
+#>
+<#
+    }
+#>
+}
