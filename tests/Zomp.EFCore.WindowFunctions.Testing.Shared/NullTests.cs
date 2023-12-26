@@ -6,31 +6,25 @@ public partial class NullTests
     public void RowNumberWithOrderingNullCheck()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(r.Col1 == null ? 1 : 2)),
-        });
+        .Select(r => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(r.Col1 == null ? 1 : 2)));
 
         var result = query.ToList();
 
         var expectedSequence = TestRows.Select((_, i) => i + 1);
-        Assert.Equal(expectedSequence, result.Select(r => (int)r.RowNumber));
+        Assert.Equal(expectedSequence, result.Select(r => (int)r));
     }
 
     [Fact]
     public void MaxWithExpressionNullCheck()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Max = EF.Functions.Max(r.Col1 == null ? r.Id : r.Id - 100, EF.Functions.Over()),
-        });
+        .Select(r => EF.Functions.Max(r.Col1 == null ? r.Id : r.Id - 100, EF.Functions.Over()));
 
         var result = query.ToList();
 
         var max = TestRows.Max(r => r.Col1 == null ? r.Id : r.Id - 100);
         var expectedSequence = TestRows.Select(_ => (int?)max);
-        Assert.Equal(expectedSequence, result.Select(r => r.Max));
+        Assert.Equal(expectedSequence, result);
     }
 
     [Fact]

@@ -7,96 +7,78 @@ public abstract partial class CountTests<TResult>
     public void CountBasic()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Count = EF.Functions.Count<int, TResult>(r.Id, EF.Functions.Over()),
-        });
+        .Select(r => EF.Functions.Count<int, TResult>(r.Id, EF.Functions.Over()));
 
         var result = query.ToList();
 
         var maxId = TestRows.Length;
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => maxId);
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
     [Fact]
     public void CountBasicNullable()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Count = EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over()),
-        });
+        .Select(r => EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over()));
 
         var result = query.ToList();
 
         var countId = TestRows.Count(x => x.Col1 is not null);
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => countId);
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
     [Fact]
     public void CountBetweenCurrentRowAndNext()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Count = EF.Functions.Count<int, TResult>(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromCurrentRow().ToFollowing(1)),
-        });
+        .Select(r => EF.Functions.Count<int, TResult>(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromCurrentRow().ToFollowing(1)));
 
         var result = query.ToList();
 
         var expectedSequence = TestRows
             .Select((_, i) => i < TestRows.Length - 1 ? 2 : 1);
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
     [Fact]
     public void CountBetweenCurrentRowAndNextNullable()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Count = EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over().OrderBy(r.Id).Rows().FromCurrentRow().ToFollowing(1)),
-        });
+        .Select(r => EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over().OrderBy(r.Id).Rows().FromCurrentRow().ToFollowing(1)));
 
         var result = query.ToList();
 
         var expectedSequence = TestRows.Select((_, i)
             => TestRows.CountNonNulls(z => z.Col1, i, i + 1));
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
     [Fact]
     public void CountBetweenTwoPreceding()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Count = EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over().OrderBy(r.Id).Rows().FromPreceding(2).ToPreceding(1)),
-        });
+        .Select(r => EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over().OrderBy(r.Id).Rows().FromPreceding(2).ToPreceding(1)));
 
         var result = query.ToList();
 
         var expectedSequence = TestRows.Select((_, i)
             => TestRows.CountNonNulls(z => z.Col1, i - 2, i - 1));
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
     [Fact]
     public void CountBetweenTwoFollowing()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Count = EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over().OrderBy(r.Id).Rows().FromFollowing(1).ToFollowing(2)),
-        });
+        .Select(r => EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over().OrderBy(r.Id).Rows().FromFollowing(1).ToFollowing(2)));
 
         var result = query.ToList();
 
         var expectedSequence = TestRows.Select((_, i)
             => TestRows.CountNonNulls(z => z.Col1, i + 1, i + 2));
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
     [Fact]
@@ -121,12 +103,9 @@ public abstract partial class CountTests<TResult>
     public void CountWithPartition()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Count = EF.Functions.Count<int?, TResult>(
+        .Select(r => EF.Functions.Count<int?, TResult>(
                 r.Col1,
-                EF.Functions.Over().PartitionBy(r.Id / 10)),
-        });
+                EF.Functions.Over().PartitionBy(r.Id / 10)));
 
         var result = query.ToList();
 
@@ -136,7 +115,7 @@ public abstract partial class CountTests<TResult>
             r => r.Count(z => z.Col1 is not null));
 
         var expectedSequence = TestRows.Select(r => groups[r.Id / 10]);
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
     [Fact]
@@ -169,16 +148,13 @@ public abstract partial class CountTests<TResult>
         Skip.If(DbContext.IsSqlite, "Look more into this");
 
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Count = EF.Functions.Count<long, TResult>(r.Id, EF.Functions.Over()),
-        });
+        .Select(r => EF.Functions.Count<long, TResult>(r.Id, EF.Functions.Over()));
 
         var result = query.ToList();
 
         var count = TestRows.Length;
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => count);
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
     [SkippableFact]
@@ -187,16 +163,13 @@ public abstract partial class CountTests<TResult>
         Skip.If(DbContext.IsSqlite, "Look more into this");
 
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Count = EF.Functions.Count<string, TResult>(r.Col1.ToString(), EF.Functions.Over()),
-        });
+        .Select(r => EF.Functions.Count<string, TResult>(r.Col1.ToString(), EF.Functions.Over()));
 
         var result = query.ToList();
 
         var count = TestRows.Count(r => r.Col1?.ToString(CultureInfo.InvariantCulture) != null);
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => count);
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
     [SkippableFact]
@@ -205,16 +178,13 @@ public abstract partial class CountTests<TResult>
         Skip.If(DbContext.IsSqlite, "Look more into this");
 
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Count = EF.Functions.Count<byte[]?, TResult>(r.IdBytes, EF.Functions.Over()),
-        });
+        .Select(r => EF.Functions.Count<byte[]?, TResult>(r.IdBytes, EF.Functions.Over()));
 
         var result = query.ToList();
 
         var count = TestRows.Length;
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => count);
 
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 }

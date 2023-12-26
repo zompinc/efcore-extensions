@@ -6,10 +6,7 @@ public partial class RankTests
     public void RowNumberBasic()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(r.Id).PartitionBy(r.Id / 10)),
-        });
+        .Select(r => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(r.Id).PartitionBy(r.Id / 10)));
 
         var result = query.ToList();
 
@@ -17,7 +14,7 @@ public partial class RankTests
             .SelectMany(g =>
                 g.Select((j, i) => (long)(i + 1)));
 
-        Assert.Equal(expectedSequence, result.Select(r => r.RowNumber));
+        Assert.Equal(expectedSequence, result);
     }
 
     [SkippableFact]
@@ -26,27 +23,21 @@ public partial class RankTests
         Skip.If(DbContext.IsSqlServer);
 
         var query = DbContext.TestRows
-            .Select(r => new
-            {
-                RowNumber = EF.Functions.RowNumber(EF.Functions.Over()),
-            });
+            .Select(r => EF.Functions.RowNumber(EF.Functions.Over()));
 
         var result = query.ToList();
 
         var expectedSequence = TestRows
             .Select((j, i) => (long)(i + 1));
 
-        Assert.Equal(expectedSequence, result.Select(r => r.RowNumber));
+        Assert.Equal(expectedSequence, result);
     }
 
     [Fact]
     public void RankBasic()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            Rank = EF.Functions.Rank(EF.Functions.Over().OrderBy(r.Id / 10)),
-        });
+        .Select(r => EF.Functions.Rank(EF.Functions.Over().OrderBy(r.Id / 10)));
 
         var result = query.ToList();
 
@@ -58,17 +49,14 @@ public partial class RankTests
                 .Select(g => g.Count())
                 .Sum() + 1);
 
-        Assert.Equal(expectedSequence, result.Select(r => r.Rank));
+        Assert.Equal(expectedSequence, result);
     }
 
     [Fact]
     public void DenseRankBasic()
     {
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            DenseRank = EF.Functions.DenseRank(EF.Functions.Over().OrderBy(r.Id / 10)),
-        });
+        .Select(r => EF.Functions.DenseRank(EF.Functions.Over().OrderBy(r.Id / 10)));
 
         var result = query.ToList();
 
@@ -76,7 +64,7 @@ public partial class RankTests
             .GroupBy(r => r.Id / 10)
             .SelectMany((g, i) => g.Select(j => (long)(i + 1)));
 
-        Assert.Equal(expectedSequence, result.Select(r => r.DenseRank));
+        Assert.Equal(expectedSequence, result);
     }
 
     [Fact]
@@ -85,10 +73,7 @@ public partial class RankTests
         bool nullsLast = DbContext.IsPostgreSQL;
 
         var query = DbContext.TestRows
-        .Select(r => new
-        {
-            PercentRank = EF.Functions.PercentRank(EF.Functions.Over().OrderBy(r.Col1)),
-        });
+        .Select(r => EF.Functions.PercentRank(EF.Functions.Over().OrderBy(r.Col1)));
 
         var result = query.ToList();
 
@@ -104,6 +89,6 @@ public partial class RankTests
                 .Select(g => g.Count())
                 .Sum() / (double)(TestRows.Length - 1));
 
-        Assert.Equal(expectedSequence, result.Select(r => r.PercentRank));
+        Assert.Equal(expectedSequence, result.Select(r => r));
     }
 }
