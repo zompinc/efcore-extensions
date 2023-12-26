@@ -8,7 +8,7 @@ public partial class AnalyticTests
         const int offset = 2;
         const int @default = 56;
         var query = DbContext.TestRows
-        .Select(r => EF.Functions.Lead(r.Id, offset, @default, EF.Functions.Over().OrderBy(r.Id).PartitionBy(r.Id / 10)));
+        .Select(r => EF.Functions.Lead(r.Id, offset, @default, EF.Functions.Over().OrderBy(r.Id)));
 
         var result = query.ToList();
 
