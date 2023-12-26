@@ -3,8 +3,6 @@
 public class NullSensitiveComparer<T>(bool nullsLast = false) : IComparer<T?>
     where T : struct
 {
-    private readonly bool nullsLast = nullsLast;
-
     public int Compare(T? x, T? y)
     {
         if (x is null && y is null)

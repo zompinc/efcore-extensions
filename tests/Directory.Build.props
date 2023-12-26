@@ -20,6 +20,9 @@
 
     <!-- Look into ToString soon -->
     <NoWarn>$(NoWarn);CA1305</NoWarn>
+
+    <NoWarn>$(NoWarn);SA1601</NoWarn>
+    <NoWarn>$(NoWarn);SA1502</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">
@@ -27,6 +30,7 @@
     <PackageReference Include="MartinCostello.Logging.XUnit" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.skippablefact" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
   </ItemGroup>
 
@@ -37,5 +41,6 @@
     <Using Include="Xunit" />
     <Using Include="Xunit.Abstractions" />
     <Using Include="Zomp.EFCore.Testing" />
+    <Using Include="Zomp.EFCore.Testing.TestFixture" Static="true" />
   </ItemGroup>
 </Project>

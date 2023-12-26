@@ -1,12 +1,11 @@
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class MaxTests(TestDbContext dbContext)
+public partial class MaxTests
 {
-    private readonly TestDbContext dbContext = dbContext;
-
+    [Fact]
     public void SimpleMax()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.Id, EF.Functions.Over()),
@@ -19,9 +18,10 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [Fact]
     public void MaxDifferByExpressionOnly()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.Id, EF.Functions.Over()),
@@ -38,9 +38,10 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedMaxTimesTwo, distinctResults.MaxTimesTwo);
     }
 
+    [Fact]
     public void MaxWithOrder()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.Id, EF.Functions.Over().OrderBy(r.Col1 / 10)),
@@ -49,9 +50,10 @@ public class MaxTests(TestDbContext dbContext)
         var result = query.ToList();
     }
 
+    [Fact]
     public void SimpleMaxNullable()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.Col1, EF.Functions.Over()),
@@ -64,9 +66,10 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [Fact]
     public void MaxBetweenCurrentRowAndOne()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromCurrentRow().ToFollowing(1)),
@@ -83,9 +86,10 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [Fact]
     public void MaxBetweenTwoPreceding()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromPreceding(2).ToPreceding(1)),
@@ -101,9 +105,10 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [Fact]
     public void MaxBetweenTwoFollowing()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromFollowing(1).ToFollowing(2)),
@@ -119,9 +124,10 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [Fact]
     public void MaxBetweenFollowingAndUnbounded()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Original = r,
@@ -138,9 +144,10 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [Fact]
     public void MaxWithPartition()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(
@@ -157,9 +164,10 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [Fact]
     public void MaxWith2Partitions()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Original = r,
@@ -178,9 +186,10 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [Fact]
     public void SimpleMaxWithCast()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max((long)r.Id, EF.Functions.Over()),
@@ -193,9 +202,10 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [Fact]
     public void MaxWithCastToString()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.Col1.ToString(), EF.Functions.Over()),
@@ -208,9 +218,12 @@ public class MaxTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [SkippableFact]
     public void MaxBinary()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsPostgreSQL, "Can't max over bit(n) or bytea in postgres");
+
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.IdBytes, EF.Functions.Over()),

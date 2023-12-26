@@ -35,8 +35,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.WindowFunctions.SqlServer", "src\Zomp.EFCore.WindowFunctions.SqlServer\Zomp.EFCore.WindowFunctions.SqlServer.csproj", "{25596004-428F-400A-A02C-21A079C3CD3E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.WindowFunctions.Testing", "tests\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.csproj", "{39355197-4FBB-4007-BE49-3CEB8ADA4CEF}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.WindowFunctions.Sqlite", "src\Zomp.EFCore.WindowFunctions.Sqlite\Zomp.EFCore.WindowFunctions.Sqlite.csproj", "{914B3C27-AC1A-40A7-BCD1-05C0BC323582}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zomp.EFCore.WindowFunctions.Sqlite.Tests", "tests\Zomp.EFCore.WindowFunctions.Sqlite.Tests\Zomp.EFCore.WindowFunctions.Sqlite.Tests.csproj", "{E0FB8AB7-1527-4273-9276-E26F3C763A52}"
@@ -94,6 +92,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{61D9
 		.vscode\tasks.json = .vscode\tasks.json
 	EndProjectSection
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Zomp.EFCore.WindowFunctions.Testing.Shared", "tests\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.shproj", "{379AED0A-4C97-4EBC-BADA-68104B9514CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -112,10 +112,6 @@ Global
 		{25596004-428F-400A-A02C-21A079C3CD3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{25596004-428F-400A-A02C-21A079C3CD3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{25596004-428F-400A-A02C-21A079C3CD3E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{39355197-4FBB-4007-BE49-3CEB8ADA4CEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{39355197-4FBB-4007-BE49-3CEB8ADA4CEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{39355197-4FBB-4007-BE49-3CEB8ADA4CEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{39355197-4FBB-4007-BE49-3CEB8ADA4CEF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{914B3C27-AC1A-40A7-BCD1-05C0BC323582}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{914B3C27-AC1A-40A7-BCD1-05C0BC323582}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{914B3C27-AC1A-40A7-BCD1-05C0BC323582}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -192,7 +188,6 @@ Global
 		{C8334CC7-29F2-48A2-BD76-75406E59C46F} = {F71F1DAC-BD40-4112-8829-FCCFF65A8A23}
 		{DFB5C7D7-00FD-421C-BA2D-93A739E8ADB2} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 		{25596004-428F-400A-A02C-21A079C3CD3E} = {F71F1DAC-BD40-4112-8829-FCCFF65A8A23}
-		{39355197-4FBB-4007-BE49-3CEB8ADA4CEF} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 		{914B3C27-AC1A-40A7-BCD1-05C0BC323582} = {F71F1DAC-BD40-4112-8829-FCCFF65A8A23}
 		{E0FB8AB7-1527-4273-9276-E26F3C763A52} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 		{F0788EED-5EC7-4235-BCA2-53DC25032F3A} = {F71F1DAC-BD40-4112-8829-FCCFF65A8A23}
@@ -215,8 +210,15 @@ Global
 		{E723EBB7-E77A-482D-B862-A86BD6CECC8B} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 		{BCF7993C-2B7D-43A3-B99B-1E32072031FB} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 		{61D9540B-9FAE-48BF-8B47-3AC5493586DA} = {528A7E80-5391-4750-B0B4-47B05160E73A}
+		{379AED0A-4C97-4EBC-BADA-68104B9514CC} = {941686A1-8DDE-4D64-AA18-3AC347935CAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C20B0087-9477-4FC8-A489-4A8627C395B0}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		tests\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.projitems*{379aed0a-4c97-4ebc-bada-68104b9514cc}*SharedItemsImports = 13
+		tests\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.projitems*{dfb5c7d7-00fd-421c-ba2d-93a739e8adb2}*SharedItemsImports = 5
+		tests\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.projitems*{e0fb8ab7-1527-4273-9276-e26f3c763a52}*SharedItemsImports = 5
+		tests\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.projitems*{f5aa2804-f1a1-45e6-9720-21f45fa12053}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

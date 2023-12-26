@@ -1,10 +1,11 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class NullTests(TestDbContext dbContext)
+public partial class NullTests
 {
+    [Fact]
     public void RowNumberWithOrderingNullCheck()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(r.Col1 == null ? 1 : 2)),
@@ -16,9 +17,10 @@ public class NullTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => (int)r.RowNumber));
     }
 
+    [Fact]
     public void MaxWithExpressionNullCheck()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.Col1 == null ? r.Id : r.Id - 100, EF.Functions.Over()),
@@ -31,9 +33,10 @@ public class NullTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Max));
     }
 
+    [Fact]
     public void MaxWithPartitionNullCheck()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Max = EF.Functions.Max(r.Id, EF.Functions.Over().OrderByDescending(r.Id).PartitionBy(r.Col1 == null ? 1 : 2)),

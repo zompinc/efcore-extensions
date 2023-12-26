@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>379aed0a-4c97-4ebc-bada-68104b9514cc</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Zomp.EFCore.WindowFunctions.Testing.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ArrayExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AvgTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CountTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DecimalRoundingEqualityComparer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MaxTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NullSensitiveComparer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NullTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RankTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SumTests.cs" />
+  </ItemGroup>
+</Project>

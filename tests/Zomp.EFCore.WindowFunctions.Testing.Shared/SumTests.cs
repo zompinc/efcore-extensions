@@ -1,30 +1,31 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class SumTests(TestDbContext dbContext)
+public abstract partial class SumTests<TResult>
+        where TResult : IConvertible
 {
-    private readonly TestDbContext dbContext = dbContext;
-
+    [Fact]
     public void SimpleSum()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
-            Sum = EF.Functions.Sum(r.Id, EF.Functions.Over()),
+            Sum = EF.Functions.Sum<int, TResult>(r.Id, EF.Functions.Over()),
         });
 
         var result = query.ToList();
 
         var sumId = TestRows.Sum(r => r.Id);
-        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (int?)sumId);
-        Assert.Equal(expectedSequence, result.Select(r => r.Sum));
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (long?)sumId);
+        Assert.Equal(expectedSequence, result.Select(r => r.Sum?.ToInt64(null)));
     }
 
+    [Fact]
     public void SumWithPartition()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
-            Sum = EF.Functions.Sum(
+            Sum = EF.Functions.Sum<int, TResult>(
                 r.Id,
                 EF.Functions.Over().PartitionBy(r.Id / 10)),
         });
@@ -34,16 +35,17 @@ public class SumTests(TestDbContext dbContext)
         var groups = TestRows.GroupBy(r => r.Id / 10)
             .ToDictionary(r => r.Key, r => r.Sum(s => s.Id));
 
-        var expectedSequence = TestRows.Select(r => (int?)groups[r.Id / 10]);
-        Assert.Equal(expectedSequence, result.Select(r => r.Sum));
+        var expectedSequence = TestRows.Select(r => (long?)groups[r.Id / 10]);
+        Assert.Equal(expectedSequence, result.Select(r => r.Sum?.ToInt64(null)));
     }
 
+    [Fact]
     public void SumWithPartitionAndOrder()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
-            Sum = EF.Functions.Sum(
+            Sum = EF.Functions.Sum<int, TResult>(
                 r.Id,
                 EF.Functions.Over().OrderBy(r.Id).PartitionBy(r.Id / 10)),
         });
@@ -57,8 +59,8 @@ public class SumTests(TestDbContext dbContext)
                 .Where(g => g.Key == r.Id / 10)
                 .SelectMany(g => g)
                 .Where(z => z.Id <= r.Id)
-                .Sum(s => s.Id));
+                .Sum(s => (long)s.Id));
 
-        Assert.Equal(expectedSequence, result.Select(r => r.Sum!.Value));
+        Assert.Equal(expectedSequence, result.Select(r => r.Sum!.ToInt64(null)));
     }
 }

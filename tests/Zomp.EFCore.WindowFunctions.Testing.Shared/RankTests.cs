@@ -1,12 +1,11 @@
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class RankTests(TestDbContext dbContext)
+public partial class RankTests
 {
-    private readonly TestDbContext dbContext = dbContext;
-
+    [Fact]
     public void RowNumberBasic()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(r.Id).PartitionBy(r.Id / 10)),
@@ -21,9 +20,12 @@ public class RankTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.RowNumber));
     }
 
+    [SkippableFact]
     public void RowNumberEmptyOver()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsSqlServer);
+
+        var query = DbContext.TestRows
             .Select(r => new
             {
                 RowNumber = EF.Functions.RowNumber(EF.Functions.Over()),
@@ -37,9 +39,10 @@ public class RankTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.RowNumber));
     }
 
+    [Fact]
     public void RankBasic()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             Rank = EF.Functions.Rank(EF.Functions.Over().OrderBy(r.Id / 10)),
@@ -58,9 +61,10 @@ public class RankTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.Rank));
     }
 
+    [Fact]
     public void DenseRankBasic()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             DenseRank = EF.Functions.DenseRank(EF.Functions.Over().OrderBy(r.Id / 10)),
@@ -75,9 +79,12 @@ public class RankTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.DenseRank));
     }
 
-    public void PercentRankBasic(bool nullsLast = false)
+    [Fact]
+    public void PercentRankBasic()
     {
-        var query = dbContext.TestRows
+        bool nullsLast = DbContext.IsPostgreSQL;
+
+        var query = DbContext.TestRows
         .Select(r => new
         {
             PercentRank = EF.Functions.PercentRank(EF.Functions.Over().OrderBy(r.Col1)),

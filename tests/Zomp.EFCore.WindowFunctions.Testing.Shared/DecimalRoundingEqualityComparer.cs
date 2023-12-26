@@ -2,9 +2,14 @@
 
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
-public class DecimalRoundingEqualityComparer(int roundingDecimals) : IEqualityComparer<decimal?>
+public class DecimalRoundingEqualityComparer : IEqualityComparer<decimal?>
 {
-    private readonly decimal epsilon = (decimal)Math.Pow(0.1, roundingDecimals);
+    private readonly decimal epsilon;
+
+    public DecimalRoundingEqualityComparer(int roundingDecimals)
+    {
+        epsilon = (decimal)Math.Pow(0.1, roundingDecimals);
+    }
 
     public bool Equals(decimal? x, decimal? y)
     {
@@ -21,8 +26,9 @@ public class DecimalRoundingEqualityComparer(int roundingDecimals) : IEqualityCo
         return Math.Abs(x.Value - y.Value) < this.epsilon;
     }
 
+    [SuppressMessage("Design", "CA1065:Do not raise exceptions in unexpected locations", Justification = "Testing code")]
     public int GetHashCode([DisallowNull] decimal? obj)
     {
-        return obj.GetHashCode();
+        throw new NotImplementedException();
     }
 }
