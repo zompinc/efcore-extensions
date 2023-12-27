@@ -25,14 +25,14 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         {
             nameof(DbFunctionsExtensions.Min) => Over(arguments, "MIN"),
             nameof(DbFunctionsExtensions.Max) => Over(arguments, "MAX"),
-            nameof(DbFunctionsExtensions.Lead) => Over(arguments, "LEAD", 3),
+            nameof(DbFunctionsExtensions.Lead) => Over(arguments, "LEAD"),
             nameof(DbFunctionsExtensions.Sum) => Over(arguments, "SUM"),
             nameof(DbFunctionsExtensions.Avg) => Over(arguments, "AVG"),
             nameof(DbFunctionsExtensions.Count) => Over(arguments, "COUNT"),
-            nameof(DbFunctionsExtensions.RowNumber) => Over(arguments, "ROW_NUMBER", 0),
-            nameof(DbFunctionsExtensions.Rank) => Over(arguments, "RANK", 0),
-            nameof(DbFunctionsExtensions.DenseRank) => Over(arguments, "DENSE_RANK", 0),
-            nameof(DbFunctionsExtensions.PercentRank) => Over(arguments, "PERCENT_RANK", 0),
+            nameof(DbFunctionsExtensions.RowNumber) => Over(arguments, "ROW_NUMBER"),
+            nameof(DbFunctionsExtensions.Rank) => Over(arguments, "RANK"),
+            nameof(DbFunctionsExtensions.DenseRank) => Over(arguments, "DENSE_RANK"),
+            nameof(DbFunctionsExtensions.PercentRank) => Over(arguments, "PERCENT_RANK"),
 
             nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
             nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
@@ -61,29 +61,30 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
     /// </summary>
     /// <param name="arguments">SQL representations of <see cref="MethodCallExpression.Arguments" />.</param>
     /// <param name="functionName">Function name.</param>
-    /// <param name="startIndex">0-based index of the first over parameter.</param>
     /// <returns>A SQL translation of the <see cref="MethodCallExpression" />.</returns>
-    protected virtual SqlExpression Over(IReadOnlyList<SqlExpression> arguments, string functionName, int startIndex = 1)
+    protected virtual SqlExpression Over(IReadOnlyList<SqlExpression> arguments, string functionName)
     {
         //// For count there needs to be an option to call for
         //// new SqlConstantExpression(Expression.Constant("*"), null)
 
         var directArgs = new List<SqlExpression>();
-        for (var i = 0; i < startIndex; ++i)
+
+        OverExpression? over = null;
+
+        for (var i = 1; i < arguments.Count; ++i)
         {
-            directArgs.Add(sqlExpressionFactory.ApplyDefaultTypeMapping(arguments[i + 1]));
+            var argument = arguments[i];
+
+            if ((argument is OverExpression o && (over = o) is { })
+                || argument.Type == typeof(OverClause))
+            {
+                break;
+            }
+
+            directArgs.Add(sqlExpressionFactory.ApplyDefaultTypeMapping(argument));
         }
 
-        OrderingSqlExpression? orderingSqlExpression = null;
-        PartitionByExpression? partitionBySqlExpression = null;
-
-        if (arguments.Count > 1 && arguments[startIndex + 1] is OverExpression over)
-        {
-            orderingSqlExpression = over.OrderingExpression;
-            partitionBySqlExpression = over.PartitionByExpression;
-        }
-
-        return new WindowFunctionExpression(functionName, directArgs, partitionBySqlExpression?.List, orderingSqlExpression?.List, orderingSqlExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
+        return new WindowFunctionExpression(functionName, directArgs, over?.PartitionByExpression?.List, over?.OrderingExpression?.List, over?.OrderingExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
     }
 
     private static OverExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments)
