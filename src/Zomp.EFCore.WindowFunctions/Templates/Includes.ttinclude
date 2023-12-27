@@ -23,7 +23,14 @@ public enum VariationType
 public enum FunctionType
 {
     NoArguments,
-    SingleArgument
+    SingleArgument,
+    LeadLag
+}
+
+public record Argument(string Type, string Name, string Description)
+{
+    public string ToParameterDeclatarion() => $"{Type} {Name}";
+    public string ToTrivia() => $"    /// <param name=\"{Name.Trim(new char[] {'@'})}\">{Description}</param>";
 }
 
 public record Configuration(FunctionType FunctionType, ExpressionType ExpressionType, bool CustomReturnType, string SpecificReturnType)
@@ -35,15 +42,22 @@ public record Configuration(FunctionType FunctionType, ExpressionType Expression
         ExpressionType.ByteArray => "byte[]",
         _ => "string",
     };
+    private static readonly Argument Offset = new("long", "offset", "The offset.");
+    private static readonly Argument Default = new("T?", "@default", "The default.");
     public bool IsGeneric => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct or ExpressionType.Generic;
     public bool IsGenericWithQualifier => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct;
     public string ReturnType => CustomReturnType ? "TResult" : !string.IsNullOrEmpty(SpecificReturnType) ? SpecificReturnType : IsGeneric ? "T" : TypeDefinition;
     public string ArgumentType => IsGeneric ? TypeDefinition : TypeDefinition + "?";
     public string GenericTypeParameters => FunctionType != FunctionType.NoArguments && IsGeneric ? CustomReturnType ? "<T, TResult>" : "<T>" : string.Empty;
-    public string Arguments => FunctionType switch
+    private Argument GetDefaultExpression() => new(ArgumentType, "expression", "Expression to run window function on.");
+    private List<Argument> ArgList => FunctionType switch
     {
-        FunctionType.SingleArgument => $"{ArgumentType} expression, ",
-        _ => "",
+        FunctionType.SingleArgument => new List<Argument>() {GetDefaultExpression()},
+        FunctionType.LeadLag => new List<Argument>() {GetDefaultExpression(), Offset, Default},
+        _ => new List<Argument>{},
     };
+
+    public string Arguments => string.Join(string.Empty, ArgList.Select(a => a.ToParameterDeclatarion() + ", "));
+    public string ParameterTrivia => string.Join(string.Empty, ArgList.Select(a => a.ToTrivia() + "\r\n"));
 }
 #>
