@@ -29,11 +29,11 @@ public enum FunctionType
 
 public record Argument(string Type, string Name, string Description)
 {
-    public string ToParameterDeclatarion() => $"{Type} {Name}";
-    public string ToTrivia() => $"    /// <param name=\"{Name.Trim(new char[] {'@'})}\">{Description}</param>";
+    public string ToParameterDeclaration() => $"{Type} {Name}";
+    public string ToTrivia() => $"    /// <param name=\"{Name.Trim(new char[] { '@' })}\">{Description}</param>";
 }
 
-public record Configuration(FunctionType FunctionType, ExpressionType ExpressionType, bool CustomReturnType, string SpecificReturnType)
+public record Configuration(FunctionType FunctionType, ExpressionType ExpressionType, bool CustomReturnType, string SpecificReturnType, bool RequireIgnoreNullsOption)
 {
     string TypeDefinition { get; } = ExpressionType switch
     {
@@ -44,20 +44,30 @@ public record Configuration(FunctionType FunctionType, ExpressionType Expression
     };
     private static readonly Argument Offset = new("long", "offset", "The offset.");
     private static readonly Argument Default = new("T?", "@default", "The default.");
+    private static readonly Argument RequireOrIgnoreNulls = new("RequireOrIgnoreNulls?", "requireOrIgnoreNulls", "Require nulls or ignore nulls.");
     public bool IsGeneric => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct or ExpressionType.Generic;
     public bool IsGenericWithQualifier => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct;
     public string ReturnType => CustomReturnType ? "TResult" : !string.IsNullOrEmpty(SpecificReturnType) ? SpecificReturnType : IsGeneric ? "T" : TypeDefinition;
     public string ArgumentType => IsGeneric ? TypeDefinition : TypeDefinition + "?";
     public string GenericTypeParameters => FunctionType != FunctionType.NoArguments && IsGeneric ? CustomReturnType ? "<T, TResult>" : "<T>" : string.Empty;
     private Argument GetDefaultExpression() => new(ArgumentType, "expression", "Expression to run window function on.");
+    private List<Argument> GetLeadLagArguments()
+    {
+        var list = new List<Argument>() { GetDefaultExpression(), Offset, Default };
+        if (RequireIgnoreNullsOption)
+        {
+            list.Add(RequireOrIgnoreNulls);
+        }
+        return list;
+    }
     private List<Argument> ArgList => FunctionType switch
     {
-        FunctionType.SingleArgument => new List<Argument>() {GetDefaultExpression()},
-        FunctionType.LeadLag => new List<Argument>() {GetDefaultExpression(), Offset, Default},
-        _ => new List<Argument>{},
+        FunctionType.SingleArgument => new List<Argument>() { GetDefaultExpression() },
+        FunctionType.LeadLag => GetLeadLagArguments(),
+        _ => new List<Argument> { },
     };
 
-    public string Arguments => string.Join(string.Empty, ArgList.Select(a => a.ToParameterDeclatarion() + ", "));
+    public string Arguments => string.Join(string.Empty, ArgList.Select(a => a.ToParameterDeclaration() + ", "));
     public string ParameterTrivia => string.Join(string.Empty, ArgList.Select(a => a.ToTrivia() + "\r\n"));
 }
 #>

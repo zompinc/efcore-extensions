@@ -23,28 +23,37 @@ public static partial class DbFunctionsExtensions
     if (!Enum.TryParse<FunctionType>(functionType, out var functionTypeEnum)) functionTypeEnum = FunctionType.SingleArgument;
     var structsOnly = variationTypeEnum == VariationType.StructsOnly;
 
-    foreach (var customReturnTypeOption in new bool[] {false, true})
+    foreach (var requireIgnoreNullsOption in new bool[] {false, true})
     {
-        if (!customReturnType && customReturnTypeOption)
+
+        if (functionTypeEnum != FunctionType.LeadLag && requireIgnoreNullsOption)
         {
             continue;
         }
-    
-        foreach (var expressionType in expressionTypes)
+
+        foreach (var customReturnTypeOption in new bool[] {false, true})
         {
-            var configuration = new Configuration(functionTypeEnum, expressionType, customReturnTypeOption, specificReturnType);
-
-            if (structsOnly && !configuration.IsGeneric)
+            if (!customReturnType && customReturnTypeOption)
             {
                 continue;
             }
 
-            if (variationTypeEnum == VariationType.Generic ^ expressionType == ExpressionType.Generic)
+            foreach (var expressionType in expressionTypes)
             {
-                continue;
-            }
+                var configuration = new Configuration(functionTypeEnum, expressionType, customReturnTypeOption, specificReturnType, requireIgnoreNullsOption);
 
-            configurations.Add(configuration);
+                if (structsOnly && !configuration.IsGeneric)
+                {
+                    continue;
+                }
+
+                if (variationTypeEnum == VariationType.Generic ^ expressionType == ExpressionType.Generic)
+                {
+                    continue;
+                }
+
+                configurations.Add(configuration);
+            }
         }
     }
 
