@@ -68,6 +68,6 @@ public record Configuration(FunctionType FunctionType, ExpressionType Expression
     };
 
     public string Arguments => string.Join(string.Empty, ArgList.Select(a => a.ToParameterDeclaration() + ", "));
-    public string ParameterTrivia => string.Join(string.Empty, ArgList.Select(a => a.ToTrivia() + "\r\n"));
+    public string ParameterTrivia => string.Join("\r\n", ArgList.Select(a => a.ToTrivia()));
 }
 #>
