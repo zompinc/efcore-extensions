@@ -1,14 +1,14 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Clauses;
 
 /// <summary>
-/// Require Or Ignore Nulls.
+/// Respect Or Ignore Nulls.
 /// </summary>
-public enum RequireOrIgnoreNulls
+public enum RespectOrIgnoreNulls
 {
     /// <summary>
-    /// Require nulls.
+    /// Respect nulls.
     /// </summary>
-    RequireNulls,
+    RespectNulls,
 
     /// <summary>
     /// Ignore nulls.

@@ -5,6 +5,7 @@
 /// </summary>
 /// <param name="function">Function (MIN, MAX).</param>
 /// <param name="arguments">A list of argument expressions of the Window function.</param>
+/// <param name="respectOrIgnoreNulls">Respect or ignore nulls.</param>
 /// <param name="partitions">A list of expressions to partition by.</param>
 /// <param name="orderings">A list of ordering expressions to order by.</param>
 /// <param name="rowOrRange">Row or range clause.</param>
@@ -22,6 +23,7 @@
 public class WindowFunctionExpression(
     string function,
     IReadOnlyList<SqlExpression> arguments,
+    RespectOrIgnoreNulls? respectOrIgnoreNulls,
     IReadOnlyList<SqlExpression>? partitions,
     IReadOnlyList<OrderingExpression>? orderings,
     RowOrRangeExpression? rowOrRange,
@@ -31,6 +33,11 @@ public class WindowFunctionExpression(
     /// Gets the arguments of the window function.
     /// </summary>
     public virtual IReadOnlyList<SqlExpression> Arguments { get; } = arguments;
+
+    /// <summary>
+    /// Gets the respect nulls or ignore nulls parameter.
+    /// </summary>
+    public RespectOrIgnoreNulls? RespectOrIgnoreNulls { get; } = respectOrIgnoreNulls;
 
     /// <summary>
     /// Gets the list of expressions used in partitioning.
@@ -67,7 +74,7 @@ public class WindowFunctionExpression(
             && (ReferenceEquals(partitions, Partitions) || partitions.SequenceEqual(Partitions))
             && (ReferenceEquals(orderings, Orderings) || orderings.SequenceEqual(Orderings))
                 ? this
-                : new(Function, arguments, partitions, orderings, RowOrRange, TypeMapping);
+                : new(Function, arguments, RespectOrIgnoreNulls, partitions, orderings, RowOrRange, TypeMapping);
 
     /// <inheritdoc />
     public override bool Equals(object? obj)
@@ -104,6 +111,14 @@ public class WindowFunctionExpression(
         ArgumentNullException.ThrowIfNull(visitor);
         var changed = false;
         var partitions = new List<SqlExpression>();
+        var arguments = new List<SqlExpression>();
+        foreach (var argument in Arguments)
+        {
+            var newEArgument = (SqlExpression)visitor.Visit(argument);
+            changed |= newEArgument != argument;
+            arguments.Add(newEArgument);
+        }
+
         foreach (var partition in Partitions)
         {
             var newPartition = (SqlExpression)visitor.Visit(partition);
@@ -119,16 +134,8 @@ public class WindowFunctionExpression(
             orderings.Add(newOrdering);
         }
 
-        var arguments = new List<SqlExpression>();
-        foreach (var argument in Arguments)
-        {
-            var newExpression = (SqlExpression)visitor.Visit(argument);
-            changed |= newExpression != argument;
-            arguments.Add(newExpression);
-        }
-
         return changed
-            ? new WindowFunctionExpression(Function, arguments, partitions, orderings, RowOrRange, TypeMapping)
+            ? new WindowFunctionExpression(Function, arguments, RespectOrIgnoreNulls, partitions, orderings, RowOrRange, TypeMapping)
             : this;
     }
 
@@ -138,7 +145,15 @@ public class WindowFunctionExpression(
         ArgumentNullException.ThrowIfNull(expressionPrinter);
         expressionPrinter.Append($"{Function}(");
         expressionPrinter.VisitCollection(Arguments);
-        expressionPrinter.Append(") OVER(");
+        expressionPrinter.Append(") ");
+
+        if (RespectOrIgnoreNulls is { } respectOrIgnoreNulls)
+        {
+            expressionPrinter.Append(respectOrIgnoreNulls == Clauses.RespectOrIgnoreNulls.RespectNulls
+                ? "RESPECT NULLS " : "IGNORE NULLS ");
+        }
+
+        expressionPrinter.Append("OVER(");
 
         if (Partitions.Any())
         {

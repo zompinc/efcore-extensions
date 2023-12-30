@@ -70,6 +70,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         var directArgs = new List<SqlExpression>();
 
         OverExpression? over = null;
+        RespectOrIgnoreNulls? respectOrIgnoreNulls = null;
 
         for (var i = 1; i < arguments.Count; ++i)
         {
@@ -81,10 +82,16 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
                 break;
             }
 
+            if (argument is SqlConstantExpression sce && sce.Type == typeof(RespectOrIgnoreNulls))
+            {
+                respectOrIgnoreNulls = (RespectOrIgnoreNulls?)sce.Value;
+                continue;
+            }
+
             directArgs.Add(sqlExpressionFactory.ApplyDefaultTypeMapping(argument));
         }
 
-        return new WindowFunctionExpression(functionName, directArgs, over?.PartitionByExpression?.List, over?.OrderingExpression?.List, over?.OrderingExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
+        return new WindowFunctionExpression(functionName, directArgs, respectOrIgnoreNulls, over?.PartitionByExpression?.List, over?.OrderingExpression?.List, over?.OrderingExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
     }
 
     private static OverExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments)

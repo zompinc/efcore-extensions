@@ -18,7 +18,15 @@ public static class ExpressionVisitorExtensions
         IRelationalCommandBuilder relationalCommandBuilder = (IRelationalCommandBuilder)fi!.GetValue(expressionVisitor)!;
         relationalCommandBuilder.Append($"{windowFunctionExpression.Function}(");
         GenerateList(relationalCommandBuilder, windowFunctionExpression.Arguments, e => expressionVisitor.Visit(e));
-        relationalCommandBuilder.Append(") OVER(");
+        relationalCommandBuilder.Append(") ");
+
+        if (windowFunctionExpression.RespectOrIgnoreNulls is { } respectOrIgnoreNulls)
+        {
+            relationalCommandBuilder.Append(respectOrIgnoreNulls == RespectOrIgnoreNulls.RespectNulls
+                ? "RESPECT NULLS " : "IGNORE NULLS ");
+        }
+
+        relationalCommandBuilder.Append("OVER(");
         if (windowFunctionExpression.Partitions.Any())
         {
             relationalCommandBuilder.Append("PARTITION BY ");
