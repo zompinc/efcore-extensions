@@ -23,7 +23,7 @@ public class CombinedTests
 
         var result = query.ToList();
 
-        var expectedSequence = LastNonNull(TestFixture.TestRows, r => r.Col1);
+        var expectedSequence = TestFixture.TestRows.LastNonNull(r => r.Col1);
         Assert.Equal(expectedSequence, result.Select(r => r.LastNonNull));
     }
 
@@ -45,7 +45,7 @@ public class CombinedTests
 
         var result = query.ToList();
 
-        var expectedSequence = LastNonNull(TestFixture.TestRows, r => r.Col1);
+        var expectedSequence = TestFixture.TestRows.LastNonNull(r => r.Col1);
         Assert.Equal(expectedSequence, result.Select(r => r.LastNonNull));
     }
 
@@ -65,22 +65,7 @@ public class CombinedTests
 
         var result = query.ToList();
 
-        var expectedSequence = LastNonNull(TestFixture.TestRows, r => r.Col1);
+        var expectedSequence = TestFixture.TestRows.LastNonNull(r => r.Col1);
         Assert.Equal(expectedSequence, result.Select(r => r.LastNonNull));
-    }
-
-    private static IEnumerable<TR?> LastNonNull<T, TR>(IEnumerable<T> list, Func<T, TR?> func)
-    {
-        TR? lastNonnull = default;
-        foreach (var elem in list)
-        {
-            var currentResult = func.Invoke(elem);
-            if (currentResult is not null)
-            {
-                lastNonnull = currentResult;
-            }
-
-            yield return lastNonnull;
-        }
     }
 }

@@ -62,4 +62,18 @@ public partial class AnalyticTests
         var expectedSequence = TestRows.Select((_, i) => i + Offset >= TestRows.Length ? Default : (int?)TestRows[i + Offset].Id);
         Assert.Equal(expectedSequence, result);
     }
+
+    [SkippableFact]
+    public void LagLastNonNull()
+    {
+        Skip.If(DbContext.IsSqlite || DbContext.IsPostgreSQL);
+
+        var query = DbContext.TestRows
+            .Select(r => EF.Functions.Lag(r.Col1, 0, null, Clauses.RespectOrIgnoreNulls.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id)));
+
+        var result = query.ToList();
+
+        var expectedSequence = TestRows.LastNonNull(r => r.Col1);
+        Assert.Equal(expectedSequence, result);
+    }
 }
