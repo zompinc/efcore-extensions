@@ -35,25 +35,36 @@ public record Argument(string Type, string Name, string Description)
 
 public record Configuration(FunctionType FunctionType, ExpressionType ExpressionType, bool CustomReturnType, string SpecificReturnType, bool RespectIgnoreNullsOption)
 {
-    string TypeDefinition { get; } = ExpressionType switch
+    string TypeDefinition { get; } = GetTypeDefinition(ExpressionType);
+
+    static string GetTypeDefinition(ExpressionType expressionType) => expressionType switch
     {
         ExpressionType.NonNullableStruct => "T",
         ExpressionType.NullableStruct or ExpressionType.Generic => "T?",
         ExpressionType.ByteArray => "byte[]",
         _ => "string",
     };
+
+    static string GetAlwaysNullableTypeDefinition(ExpressionType expressionType) => expressionType switch
+    {
+        ExpressionType.NullableStruct or ExpressionType.Generic => GetTypeDefinition(expressionType),
+        _ => $"{GetTypeDefinition(expressionType)}?",
+    };
+
+    string AlwaysNullableTypeDefinition { get; } = GetAlwaysNullableTypeDefinition(ExpressionType);
+
     private static readonly Argument Offset = new("long", "offset", "The offset.");
-    private static readonly Argument Default = new("T?", "@default", "The default.");
     private static readonly Argument RespectOrIgnoreNulls = new("RespectOrIgnoreNulls?", "respectOrIgnoreNulls", "Respect nulls or ignore nulls.");
     public bool IsGeneric => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct or ExpressionType.Generic;
     public bool IsGenericWithQualifier => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct;
     public string ReturnType => CustomReturnType ? "TResult" : !string.IsNullOrEmpty(SpecificReturnType) ? SpecificReturnType : IsGeneric ? "T" : TypeDefinition;
     public string ArgumentType => IsGeneric ? TypeDefinition : TypeDefinition + "?";
     public string GenericTypeParameters => FunctionType != FunctionType.NoArguments && IsGeneric ? CustomReturnType ? "<T, TResult>" : "<T>" : string.Empty;
-    private Argument GetDefaultExpression() => new(ArgumentType, "expression", "Expression to run window function on.");
+    private Argument GetMainExpression() => new(ArgumentType, "expression", "Expression to run window function on.");
+    private Argument GetDefaultExpression() => new(AlwaysNullableTypeDefinition, "@default", "The default.");
     private List<Argument> GetLeadLagArguments()
     {
-        var list = new List<Argument>() { GetDefaultExpression(), Offset, Default };
+        var list = new List<Argument>() { GetMainExpression(), Offset, GetDefaultExpression() };
         if (RespectIgnoreNullsOption)
         {
             list.Add(RespectOrIgnoreNulls);
@@ -62,7 +73,7 @@ public record Configuration(FunctionType FunctionType, ExpressionType Expression
     }
     private List<Argument> ArgList => FunctionType switch
     {
-        FunctionType.SingleArgument => new List<Argument>() { GetDefaultExpression() },
+        FunctionType.SingleArgument => new List<Argument>() { GetMainExpression() },
         FunctionType.LeadLag => GetLeadLagArguments(),
         _ => new List<Argument> { },
     };

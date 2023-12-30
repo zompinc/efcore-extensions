@@ -26,6 +26,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
             nameof(DbFunctionsExtensions.Min) => Over(arguments, "MIN"),
             nameof(DbFunctionsExtensions.Max) => Over(arguments, "MAX"),
             nameof(DbFunctionsExtensions.Lead) => Over(arguments, "LEAD"),
+            nameof(DbFunctionsExtensions.Lag) => Over(arguments, "LAG"),
             nameof(DbFunctionsExtensions.Sum) => Over(arguments, "SUM"),
             nameof(DbFunctionsExtensions.Avg) => Over(arguments, "AVG"),
             nameof(DbFunctionsExtensions.Count) => Over(arguments, "COUNT"),
