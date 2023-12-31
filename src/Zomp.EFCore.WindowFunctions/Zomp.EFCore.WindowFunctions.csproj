@@ -40,8 +40,8 @@
       <Parameters Include="Function=Rank|Summary=The RANK() window function returns the rank value of the expression across all input values.|FunctionType=NoArguments|VariationType=Generic|NonNullableReturnType=true|SpecificReturnType=long" />
       <Parameters Include="Function=DenseRank|Summary=The DENSE_RANK() window function returns the dense rank value of the expression across all input values.|FunctionType=NoArguments|VariationType=Generic|NonNullableReturnType=true|SpecificReturnType=long" />
       <Parameters Include="Function=PercentRank|Summary=The PERCENT_RANK() window function returns the percent rank value of the expression across all input values.|FunctionType=NoArguments|VariationType=Generic|NonNullableReturnType=true|SpecificReturnType=double" />
-      <Parameters Include="Function=Lead|Summary=The LEAD() window function.|VariationType=All|FunctionType=LeadLag" />
-      <Parameters Include="Function=Lag|Summary=The LAG() window function.|VariationType=All|FunctionType=LeadLag" />
+      <Parameters Include="Function=Lead|Summary=The LEAD window function returns the values for a row at a given offset below (after) the current row in the partition.|VariationType=All|FunctionType=LeadLag" />
+      <Parameters Include="Function=Lag|Summary=The LAG window function returns the values for a row at a given offset above (before) the current row in the partition.|VariationType=All|FunctionType=LeadLag" />
     </ItemGroup>
     <MakeDir Directories="$(IntermediateOutputPath)" Condition="!Exists('$(IntermediateOutputPath)')" />
     <MSBuild Projects="$(MSBuildProjectFile)" Targets="GenerateFunction" Properties="Parameters=%(Parameters.Identity)" />
