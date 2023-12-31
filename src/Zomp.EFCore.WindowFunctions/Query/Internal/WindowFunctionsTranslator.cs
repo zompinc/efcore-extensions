@@ -23,17 +23,17 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
     public SqlExpression? Translate(SqlExpression? instance, MethodInfo method, IReadOnlyList<SqlExpression> arguments, IDiagnosticsLogger<DbLoggerCategory.Query> logger)
         => method.Name switch
         {
-            nameof(DbFunctionsExtensions.Min) => Over(arguments, "MIN"),
-            nameof(DbFunctionsExtensions.Max) => Over(arguments, "MAX"),
-            nameof(DbFunctionsExtensions.Lead) => Over(arguments, "LEAD"),
-            nameof(DbFunctionsExtensions.Lag) => Over(arguments, "LAG"),
-            nameof(DbFunctionsExtensions.Sum) => Over(arguments, "SUM"),
-            nameof(DbFunctionsExtensions.Avg) => Over(arguments, "AVG"),
-            nameof(DbFunctionsExtensions.Count) => Over(arguments, "COUNT"),
-            nameof(DbFunctionsExtensions.RowNumber) => Over(arguments, "ROW_NUMBER"),
-            nameof(DbFunctionsExtensions.Rank) => Over(arguments, "RANK"),
-            nameof(DbFunctionsExtensions.DenseRank) => Over(arguments, "DENSE_RANK"),
-            nameof(DbFunctionsExtensions.PercentRank) => Over(arguments, "PERCENT_RANK"),
+            nameof(DbFunctionsExtensions.Min) => Parse(arguments, "MIN"),
+            nameof(DbFunctionsExtensions.Max) => Parse(arguments, "MAX"),
+            nameof(DbFunctionsExtensions.Lead) => Parse(arguments, "LEAD"),
+            nameof(DbFunctionsExtensions.Lag) => Parse(arguments, "LAG"),
+            nameof(DbFunctionsExtensions.Sum) => Parse(arguments, "SUM"),
+            nameof(DbFunctionsExtensions.Avg) => Parse(arguments, "AVG"),
+            nameof(DbFunctionsExtensions.Count) => Parse(arguments, "COUNT"),
+            nameof(DbFunctionsExtensions.RowNumber) => Parse(arguments, "ROW_NUMBER"),
+            nameof(DbFunctionsExtensions.Rank) => Parse(arguments, "RANK"),
+            nameof(DbFunctionsExtensions.DenseRank) => Parse(arguments, "DENSE_RANK"),
+            nameof(DbFunctionsExtensions.PercentRank) => Parse(arguments, "PERCENT_RANK"),
 
             nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
             nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
@@ -63,7 +63,7 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
     /// <param name="arguments">SQL representations of <see cref="MethodCallExpression.Arguments" />.</param>
     /// <param name="functionName">Function name.</param>
     /// <returns>A SQL translation of the <see cref="MethodCallExpression" />.</returns>
-    protected virtual SqlExpression Over(IReadOnlyList<SqlExpression> arguments, string functionName)
+    protected virtual SqlExpression Parse(IReadOnlyList<SqlExpression> arguments, string functionName)
     {
         //// For count there needs to be an option to call for
         //// new SqlConstantExpression(Expression.Constant("*"), null)
