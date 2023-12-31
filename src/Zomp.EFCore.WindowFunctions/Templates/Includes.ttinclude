@@ -29,12 +29,15 @@ public enum FunctionType
 
 public record Argument(string Type, string Name, string Description)
 {
+    static readonly char[] TrimChars = new char[] { '@' };
     public string ToParameterDeclaration() => $"{Type} {Name}";
-    public string ToTrivia() => $"    /// <param name=\"{Name.Trim(new char[] { '@' })}\">{Description}</param>";
+    public string ToTrivia() => $"    /// <param name=\"{Name.Trim(TrimChars)}\">{Description}</param>";
 }
 
-public record Configuration(FunctionType FunctionType, ExpressionType ExpressionType, bool CustomReturnType, string SpecificReturnType, bool RespectIgnoreNullsOption)
+public record Configuration(FunctionType FunctionType, ExpressionType ExpressionType, bool CustomReturnType, string SpecificReturnType, bool RespectIgnoreNullsOption, int NumberOfOptionalArguments)
 {
+    static readonly List<Argument> EmptyArgumentList = new();
+
     string TypeDefinition { get; } = GetTypeDefinition(ExpressionType);
 
     static string GetTypeDefinition(ExpressionType expressionType) => expressionType switch
@@ -65,6 +68,7 @@ public record Configuration(FunctionType FunctionType, ExpressionType Expression
     private List<Argument> GetLeadLagArguments()
     {
         var list = new List<Argument>() { GetMainExpression(), Offset, GetDefaultExpression() };
+        list = list[..^NumberOfOptionalArguments];
         if (RespectIgnoreNullsOption)
         {
             list.Add(RespectOrIgnoreNulls);
@@ -75,7 +79,7 @@ public record Configuration(FunctionType FunctionType, ExpressionType Expression
     {
         FunctionType.SingleArgument => new List<Argument>() { GetMainExpression() },
         FunctionType.LeadLag => GetLeadLagArguments(),
-        _ => new List<Argument> { },
+        _ => EmptyArgumentList,
     };
 
     public string Arguments => string.Join(string.Empty, ArgList.Select(a => a.ToParameterDeclaration() + ", "));
