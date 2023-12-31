@@ -29,6 +29,8 @@ Window functions supported:
 - RANK
 - DENSE_RANK
 - PERCENT_RANK
+- LEAD
+- LAG
 
 ### Installation
 
