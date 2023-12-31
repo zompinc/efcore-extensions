@@ -63,6 +63,30 @@ public partial class AnalyticTests
         Assert.Equal(expectedSequence, result);
     }
 
+    [Fact]
+    public void LagBasic()
+    {
+        var query = DbContext.TestRows
+        .Select(r => EF.Functions.Lag(r.Col1, EF.Functions.Over().OrderBy(r.Id)));
+
+        var result = query.ToList();
+
+        var expectedSequence = ((int?[])[null, .. TestRows.Select(z => z.Col1)])[..^1];
+        Assert.Equal(expectedSequence, result);
+    }
+
+    [Fact]
+    public void LagWithStrings()
+    {
+        var query = DbContext.TestRows
+        .Select(r => EF.Functions.Lag(r.Col1.ToString(), EF.Functions.Over().OrderBy(r.Id)));
+
+        var result = query.ToList();
+
+        var expectedSequence = ((string?[])[null, .. TestRows.Select(z => z.Col1?.ToString())])[..^1];
+        Assert.Equal(expectedSequence, result);
+    }
+
     [SkippableFact]
     public void LagLastNonNull()
     {
