@@ -4,10 +4,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="xunit" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Microsoft.EntityFrameworkCore" />
+    <Using Include="Microsoft.Extensions.Configuration" />
     <Using Include="Microsoft.Extensions.Logging" />
     <Using Include="System.Collections.Immutable" />
     <Using Include="Xunit" />

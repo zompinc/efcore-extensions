@@ -25,6 +25,7 @@
     <PackageReference Include="InfoOf.Fody" PrivateAssets="all" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
   </ItemGroup>
 
   <Target Name="GenerateFromTemplates" BeforeTargets="CoreCompile" DependsOnTargets="PrepareForBuild">

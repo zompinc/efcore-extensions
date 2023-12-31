@@ -1,18 +1,15 @@
 ﻿namespace Zomp.EFCore.BinaryFunctions.SqlServer.Tests;
 
-public class SqlServerTestDbContext : TestDbContext
+public class SqlServerTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbContext(loggerFactory)
 {
-    public SqlServerTestDbContext(ILoggerFactory? loggerFactory = null)
-        : base(loggerFactory)
-    {
-    }
+    private static string ConnectionString { get; } = GetSqlServerConnectionString("Zomp_EfCore_BinaryFunctions_Tests");
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
 
         optionsBuilder.UseSqlServer(
-            $@"Server=(LocalDB)\MsSqlLocalDB;Database=Zomp_EfCore_BinaryFunctions_Tests;Trusted_Connection=True",
+            ConnectionString,
             sqlOptions => sqlOptions.UseBinaryFunctions());
     }
 }
