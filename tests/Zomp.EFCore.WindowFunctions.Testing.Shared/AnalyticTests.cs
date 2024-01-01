@@ -87,13 +87,18 @@ public partial class AnalyticTests
         Assert.Equal(expectedSequence, result);
     }
 
-    [SkippableFact]
-    public void LagLastNonNull()
+    [SkippableTheory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void LagLastNonNull(bool withDefault)
     {
         Skip.If(DbContext.IsSqlite || DbContext.IsPostgreSQL);
 
-        var query = DbContext.TestRows
-            .Select(r => EF.Functions.Lag(r.Col1, 0, null, Clauses.RespectOrIgnoreNulls.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id)));
+        Expression<Func<TestRow, int?>> lastNonNullExpr = withDefault
+            ? r => EF.Functions.Lag(r.Col1, 0, null, Clauses.RespectOrIgnoreNulls.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id))
+            : r => EF.Functions.Lag(r.Col1, 0, Clauses.RespectOrIgnoreNulls.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id));
+
+        var query = DbContext.TestRows.Select(lastNonNullExpr);
 
         var result = query.ToList();
 
