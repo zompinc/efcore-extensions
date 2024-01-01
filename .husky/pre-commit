@@ -6,6 +6,15 @@ if [ -n "$1" ]; then
   formatLevel=$1
 fi
 
+if hash dotnet 2>/dev/null; then
+  dotnet=dotnet
+elif hash dotnet.exe 2>/dev/null; then
+  dotnet=dotnet.exe
+else
+  echo Must have dotnet
+  exit 1
+fi
+
 EXIT_STATUS=0
-dotnet.exe tool run dotnet-format --verify-no-changes Zomp.EFCore.Extensions.sln -v $formatLevel whitespace || EXIT_STATUS=$?
+$dotnet tool run dotnet-format --verify-no-changes Zomp.EFCore.Extensions.sln -v $formatLevel whitespace || EXIT_STATUS=$?
 exit $EXIT_STATUS

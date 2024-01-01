@@ -16,7 +16,6 @@ indent_size = 2
 # C# files
 [*.cs]
 csharp_style_namespace_declarations = file_scoped
-end_of_line = crlf
 dotnet_diagnostic.IDE0005.severity = warning
 
 #### Core EditorConfig Options ####

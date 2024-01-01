@@ -9,26 +9,63 @@ on:
 env:
   Configuration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  postgis_version: 3
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  pg_major: 16
 
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: 1
+          SA_PASSWORD: P@ssw0rd
+        ports:
+          - 1433:1433
+    defaults:
+      run:
+        shell: bash
 
     steps:
     - name: Start PostgreSQL on Windows
+      if: ${{ runner.os == 'Windows' }}
       run: |
         $pgService = Get-Service -Name postgresql*
         Set-Service -InputObject $pgService -Status running -StartupType automatic
         Start-Process -FilePath "$env:PGBIN\pg_isready" -Wait -PassThru
 
     - name: Set up PostgreSQL test user
+      if: ${{ runner.os == 'Windows' }}
       env:
         PGUSER: postgres
         PGPASSWORD: root
       run: |
         & $env:PGBIN\psql -c "CREATE USER npgsql_tests SUPERUSER PASSWORD 'npgsql_tests'"
+
+    # Borrow from https://github.com/npgsql/efcore.pg/blob/1cb8fb5d6380b1005bdfe3c56908d6fdd1f43cc2/.github/workflows/build.yml#L54
+    - name: Set up PostgreSQL for Linux
+      if: ${{ runner.os != 'Windows' }}
+      env:
+        PGUSER: postgres
+        PGPASSWORD: root
+      run: |
+        # First uninstall any PostgreSQL installed on the image
+        dpkg-query -W --showformat='${Package}\n' 'postgresql-*' | xargs sudo dpkg -P postgresql
+
+        # Import the repository signing key
+        wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+        sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main ${{ env.pg_major }}" >> /etc/apt/sources.list.d/pgdg.list'
+        sudo apt-get update -qq
+        sudo apt-get install -qq postgresql-${{ env.pg_major  }}
+
+        sudo sed -i 's/max_connections = 100/max_connections = 200/g' /etc/postgresql/${{ env.pg_major }}/main/postgresql.conf
+        sudo systemctl restart postgresql
+        sudo -u postgres psql -c "CREATE USER npgsql_tests SUPERUSER PASSWORD 'npgsql_tests'"
 
     - uses: actions/checkout@v3
       with:
@@ -47,8 +84,6 @@ jobs:
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: | 
-          6.0.x
-          7.0.x
           8.0.x
         include-prerelease: true
 
@@ -63,6 +98,8 @@ jobs:
     - name: Build
       run: dotnet build -c Release --no-restore
     - name: Test
+      env:
+        Zomp_EF_Data__ConnectionString: Server=localhost;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
       run: dotnet test -c Release --no-build --verbosity normal --settings tests/coverlet.runsettings
     - name: Generate code coverage report
       run: dotnet tool run reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
@@ -72,7 +109,7 @@ jobs:
         name: coverage
         path: reports/coverage
     - name: Pack
-      run: dotnet pack --property:PackageOutputPath=$env:GITHUB_WORKSPACE/packages --no-build
+      run: dotnet pack --property:PackageOutputPath=${GITHUB_WORKSPACE}/packages --no-build
     - name: Upload artifacts (.nupkg)
       uses: actions/upload-artifact@v3
       with:
