@@ -4,6 +4,7 @@ root = true
 [*]
 indent_style = space
 spelling_exclusion_path = .vscode/spellright.dict
+end_of_line = LF
 
 # Xml files
 [*.xml]
