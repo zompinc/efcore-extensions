@@ -20,9 +20,9 @@ public static class ExpressionVisitorExtensions
         GenerateList(relationalCommandBuilder, windowFunctionExpression.Arguments, e => expressionVisitor.Visit(e));
         relationalCommandBuilder.Append(") ");
 
-        if (windowFunctionExpression.RespectOrIgnoreNulls is { } respectOrIgnoreNulls)
+        if (windowFunctionExpression.NullHandling is { } nullHandling)
         {
-            relationalCommandBuilder.Append(respectOrIgnoreNulls == RespectOrIgnoreNulls.RespectNulls
+            relationalCommandBuilder.Append(nullHandling == NullHandling.RespectNulls
                 ? "RESPECT NULLS " : "IGNORE NULLS ");
         }
 

@@ -203,7 +203,7 @@ Starting with SQL Server 2022 (16.x) it is possible to use LAG with IGNORE NULLS
 Use the following expression:
 
 ```cs
-Expression<Func<TestRow, int?>> lastNonNullExpr = r => EF.Functions.Lag(r.Col1, 0, Clauses.RespectOrIgnoreNulls.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id)
+Expression<Func<TestRow, int?>> lastNonNullExpr = r => EF.Functions.Lag(r.Col1, 0, NullHandling.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id)
 ```
 
 More SQL Server related information on the LAG function here available [here](https://learn.microsoft.com/en-us/sql/t-sql/functions/lead-transact-sql?view=sql-server-ver16#-ignore-nulls--respect-nulls-).

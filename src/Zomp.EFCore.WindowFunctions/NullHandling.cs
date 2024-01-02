@@ -1,9 +1,9 @@
-﻿namespace Zomp.EFCore.WindowFunctions.Clauses;
+﻿namespace Zomp.EFCore.WindowFunctions;
 
 /// <summary>
-/// Respect Or Ignore Nulls.
+/// Specifies whether null should be respected or ignored.
 /// </summary>
-public enum RespectOrIgnoreNulls
+public enum NullHandling
 {
     /// <summary>
     /// Respect nulls.

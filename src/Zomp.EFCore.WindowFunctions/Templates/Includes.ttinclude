@@ -57,7 +57,7 @@ public record Configuration(FunctionType FunctionType, ExpressionType Expression
     string AlwaysNullableTypeDefinition { get; } = GetAlwaysNullableTypeDefinition(ExpressionType);
 
     private static readonly Argument Offset = new("long", "offset", "The offset.");
-    private static readonly Argument RespectOrIgnoreNulls = new("RespectOrIgnoreNulls?", "respectOrIgnoreNulls", "Respect nulls or ignore nulls.");
+    private static readonly Argument NullHandling = new("NullHandling?", "nullHandling", "Respect nulls or ignore nulls. If omitted or <see langword=\"null\" /> is specified, provider's default is used which is to respect nulls.");
     public bool IsGeneric => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct or ExpressionType.Generic;
     public bool IsGenericWithQualifier => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct;
     public string ReturnType => CustomReturnType ? "TResult" : !string.IsNullOrEmpty(SpecificReturnType) ? SpecificReturnType : IsGeneric ? "T" : TypeDefinition;
@@ -71,7 +71,7 @@ public record Configuration(FunctionType FunctionType, ExpressionType Expression
         list = list[..^NumberOfOptionalArguments];
         if (RespectIgnoreNullsOption)
         {
-            list.Add(RespectOrIgnoreNulls);
+            list.Add(NullHandling);
         }
         return list;
     }

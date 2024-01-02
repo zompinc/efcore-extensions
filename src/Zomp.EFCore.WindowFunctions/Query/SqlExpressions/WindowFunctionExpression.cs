@@ -5,7 +5,7 @@
 /// </summary>
 /// <param name="function">Function (MIN, MAX).</param>
 /// <param name="arguments">A list of argument expressions of the Window function.</param>
-/// <param name="respectOrIgnoreNulls">Respect or ignore nulls.</param>
+/// <param name="nullHandling">Respect or ignore nulls.</param>
 /// <param name="partitions">A list of expressions to partition by.</param>
 /// <param name="orderings">A list of ordering expressions to order by.</param>
 /// <param name="rowOrRange">Row or range clause.</param>
@@ -23,7 +23,7 @@
 public class WindowFunctionExpression(
     string function,
     IReadOnlyList<SqlExpression> arguments,
-    RespectOrIgnoreNulls? respectOrIgnoreNulls,
+    NullHandling? nullHandling,
     IReadOnlyList<SqlExpression>? partitions,
     IReadOnlyList<OrderingExpression>? orderings,
     RowOrRangeExpression? rowOrRange,
@@ -37,7 +37,7 @@ public class WindowFunctionExpression(
     /// <summary>
     /// Gets the respect nulls or ignore nulls parameter.
     /// </summary>
-    public RespectOrIgnoreNulls? RespectOrIgnoreNulls { get; } = respectOrIgnoreNulls;
+    public NullHandling? NullHandling { get; } = nullHandling;
 
     /// <summary>
     /// Gets the list of expressions used in partitioning.
@@ -74,7 +74,7 @@ public class WindowFunctionExpression(
             && (ReferenceEquals(partitions, Partitions) || partitions.SequenceEqual(Partitions))
             && (ReferenceEquals(orderings, Orderings) || orderings.SequenceEqual(Orderings))
                 ? this
-                : new(Function, arguments, RespectOrIgnoreNulls, partitions, orderings, RowOrRange, TypeMapping);
+                : new(Function, arguments, NullHandling, partitions, orderings, RowOrRange, TypeMapping);
 
     /// <inheritdoc />
     public override bool Equals(object? obj)
@@ -135,7 +135,7 @@ public class WindowFunctionExpression(
         }
 
         return changed
-            ? new WindowFunctionExpression(Function, arguments, RespectOrIgnoreNulls, partitions, orderings, RowOrRange, TypeMapping)
+            ? new WindowFunctionExpression(Function, arguments, NullHandling, partitions, orderings, RowOrRange, TypeMapping)
             : this;
     }
 
@@ -147,9 +147,9 @@ public class WindowFunctionExpression(
         expressionPrinter.VisitCollection(Arguments);
         expressionPrinter.Append(") ");
 
-        if (RespectOrIgnoreNulls is { } respectOrIgnoreNulls)
+        if (NullHandling is { } nullHandling)
         {
-            expressionPrinter.Append(respectOrIgnoreNulls == Clauses.RespectOrIgnoreNulls.RespectNulls
+            expressionPrinter.Append(nullHandling == WindowFunctions.NullHandling.RespectNulls
                 ? "RESPECT NULLS " : "IGNORE NULLS ");
         }
 

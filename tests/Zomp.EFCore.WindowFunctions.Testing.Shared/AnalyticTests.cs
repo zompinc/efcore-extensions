@@ -18,7 +18,7 @@ public partial class AnalyticTests
     }
 
     [SkippableFact]
-    public void LeadNullForRespectOrIgnoreNulls()
+    public void LeadNullForNullHandling()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Lead(r.Id, Offset, Default, null, EF.Functions.Over().OrderBy(r.Id)));
@@ -35,7 +35,7 @@ public partial class AnalyticTests
         Skip.If(DbContext.IsSqlite || DbContext.IsPostgreSQL);
 
         var query = DbContext.TestRows
-        .Select(r => EF.Functions.Lead(r.Id, Offset, Default, Clauses.RespectOrIgnoreNulls.RespectNulls, EF.Functions.Over().OrderBy(r.Id)));
+        .Select(r => EF.Functions.Lead(r.Id, Offset, Default, NullHandling.RespectNulls, EF.Functions.Over().OrderBy(r.Id)));
 
         var result = query.ToList();
 
@@ -51,7 +51,7 @@ public partial class AnalyticTests
         var query = DbContext.TestRows
         .Select(r => new
         {
-            Lead = EF.Functions.Lead(r.Id, Offset, Default, Clauses.RespectOrIgnoreNulls.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id)),
+            Lead = EF.Functions.Lead(r.Id, Offset, Default, NullHandling.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id)),
             Original = r,
         })
         .OrderBy(r => r.Original)
@@ -95,8 +95,8 @@ public partial class AnalyticTests
         Skip.If(DbContext.IsSqlite || DbContext.IsPostgreSQL);
 
         Expression<Func<TestRow, int?>> lastNonNullExpr = withDefault
-            ? r => EF.Functions.Lag(r.Col1, 0, null, Clauses.RespectOrIgnoreNulls.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id))
-            : r => EF.Functions.Lag(r.Col1, 0, Clauses.RespectOrIgnoreNulls.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id));
+            ? r => EF.Functions.Lag(r.Col1, 0, null, NullHandling.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id))
+            : r => EF.Functions.Lag(r.Col1, 0, NullHandling.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id));
 
         var query = DbContext.TestRows.Select(lastNonNullExpr);
 
