@@ -23,27 +23,66 @@ public enum VariationType
 public enum FunctionType
 {
     NoArguments,
-    SingleArgument
+    SingleArgument,
+    LeadLag
 }
 
-public record Configuration(FunctionType FunctionType, ExpressionType ExpressionType, bool CustomReturnType, string SpecificReturnType)
+public record Argument(string Type, string Name, string Description)
 {
-    string TypeDefinition { get; } = ExpressionType switch
+    static readonly char[] TrimChars = new char[] { '@' };
+    public string ToParameterDeclaration() => $"{Type} {Name}";
+    public string ToTrivia() => $"    /// <param name=\"{Name.Trim(TrimChars)}\">{Description}</param>";
+}
+
+public record Configuration(FunctionType FunctionType, ExpressionType ExpressionType, bool CustomReturnType, string SpecificReturnType, bool RespectIgnoreNullsOption, int NumberOfOptionalArguments)
+{
+    static readonly List<Argument> EmptyArgumentList = new();
+
+    string TypeDefinition { get; } = GetTypeDefinition(ExpressionType);
+
+    static string GetTypeDefinition(ExpressionType expressionType) => expressionType switch
     {
         ExpressionType.NonNullableStruct => "T",
         ExpressionType.NullableStruct or ExpressionType.Generic => "T?",
         ExpressionType.ByteArray => "byte[]",
         _ => "string",
     };
+
+    static string GetAlwaysNullableTypeDefinition(ExpressionType expressionType) => expressionType switch
+    {
+        ExpressionType.NullableStruct or ExpressionType.Generic => GetTypeDefinition(expressionType),
+        _ => $"{GetTypeDefinition(expressionType)}?",
+    };
+
+    string AlwaysNullableTypeDefinition { get; } = GetAlwaysNullableTypeDefinition(ExpressionType);
+
+    private static readonly Argument Offset = new("long", "offset", "The offset.");
+    private static readonly Argument NullHandling = new("NullHandling?", "nullHandling", "Respect nulls or ignore nulls. If omitted or <see langword=\"null\" /> is specified, provider's default is used which is to respect nulls.");
     public bool IsGeneric => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct or ExpressionType.Generic;
     public bool IsGenericWithQualifier => ExpressionType is ExpressionType.NonNullableStruct or ExpressionType.NullableStruct;
     public string ReturnType => CustomReturnType ? "TResult" : !string.IsNullOrEmpty(SpecificReturnType) ? SpecificReturnType : IsGeneric ? "T" : TypeDefinition;
     public string ArgumentType => IsGeneric ? TypeDefinition : TypeDefinition + "?";
     public string GenericTypeParameters => FunctionType != FunctionType.NoArguments && IsGeneric ? CustomReturnType ? "<T, TResult>" : "<T>" : string.Empty;
-    public string Arguments => FunctionType switch
+    private Argument GetMainExpression() => new(ArgumentType, "expression", "Expression to run window function on.");
+    private Argument GetDefaultExpression() => new(AlwaysNullableTypeDefinition, "@default", "The default.");
+    private List<Argument> GetLeadLagArguments()
     {
-        FunctionType.SingleArgument => $"{ArgumentType} expression, ",
-        _ => "",
+        var list = new List<Argument>() { GetMainExpression(), Offset, GetDefaultExpression() };
+        list = list[..^NumberOfOptionalArguments];
+        if (RespectIgnoreNullsOption)
+        {
+            list.Add(NullHandling);
+        }
+        return list;
+    }
+    private List<Argument> ArgList => FunctionType switch
+    {
+        FunctionType.SingleArgument => new List<Argument>() { GetMainExpression() },
+        FunctionType.LeadLag => GetLeadLagArguments(),
+        _ => EmptyArgumentList,
     };
+
+    public string Arguments => string.Join(string.Empty, ArgList.Select(a => a.ToParameterDeclaration() + ", "));
+    public string ParameterTrivia => string.Join("\r\n", ArgList.Select(a => a.ToTrivia()));
 }
 #>

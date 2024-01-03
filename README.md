@@ -29,6 +29,8 @@ Window functions supported:
 - RANK
 - DENSE_RANK
 - PERCENT_RANK
+- LEAD
+- LAG
 
 ### Installation
 
@@ -155,7 +157,11 @@ FROM [TestRows] AS [t]
 
 ### Last non null puzzle
 
-A useful scenario which combines Window functions and binary database functions is the The Last non NULL Puzzle. It is described in Itzik Ben-Gan's [article](https://www.itprotoday.com/sql-server/last-non-null-puzzle). Solution 2 uses both binary functions and window functions. Here is how it can be combined using this library:
+One problem window functions are solving is displaying last non-null values for a given column / expressions. The problem is described in Itzik Ben-Gan's [article](https://www.itprotoday.com/sql-server/last-non-null-puzzle). Below are 2 effective approaches of solving this issue.
+
+#### Binary approach
+
+Solution 2 of the article above uses both binary functions and window functions. Here is how it can be combined using this library:
 
 ```cs
 // Relies on Max over binary.
@@ -189,6 +195,20 @@ var query = dbContext.TestRows
             EF.Functions.Over().OrderBy(r.Id))),
 });
 ```
+
+#### LAG approach
+
+Starting with SQL Server 2022 (16.x) it is possible to use LAG with IGNORE NULLS to retrieve last non-null value. Ensure the latest cumulative update is applied due to a [bug fix](https://learn.microsoft.com/en-us/troubleshoot/sql/releases/sqlserver-2022/cumulativeupdate4#2278800).
+
+Use the following expression:
+
+```cs
+Expression<Func<TestRow, int?>> lastNonNullExpr = r => EF.Functions.Lag(r.Col1, 0, NullHandling.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id)
+```
+
+More SQL Server related information on the LAG function here available [here](https://learn.microsoft.com/en-us/sql/t-sql/functions/lead-transact-sql?view=sql-server-ver16#-ignore-nulls--respect-nulls-).
+
+Note: PostgreSQL and SQLite don't support RESPECT NULLS / IGNORE NULLS at this time.
 
 ## Examples
 

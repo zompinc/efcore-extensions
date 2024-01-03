@@ -23,15 +23,17 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
     public SqlExpression? Translate(SqlExpression? instance, MethodInfo method, IReadOnlyList<SqlExpression> arguments, IDiagnosticsLogger<DbLoggerCategory.Query> logger)
         => method.Name switch
         {
-            nameof(DbFunctionsExtensions.Min) => Over(arguments, "MIN"),
-            nameof(DbFunctionsExtensions.Max) => Over(arguments, "MAX"),
-            nameof(DbFunctionsExtensions.Sum) => Over(arguments, "SUM"),
-            nameof(DbFunctionsExtensions.Avg) => Over(arguments, "AVG"),
-            nameof(DbFunctionsExtensions.Count) => Over(arguments, "COUNT"),
-            nameof(DbFunctionsExtensions.RowNumber) => Over(arguments, "ROW_NUMBER", 0),
-            nameof(DbFunctionsExtensions.Rank) => Over(arguments, "RANK", 0),
-            nameof(DbFunctionsExtensions.DenseRank) => Over(arguments, "DENSE_RANK", 0),
-            nameof(DbFunctionsExtensions.PercentRank) => Over(arguments, "PERCENT_RANK", 0),
+            nameof(DbFunctionsExtensions.Min) => Parse(arguments, "MIN"),
+            nameof(DbFunctionsExtensions.Max) => Parse(arguments, "MAX"),
+            nameof(DbFunctionsExtensions.Lead) => Parse(arguments, "LEAD"),
+            nameof(DbFunctionsExtensions.Lag) => Parse(arguments, "LAG"),
+            nameof(DbFunctionsExtensions.Sum) => Parse(arguments, "SUM"),
+            nameof(DbFunctionsExtensions.Avg) => Parse(arguments, "AVG"),
+            nameof(DbFunctionsExtensions.Count) => Parse(arguments, "COUNT"),
+            nameof(DbFunctionsExtensions.RowNumber) => Parse(arguments, "ROW_NUMBER"),
+            nameof(DbFunctionsExtensions.Rank) => Parse(arguments, "RANK"),
+            nameof(DbFunctionsExtensions.DenseRank) => Parse(arguments, "DENSE_RANK"),
+            nameof(DbFunctionsExtensions.PercentRank) => Parse(arguments, "PERCENT_RANK"),
 
             nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
             nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
@@ -60,24 +62,37 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
     /// </summary>
     /// <param name="arguments">SQL representations of <see cref="MethodCallExpression.Arguments" />.</param>
     /// <param name="functionName">Function name.</param>
-    /// <param name="startIndex">0-based index of the first over parameter.</param>
     /// <returns>A SQL translation of the <see cref="MethodCallExpression" />.</returns>
-    protected virtual SqlExpression Over(IReadOnlyList<SqlExpression> arguments, string functionName, int startIndex = 1)
+    protected virtual SqlExpression Parse(IReadOnlyList<SqlExpression> arguments, string functionName)
     {
         //// For count there needs to be an option to call for
         //// new SqlConstantExpression(Expression.Constant("*"), null)
 
-        var expression = startIndex == 1 ? arguments[startIndex] : null;
-        OrderingSqlExpression? orderingSqlExpression = null;
-        PartitionByExpression? partitionBySqlExpression = null;
+        var directArgs = new List<SqlExpression>();
 
-        if (arguments.Count > 1 && arguments[startIndex + 1] is OverExpression over)
+        OverExpression? over = null;
+        NullHandling? nullHandling = null;
+
+        for (var i = 1; i < arguments.Count; ++i)
         {
-            orderingSqlExpression = over.OrderingExpression;
-            partitionBySqlExpression = over.PartitionByExpression;
+            var argument = arguments[i];
+
+            if ((argument is OverExpression o && (over = o) is { })
+                || argument.Type == typeof(OverClause))
+            {
+                break;
+            }
+
+            if (argument is SqlConstantExpression sce && sce.Type == typeof(NullHandling))
+            {
+                nullHandling = (NullHandling?)sce.Value;
+                continue;
+            }
+
+            directArgs.Add(sqlExpressionFactory.ApplyDefaultTypeMapping(argument));
         }
 
-        return new WindowFunctionExpression(functionName, expression is not null ? sqlExpressionFactory.ApplyDefaultTypeMapping(expression) : null, partitionBySqlExpression?.List, orderingSqlExpression?.List, orderingSqlExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
+        return new WindowFunctionExpression(functionName, directArgs, nullHandling, over?.PartitionByExpression?.List, over?.OrderingExpression?.List, over?.OrderingExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
     }
 
     private static OverExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments)

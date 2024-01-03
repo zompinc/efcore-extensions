@@ -23,28 +23,40 @@ public static partial class DbFunctionsExtensions
     if (!Enum.TryParse<FunctionType>(functionType, out var functionTypeEnum)) functionTypeEnum = FunctionType.SingleArgument;
     var structsOnly = variationTypeEnum == VariationType.StructsOnly;
 
-    foreach (var customReturnTypeOption in new bool[] {false, true})
+    for (var numberOfOptionalArguments = 0; numberOfOptionalArguments <= (functionTypeEnum == FunctionType.LeadLag ? 2 : 0); ++numberOfOptionalArguments)
     {
-        if (!customReturnType && customReturnTypeOption)
+        foreach (var respectIgnoreNullsOption in new bool[] {false, true})
         {
-            continue;
-        }
-    
-        foreach (var expressionType in expressionTypes)
-        {
-            var configuration = new Configuration(functionTypeEnum, expressionType, customReturnTypeOption, specificReturnType);
 
-            if (structsOnly && !configuration.IsGeneric)
+            if (functionTypeEnum != FunctionType.LeadLag && respectIgnoreNullsOption)
             {
                 continue;
             }
 
-            if (variationTypeEnum == VariationType.Generic ^ expressionType == ExpressionType.Generic)
+            foreach (var customReturnTypeOption in new bool[] {false, true})
             {
-                continue;
-            }
+                if (!customReturnType && customReturnTypeOption)
+                {
+                    continue;
+                }
 
-            configurations.Add(configuration);
+                foreach (var expressionType in expressionTypes)
+                {
+                    var configuration = new Configuration(functionTypeEnum, expressionType, customReturnTypeOption, specificReturnType, respectIgnoreNullsOption, numberOfOptionalArguments);
+
+                    if (structsOnly && !configuration.IsGeneric)
+                    {
+                        continue;
+                    }
+
+                    if (variationTypeEnum == VariationType.Generic ^ expressionType == ExpressionType.Generic)
+                    {
+                        continue;
+                    }
+
+                    configurations.Add(configuration);
+                }
+            }
         }
     }
 
@@ -78,14 +90,7 @@ public static partial class DbFunctionsExtensions
         }
 #>
     /// <param name="_">The <see cref="DbFunctions"/> instance.</param>
-<#
-        if (functionTypeEnum != FunctionType.NoArguments)
-        {
-#>
-    /// <param name="expression">Expression to run window function on.</param>
-<#
-        }
-#>
+<#= configuration.ParameterTrivia #>
     /// <param name="over">over clause.</param>
     /// <returns><#= function #> for the selected window frame.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>

@@ -3,6 +3,6 @@
 /// <summary>
 /// Rows or range clause / keyword.
 /// </summary>
-public class RowsOrRangeClause
+public abstract class RowsOrRangeClause
 {
 }

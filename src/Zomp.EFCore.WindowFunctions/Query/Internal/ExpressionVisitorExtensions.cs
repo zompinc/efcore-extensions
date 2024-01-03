@@ -17,8 +17,16 @@ public static class ExpressionVisitorExtensions
         var fi = typeof(QuerySqlGenerator).GetField("_relationalCommandBuilder", BindingFlags.NonPublic | BindingFlags.Instance);
         IRelationalCommandBuilder relationalCommandBuilder = (IRelationalCommandBuilder)fi!.GetValue(expressionVisitor)!;
         relationalCommandBuilder.Append($"{windowFunctionExpression.Function}(");
-        expressionVisitor.Visit(windowFunctionExpression.Expression);
-        relationalCommandBuilder.Append(") OVER(");
+        GenerateList(relationalCommandBuilder, windowFunctionExpression.Arguments, e => expressionVisitor.Visit(e));
+        relationalCommandBuilder.Append(") ");
+
+        if (windowFunctionExpression.NullHandling is { } nullHandling)
+        {
+            relationalCommandBuilder.Append(nullHandling == NullHandling.RespectNulls
+                ? "RESPECT NULLS " : "IGNORE NULLS ");
+        }
+
+        relationalCommandBuilder.Append("OVER(");
         if (windowFunctionExpression.Partitions.Any())
         {
             relationalCommandBuilder.Append("PARTITION BY ");
