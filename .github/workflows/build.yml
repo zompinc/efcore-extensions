@@ -3,7 +3,7 @@ name: Build
 on:
   push:
   pull_request:
-    branches: [ master ]
+    branches: [master]
   workflow_dispatch:
 
 env:
@@ -15,7 +15,6 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     services:
@@ -26,119 +25,126 @@ jobs:
           SA_PASSWORD: P@ssw0rd
         ports:
           - 1433:1433
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: npgsql_tests
+          POSTGRES_PASSWORD: npgsql_tests
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     defaults:
       run:
         shell: bash
 
     steps:
-    - name: Start PostgreSQL on Windows
-      if: ${{ runner.os == 'Windows' }}
-      run: |
-        $pgService = Get-Service -Name postgresql*
-        Set-Service -InputObject $pgService -Status running -StartupType automatic
-        Start-Process -FilePath "$env:PGBIN\pg_isready" -Wait -PassThru
+      - name: "Determine prerequisites"
+        id: prereq
+        run: |
+          echo "need_node=$(command -v node >/dev/null 2>&1 && echo 0 || echo 1)" >> $GITHUB_OUTPUT
+          echo "need_yarn=$(command -v yarn >/dev/null 2>&1 && echo 0 || echo 1)" >> $GITHUB_OUTPUT
 
-    - name: Set up PostgreSQL test user
-      if: ${{ runner.os == 'Windows' }}
-      env:
-        PGUSER: postgres
-        PGPASSWORD: root
-      run: |
-        & $env:PGBIN\psql -c "CREATE USER npgsql_tests SUPERUSER PASSWORD 'npgsql_tests'"
+      # Consider switching to https://github.com/actions/setup-node when it works
+      # https://github.com/nektos/act/issues/973
+      - name: Install node
+        if: ${{ steps.prereq.outputs.need_node == '1' }}
+        run: |
+          if [ "${RUNNER_OS,,}" = "windows" ]
+          then
+            choco install nodejs -y
+            echo "C:\Program Files\nodejs" >> $GITHUB_PATH
+          else
+            curl -sS https://webi.sh/node | sh
+            echo ~/.local/opt/node/bin >> $GITHUB_PATH
+          fi
 
-    # Borrow from https://github.com/npgsql/efcore.pg/blob/1cb8fb5d6380b1005bdfe3c56908d6fdd1f43cc2/.github/workflows/build.yml#L54
-    - name: Set up PostgreSQL for Linux
-      if: ${{ runner.os != 'Windows' }}
-      env:
-        PGUSER: postgres
-        PGPASSWORD: root
-      run: |
-        # First uninstall any PostgreSQL installed on the image
-        dpkg-query -W --showformat='${Package}\n' 'postgresql-*' | xargs sudo dpkg -P postgresql
+      - name: Install yarn
+        if: ${{ steps.prereq.outputs.need_yarn == '1' }}
+        run: |
+          if [ "${RUNNER_OS,,}" = "windows" ]
+          then
+            choco install yarn -y
+            echo "C:\Program Files (x86)\Yarn\bin" >> $GITHUB_PATH
+          else
+            npm install -g yarn
+          fi
 
-        # Import the repository signing key
-        wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
-        sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main ${{ env.pg_major }}" >> /etc/apt/sources.list.d/pgdg.list'
-        sudo apt-get update -qq
-        sudo apt-get install -qq postgresql-${{ env.pg_major  }}
+      - uses: dotnet/nbgv@master
+        id: nbgv
+        with:
+          setAllVars: true
 
-        sudo sed -i 's/max_connections = 100/max_connections = 200/g' /etc/postgresql/${{ env.pg_major }}/main/postgresql.conf
-        sudo systemctl restart postgresql
-        sudo -u postgres psql -c "CREATE USER npgsql_tests SUPERUSER PASSWORD 'npgsql_tests'"
+      - run: nbgv cloud
 
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+      - run: yarn install
 
-    - uses: dotnet/nbgv@master
-      id: nbgv
-      with:
-        setAllVars: true
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: |
+            8.0.x
+          include-prerelease: true
 
-    - run: nbgv cloud
+      - run: dotnet tool restore
 
-    - run: yarn install
+      - name: "Run pre-commit hooks"
+        shell: bash
+        run: sh $(git config core.hooksPath)/pre-commit normal
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: | 
-          8.0.x
-        include-prerelease: true
-
-    - run: dotnet tool restore
-
-    - name: 'Run pre-commit hooks'
-      shell: bash
-      run: sh $(git config core.hooksPath)/pre-commit normal
-
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build -c Release --no-restore
-    - name: Test
-      env:
-        Zomp_EF_Data__ConnectionString: Server=localhost;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
-      run: dotnet test -c Release --no-build --verbosity normal --settings tests/coverlet.runsettings
-    - name: Generate code coverage report
-      run: dotnet tool run reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
-    - name: Upload artifacts (code coverage)
-      uses: actions/upload-artifact@v3
-      with:
-        name: coverage
-        path: reports/coverage
-    - name: Pack
-      run: dotnet pack --property:PackageOutputPath=${GITHUB_WORKSPACE}/packages --no-build
-    - name: Upload artifacts (.nupkg)
-      uses: actions/upload-artifact@v3
-      with:
-        name: packages
-        path: packages/
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build -c Release --no-restore
+      - name: Test
+        env:
+          Zomp_EF_Data__ConnectionString: Server=localhost;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
+        run: dotnet test -c Release --no-build --verbosity normal --settings tests/coverlet.runsettings
+      - name: Generate code coverage report
+        run: dotnet tool run reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
+      - name: Upload artifacts (code coverage)
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: reports/coverage
+      - name: Pack
+        run: dotnet pack --property:PackageOutputPath=${GITHUB_WORKSPACE}/packages --no-build
+      - name: Upload artifacts (.nupkg)
+        uses: actions/upload-artifact@v3
+        with:
+          name: packages
+          path: packages/
 
   publish:
     needs: build
     runs-on: windows-latest
 
     steps:
-    - name: Download Package artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: packages
-        path: packages
+      - name: Download Package artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: packages
+          path: packages
 
-    - run: dotnet tool install nugetkeyvaultsigntool --tool-path . --version 3.2.3
+      - run: dotnet tool install nugetkeyvaultsigntool --tool-path . --version 3.2.3
 
-    - name: Sign Nuget Files
-      run: .\NuGetKeyVaultSignTool sign packages\*.nupkg -kvt ${{ secrets.AZURE_TENANT_ID }} -kvu ${{ secrets.AZURE_KEY_VAULT_URL }} -kvi ${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }} -kvs ${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }} -kvc ${{ secrets.AZURE_KEY_VAULT_CERTIFICATE }} -tr ${{ secrets.TIMESTAMP_RFC3161 }}
+      - name: Sign Nuget Files
+        run: .\NuGetKeyVaultSignTool sign packages\*.nupkg -kvt ${{ secrets.AZURE_TENANT_ID }} -kvu ${{ secrets.AZURE_KEY_VAULT_URL }} -kvi ${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }} -kvs ${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }} -kvc ${{ secrets.AZURE_KEY_VAULT_CERTIFICATE }} -tr ${{ secrets.TIMESTAMP_RFC3161 }}
 
-    - name: Verify signatures
-      run: .\NuGetKeyVaultSignTool verify packages\*.nupkg
+      - name: Verify signatures
+        run: .\NuGetKeyVaultSignTool verify packages\*.nupkg
 
-    - name: Push to MyGet
-      run: dotnet nuget push packages\*.nupkg -s https://www.myget.org/F/zomp-efcore-extensions/api/v3/index.json -k ${{ secrets.MYGET_PUSH_KEY }}
+      - name: Push to MyGet
+        if: ${{ env.MYGET_PUSH_KEY != '' }}
+        run: dotnet nuget push packages\*.nupkg -s https://www.myget.org/F/zomp-efcore-extensions/api/v3/index.json -k ${{ secrets.MYGET_PUSH_KEY }}
+        env:
+          MYGET_PUSH_KEY: ${{ secrets.MYGET_PUSH_KEY }}
 
-    - name: Push to NuGet
-      if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
-      run: dotnet nuget push packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
-
+      - name: Push to NuGet
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
+        run: dotnet nuget push packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
