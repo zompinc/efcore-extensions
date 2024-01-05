@@ -6,7 +6,7 @@
     <SharedGUID>379aed0a-4c97-4ebc-bada-68104b9514cc</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Zomp.EFCore.WindowFunctions.Testing.Shared</Import_RootNamespace>
+    <Import_RootNamespace>Zomp.EFCore.WindowFunctions.Testing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AnalyticTests.cs" />

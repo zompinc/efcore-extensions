@@ -6,5 +6,5 @@
   <ItemGroup>
     <Using Include="Microsoft.Data.Sqlite" />
   </ItemGroup>
-  <Import Project="..\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.projitems" Label="Shared" />
+  <Import Project="..\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.projitems" Label="Shared" />
 </Project>

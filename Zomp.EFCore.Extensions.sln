@@ -92,7 +92,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".vscode", ".vscode", "{61D9
 		.vscode\tasks.json = .vscode\tasks.json
 	EndProjectSection
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Zomp.EFCore.WindowFunctions.Testing.Shared", "tests\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.shproj", "{379AED0A-4C97-4EBC-BADA-68104B9514CC}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Zomp.EFCore.WindowFunctions.Testing", "tests\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.shproj", "{379AED0A-4C97-4EBC-BADA-68104B9514CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -216,9 +216,9 @@ Global
 		SolutionGuid = {C20B0087-9477-4FC8-A489-4A8627C395B0}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		tests\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.projitems*{379aed0a-4c97-4ebc-bada-68104b9514cc}*SharedItemsImports = 13
-		tests\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.projitems*{dfb5c7d7-00fd-421c-ba2d-93a739e8adb2}*SharedItemsImports = 5
-		tests\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.projitems*{e0fb8ab7-1527-4273-9276-e26f3c763a52}*SharedItemsImports = 5
-		tests\Zomp.EFCore.WindowFunctions.Testing.Shared\Zomp.EFCore.WindowFunctions.Testing.Shared.projitems*{f5aa2804-f1a1-45e6-9720-21f45fa12053}*SharedItemsImports = 5
+		tests\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.projitems*{379aed0a-4c97-4ebc-bada-68104b9514cc}*SharedItemsImports = 13
+		tests\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.projitems*{dfb5c7d7-00fd-421c-ba2d-93a739e8adb2}*SharedItemsImports = 5
+		tests\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.projitems*{e0fb8ab7-1527-4273-9276-e26f3c763a52}*SharedItemsImports = 5
+		tests\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.projitems*{f5aa2804-f1a1-45e6-9720-21f45fa12053}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
