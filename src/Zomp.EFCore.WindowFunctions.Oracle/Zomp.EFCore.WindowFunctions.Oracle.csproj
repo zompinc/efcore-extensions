@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Window functions for Oracle database provider for Entity Framework Core</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Zomp.EFCore.WindowFunctions\Zomp.EFCore.WindowFunctions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Oracle.EntityFrameworkCore" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Oracle.EntityFrameworkCore.Infrastructure" />
+    <Using Include="Oracle.EntityFrameworkCore.Query.Internal" />
+    <Using Include="Oracle.EntityFrameworkCore.Query.Sql.Internal" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Oracle.Infrastructure.Internal" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Oracle.Query.Internal" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Query.Internal" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Query.SqlExpressions" />
+  </ItemGroup>
+</Project>
