@@ -41,7 +41,8 @@ public abstract partial class AvgTests<TResult>
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Avg(
                 (double)r.Id,
-                EF.Functions.Over().PartitionBy(r.Id / 10)));
+                EF.Functions.Over().PartitionBy(
+                    Math.Floor(r.Id / 10d)))); // Only need r.Id / 10 for all but Oracle.
 
         var result = query.ToList();
 

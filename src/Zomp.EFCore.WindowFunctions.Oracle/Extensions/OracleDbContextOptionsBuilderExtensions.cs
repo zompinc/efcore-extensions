@@ -26,7 +26,10 @@ public static class OracleDbContextOptionsBuilderExtensions
         var extension = coreOptionsBuilder.Options.FindExtension<OracleDbContextOptionsExtension>() ?? new OracleDbContextOptionsExtension();
 
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
-        coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsOracleParameterBasedSqlProcessorFactory>();
+#if false
+        coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsRelationalParameterBasedSqlProcessorFactory>();
+#endif
+        coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsRelationalParameterBasedSqlProcessorFactory>();
         coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsOracleQuerySqlGeneratorFactory>();
 
         return builder;
