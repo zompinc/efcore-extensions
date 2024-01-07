@@ -1,5 +1,4 @@
-﻿#if EF_CORE_7 || EF_CORE_6
-namespace Zomp.EFCore.WindowFunctions.Query.Internal;
+﻿namespace Zomp.EFCore.WindowFunctions.Query.Internal;
 
 /// <summary>
 /// A class that processes a SQL tree based on nullability of nodes to apply null semantics in use and optimize it based on parameter values.
@@ -44,4 +43,3 @@ public class WindowFunctionsSqlNullabilityProcessor : SqlNullabilityProcessor
         return windowFunctionExpression;
     }
 }
-#endif

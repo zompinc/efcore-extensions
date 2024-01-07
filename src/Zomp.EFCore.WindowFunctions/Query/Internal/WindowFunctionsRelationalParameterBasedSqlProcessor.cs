@@ -1,5 +1,4 @@
-﻿#if EF_CORE_7 || EF_CORE_6
-namespace Zomp.EFCore.WindowFunctions.Query.Internal;
+﻿namespace Zomp.EFCore.WindowFunctions.Query.Internal;
 
 /// <summary>
 /// Processes select expression.
@@ -20,4 +19,3 @@ public class WindowFunctionsRelationalParameterBasedSqlProcessor : RelationalPar
     protected override Expression ProcessSqlNullability(Expression queryExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
         => new WindowFunctionsSqlNullabilityProcessor(Dependencies, UseRelationalNulls).Process(queryExpression, parametersValues, out canCache);
 }
-#endif

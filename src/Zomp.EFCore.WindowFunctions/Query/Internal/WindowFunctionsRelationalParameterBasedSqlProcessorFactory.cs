@@ -1,5 +1,4 @@
-﻿#if EF_CORE_7 || EF_CORE_6
-namespace Zomp.EFCore.WindowFunctions.Query.Internal;
+﻿namespace Zomp.EFCore.WindowFunctions.Query.Internal;
 
 /// <summary>
 /// Factory for producing <see cref="WindowFunctionsRelationalParameterBasedSqlProcessor"/> instances.
@@ -19,4 +18,3 @@ public class WindowFunctionsRelationalParameterBasedSqlProcessorFactory : Relati
     public override RelationalParameterBasedSqlProcessor Create(bool useRelationalNulls)
         => new WindowFunctionsRelationalParameterBasedSqlProcessor(Dependencies, useRelationalNulls);
 }
-#endif
