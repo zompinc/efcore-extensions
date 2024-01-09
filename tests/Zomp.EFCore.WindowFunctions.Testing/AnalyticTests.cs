@@ -94,6 +94,9 @@ public partial class AnalyticTests
     {
         Skip.If(DbContext.IsSqlite || DbContext.IsPostgreSQL);
 
+        // Oracle doesn't allow non positive numbers for offset.
+        Skip.If(DbContext.IsOracle);
+
         Expression<Func<TestRow, int?>> lastNonNullExpr = withDefault
             ? r => EF.Functions.Lag(r.Col1, 0, null, NullHandling.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id))
             : r => EF.Functions.Lag(r.Col1, 0, NullHandling.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id));

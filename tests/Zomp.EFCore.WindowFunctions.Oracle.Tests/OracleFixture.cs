@@ -1,4 +1,4 @@
-﻿namespace Zomp.EFCore.WindowFunctions.SqlServer.Tests;
+﻿namespace Zomp.EFCore.WindowFunctions.Oracle.Tests;
 
 public class OracleFixture : TestFixture
 {
