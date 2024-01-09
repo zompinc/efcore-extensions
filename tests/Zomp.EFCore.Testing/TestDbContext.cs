@@ -10,6 +10,8 @@ public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
 
     public bool IsSqlite => Database.ProviderName?.Contains("Sqlite", StringComparison.OrdinalIgnoreCase) ?? false;
 
+    public bool IsOracle => Database.ProviderName?.Contains("Oracle", StringComparison.OrdinalIgnoreCase) ?? false;
+
     internal static TestSettings Settings { get; } = GetSettings();
 
     protected static string GetNpgsqlConnectionString(string databaseName)

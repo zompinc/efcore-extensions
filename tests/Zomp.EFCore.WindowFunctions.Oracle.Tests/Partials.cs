@@ -1,4 +1,4 @@
-﻿using Zomp.EFCore.WindowFunctions.SqlServer.Tests;
+﻿using Zomp.EFCore.WindowFunctions.Oracle.Tests;
 
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
