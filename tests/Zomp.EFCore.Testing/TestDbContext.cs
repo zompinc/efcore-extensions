@@ -20,6 +20,9 @@ public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
     protected static string GetSqlServerConnectionString(string databaseName)
         => GetConnectionString(Settings.SqlServerConnectionString, "Server=(LocalDB)\\MsSqlLocalDB;Database={0};Trusted_Connection=True", databaseName);
 
+    protected static string GetOracleConnectionString(string databaseName)
+        => GetConnectionString("OracleConnectionString", "User Id=system;Password=oracle_tests;Data Source=localhost:1521/XEPDB1;", databaseName);
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
         => _ = modelBuilder.Entity<TestRow>().Property(x => x.Id).ValueGeneratedNever();

@@ -33,6 +33,13 @@ jobs:
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
+      oracledb:
+        image: gvenzl/oracle-xe:21.3.0-slim-faststart
+        env:
+          ORACLE_PASSWORD: oracle_tests
+        ports:
+          - 51521:1521
+
     defaults:
       run:
         shell: bash
@@ -101,6 +108,7 @@ jobs:
       - name: Test
         env:
           Zomp_EF_Data__SqlServerConnectionString: Server=localhost,31433;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
+          Zomp_EF_Data__OracleConnectionString: User Id=system;Password=oracle_tests;Data Source=localhost:51521/XEPDB1;
         run: dotnet test -c Release --no-build --verbosity normal --settings tests/coverlet.runsettings
       - name: Generate code coverage report
         run: dotnet tool run reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
