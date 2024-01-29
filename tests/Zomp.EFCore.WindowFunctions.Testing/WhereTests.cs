@@ -40,4 +40,20 @@ public partial class WhereTests
 
         Assert.Equal(expected, result.Single(), TestRowEqualityComparer.Default);
     }
+
+    [Fact]
+    public void Join()
+    {
+        var query = DbContext.TestRows.Join(
+            DbContext.TestRows.Select(subRow => new
+            {
+                subRow.Id,
+                RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(subRow.Date).PartitionBy(subRow.Col1)),
+            }),
+            l => l.Id,
+            r => r.Id,
+            (l, r) => new { r.Id, r.RowNumber });
+
+        var queryStr = query.ToQueryString();
+    }
 }

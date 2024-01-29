@@ -11,9 +11,21 @@ public class WindowFunctionsRelationalQueryTranslationPreprocessor(QueryTranslat
     /// <inheritdoc/>
     public override Expression Process(Expression query)
     {
-        var @base = base.Process(query);
-        var wfd = new WindowFunctionDetector();
-        var rewritten = wfd.Visit(@base);
-        return rewritten;
+        query = new InvocationExpressionRemovingExpressionVisitor().Visit(query);
+        query = NormalizeQueryableMethod(query);
+        query = new CallForwardingExpressionVisitor().Visit(query);
+        query = new NullCheckRemovingExpressionVisitor().Visit(query);
+        query = new SubqueryMemberPushdownExpressionVisitor(QueryCompilationContext.Model).Visit(query);
+        query = new JoinDetector().Visit(query);
+        query = new NavigationExpandingExpressionVisitor(
+                this,
+                QueryCompilationContext,
+                Dependencies.EvaluatableExpressionFilter,
+                Dependencies.NavigationExpansionExtensibilityHelper)
+            .Expand(query);
+        query = new QueryOptimizingExpressionVisitor().Visit(query);
+        query = new NullCheckRemovingExpressionVisitor().Visit(query);
+        query = new WindowFunctionInsideWhereDetector().Visit(query);
+        return query;
     }
 }

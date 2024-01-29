@@ -1,6 +1,6 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Query.Internal;
 
-internal sealed class WindowFunctionDetector : ExpressionVisitor
+internal sealed class WindowFunctionInsideWhereDetector : ExpressionVisitor
 {
     private static readonly ConstructorInfo ConObj = typeof(object).GetConstructor([])
         ?? throw new InvalidOperationException("Can't be null");
@@ -223,41 +223,6 @@ internal sealed class WindowFunctionDetector : ExpressionVisitor
 
             var newProperty = Expression.Property(target, "Original");
             return newProperty;
-        }
-    }
-
-    private sealed class WindowFunctionDetectorInternal : ExpressionVisitor
-    {
-        public IList<MethodCallExpression> WindowFunctionsCollection { get; } = [];
-
-        protected override Expression VisitMethodCall(MethodCallExpression node)
-        {
-            if (WindowFunctionsEvaluatableExpressionFilter.WindowFunctionMethods.Contains(node.Method, CompareNameAndDeclaringType.Default))
-            {
-                WindowFunctionsCollection.Add(node);
-            }
-
-            return base.VisitMethodCall(node);
-        }
-    }
-
-    private sealed class CompareNameAndDeclaringType : IEqualityComparer<MethodInfo>
-    {
-        public static CompareNameAndDeclaringType Default { get; } = new();
-
-        public bool Equals(MethodInfo? x, MethodInfo? y)
-        {
-            if (x is null || y is null)
-            {
-                return x is null && y is null;
-            }
-
-            return x.Name.Equals(y.Name, StringComparison.Ordinal) && x.DeclaringType == y.DeclaringType;
-        }
-
-        public int GetHashCode(MethodInfo method)
-        {
-            return HashCode.Combine(method.Name.GetHashCode(StringComparison.Ordinal), method.DeclaringType?.GetHashCode());
         }
     }
 }
