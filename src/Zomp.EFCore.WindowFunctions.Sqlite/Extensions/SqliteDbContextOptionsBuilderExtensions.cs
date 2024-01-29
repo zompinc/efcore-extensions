@@ -36,6 +36,8 @@ public static class SqliteDbContextOptionsBuilderExtensions
         coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowQuerySqlGeneratorFactory>();
         coreOptionsBuilder.ReplaceService<IWindowFunctionsTranslatorPluginFactory, SqliteWindowFunctionsTranslatorPluginFactory>();
         coreOptionsBuilder.ReplaceService<IEvaluatableExpressionFilter, SqliteWindowFunctionsEvaluatableExpressionFilter>();
+        coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsSqliteQueryableMethodTranslatingExpressionVisitorFactory>();
+        coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
 
         return sqliteOptionsBuilder;
     }

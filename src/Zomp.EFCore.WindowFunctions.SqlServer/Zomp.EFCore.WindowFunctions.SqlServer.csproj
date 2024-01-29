@@ -18,6 +18,7 @@
     <Using Include="Microsoft.Extensions.DependencyInjection.Extensions" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="System.Linq.Expressions" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Extensions" />
     <Using Include="Zomp.EFCore.WindowFunctions.Infrastructure.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.Internal" />
     <Using Include="Zomp.EFCore.WindowFunctions.Query.SqlExpressions" />

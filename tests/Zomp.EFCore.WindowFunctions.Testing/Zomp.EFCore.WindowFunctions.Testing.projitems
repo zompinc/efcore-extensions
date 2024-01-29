@@ -19,5 +19,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)NullTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RankTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SumTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WhereTests.cs" />
   </ItemGroup>
 </Project>

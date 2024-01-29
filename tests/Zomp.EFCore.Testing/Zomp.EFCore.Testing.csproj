@@ -14,6 +14,7 @@
     <Using Include="Microsoft.Extensions.Configuration" />
     <Using Include="Microsoft.Extensions.Logging" />
     <Using Include="System.Collections.Immutable" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="Xunit" />
   </ItemGroup>
 </Project>

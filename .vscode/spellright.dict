@@ -8,5 +8,6 @@ nuget
 sqlite
 postgres
 postresql
+queryable
 retval
 zomp

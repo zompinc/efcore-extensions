@@ -174,4 +174,18 @@ public static partial class DbFunctionsExtensions
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClauseWithRowsOrRange ToUnbounded(this IRangeCanBeClosed _)
         => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToUnbounded)));
+
+    /// <summary>
+    /// Executes provided query as a sub query.
+    /// </summary>
+    /// <param name="source">Query to execute as as sub query.</param>
+    /// <typeparam name="TEntity">Type of the entity.</typeparam>
+    /// <returns>Query that will be executed as a sub query.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+    internal static IQueryable<TEntity> AsSubQuery<TEntity>(this IQueryable<TEntity> source)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+
+        return source.Provider.CreateQuery<TEntity>(Expression.Call(null, WindowFunctionsEvaluatableExpressionFilter.AsSubQueryMethod.MakeGenericMethod(typeof(TEntity)), source.Expression));
+    }
 }

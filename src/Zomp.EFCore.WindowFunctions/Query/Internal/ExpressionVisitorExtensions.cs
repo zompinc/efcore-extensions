@@ -6,6 +6,16 @@
 public static class ExpressionVisitorExtensions
 {
     /// <summary>
+    /// Replaces parameter.
+    /// </summary>
+    /// <param name="expression">Expression containing parameter.</param>
+    /// <param name="source">Parameter to replace.</param>
+    /// <param name="target">Expression to replace with.</param>
+    /// <returns>New expression.</returns>
+    public static Expression ReplaceParameter(this Expression expression, ParameterExpression source, Expression target)
+        => new ParameterReplacer(source, target).Visit(expression);
+
+    /// <summary>
     /// Visits the window function expression.
     /// </summary>
     /// <param name="expressionVisitor">Instance of the <see cref="ExpressionVisitor"/>.</param>
@@ -98,6 +108,17 @@ public static class ExpressionVisitorExtensions
             }
 
             generationAction(items[i]);
+        }
+    }
+
+    internal sealed class ParameterReplacer(ParameterExpression source, Expression target) : ExpressionVisitor
+    {
+        private readonly ParameterExpression source = source;
+        private readonly Expression target = target;
+
+        protected override Expression VisitParameter(ParameterExpression node)
+        {
+            return node == source ? target : base.VisitParameter(node);
         }
     }
 }
