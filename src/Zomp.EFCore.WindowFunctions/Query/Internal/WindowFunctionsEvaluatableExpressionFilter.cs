@@ -19,6 +19,7 @@ public static class WindowFunctionsEvaluatableExpressionFilter
         nameof(DbFunctionsExtensions.PercentRank),
         nameof(DbFunctionsExtensions.Rank),
         nameof(DbFunctionsExtensions.RowNumber),
+        nameof(DbFunctionsExtensions.Sum),
     ];
 
     [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1202:Elements should be ordered by access", Justification = "Has to come after private fields")]
