@@ -31,5 +31,5 @@ public partial class CountTests(ITestOutputHelper output) : CountTests<long>(out
 public partial class AnalyticTests(ITestOutputHelper output) : TestBase(output) { }
 
 [Collection(nameof(NpgsqlCollection))]
-public partial class WhereTests(ITestOutputHelper output) : TestBase(output) { }
+public partial class SubQueryTests(ITestOutputHelper output) : TestBase(output) { }
 #pragma warning restore SA1402 // File may only contain a single type
