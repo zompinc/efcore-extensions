@@ -49,5 +49,5 @@
     "Zomp_EF_Data__ConnectionString": "Server=localhost;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;"
   },
 
-  "postCreateCommand": "dotnet restore Zomp.EFCore.Extensions.sln"
+  "postCreateCommand": "dotnet tool restore && dotnet restore Zomp.EFCore.Extensions.sln"
 }
