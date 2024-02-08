@@ -27,7 +27,17 @@ public static class ExpressionVisitorExtensions
         var fi = typeof(QuerySqlGenerator).GetField("_relationalCommandBuilder", BindingFlags.NonPublic | BindingFlags.Instance);
         IRelationalCommandBuilder relationalCommandBuilder = (IRelationalCommandBuilder)fi!.GetValue(expressionVisitor)!;
         relationalCommandBuilder.Append($"{windowFunctionExpression.Function}(");
-        GenerateList(relationalCommandBuilder, windowFunctionExpression.Arguments, e => expressionVisitor.Visit(e));
+
+        if (windowFunctionExpression.Arguments.Count == 0
+            && windowFunctionExpression.Function.Equals(nameof(DbFunctionsExtensions.Count), StringComparison.OrdinalIgnoreCase))
+        {
+            relationalCommandBuilder.Append($"*");
+        }
+        else
+        {
+            GenerateList(relationalCommandBuilder, windowFunctionExpression.Arguments, e => expressionVisitor.Visit(e));
+        }
+
         relationalCommandBuilder.Append(") ");
 
         if (windowFunctionExpression.NullHandling is { } nullHandling)
