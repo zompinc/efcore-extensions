@@ -6,6 +6,27 @@
 public static partial class DbFunctionsExtensions
 {
     /// <summary>
+    /// The COUNT(*) window function returns the count of all rows.
+    /// </summary>
+    /// <param name="_">The <see cref="DbFunctions"/> instance.</param>
+    /// <param name="over">over clause.</param>
+    /// <returns>Count for the selected window frame.</returns>
+    /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
+    public static int Count(this DbFunctions _, OverClause over)
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Count)));
+
+    /// <summary>
+    /// The COUNT(*) window function returns the count of all rows.
+    /// </summary>
+    /// <typeparam name="TResult">Type of the result object.</typeparam>
+    /// <param name="_">The <see cref="DbFunctions"/> instance.</param>
+    /// <param name="over">over clause.</param>
+    /// <returns>Count for the selected window frame.</returns>
+    /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
+    public static TResult Count<TResult>(this DbFunctions _, OverClause over)
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Count)));
+
+    /// <summary>
     /// Returns an instance of the Over clause.
     /// </summary>
     /// <param name="_">The <see cref="DbFunctions"/> instance.</param>

@@ -32,6 +32,8 @@ public static class WindowFunctionsEvaluatableExpressionFilter
     private static readonly MethodInfo PercentRankMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.PercentRank));
     private static readonly MethodInfo RankMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.Rank));
     private static readonly MethodInfo RowNumberMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.RowNumber));
+    private static readonly MethodInfo CountMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.Count));
+    ////private static readonly MethodInfo CountTResultMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.Count), "TResult");
 
     private static readonly HashSet<MethodInfo> PreventEvaluationSet =
     [
@@ -39,6 +41,8 @@ public static class WindowFunctionsEvaluatableExpressionFilter
         RankMethod,
         DenseRankMethod,
         PercentRankMethod,
+        CountMethod,
+        ////CountTResultMethod,
     ];
 
     /// <summary>
@@ -52,7 +56,8 @@ public static class WindowFunctionsEvaluatableExpressionFilter
         {
             var declaringType = methodCallExpression.Method.DeclaringType;
             var method = methodCallExpression.Method;
-            if (PreventEvaluationSet.Contains(method) && declaringType == typeof(DbFunctionsExtensions))
+            if ((PreventEvaluationSet.Contains(method) || method.Name == nameof(DbFunctionsExtensions.Count))
+                && declaringType == typeof(DbFunctionsExtensions))
             {
                 return false;
             }

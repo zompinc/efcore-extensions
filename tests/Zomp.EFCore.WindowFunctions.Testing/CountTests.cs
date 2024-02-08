@@ -4,6 +4,19 @@ public abstract partial class CountTests<TResult>
     where TResult : IConvertible
 {
     [Fact]
+    public void CountStar()
+    {
+        var query = DbContext.TestRows
+        .Select(r => EF.Functions.Count<TResult>(EF.Functions.Over()));
+
+        var result = query.ToList();
+
+        var maxId = TestRows.Length;
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => maxId);
+        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+    }
+
+    [Fact]
     public void CountBasic()
     {
         var query = DbContext.TestRows

@@ -27,7 +27,7 @@ public class WindowFunctionExpression(
     IReadOnlyList<SqlExpression>? partitions,
     IReadOnlyList<OrderingExpression>? orderings,
     RowOrRangeExpression? rowOrRange,
-    RelationalTypeMapping? typeMapping) : SqlExpression(arguments is [var e, ..] ? e.Type : typeof(long), typeMapping)
+    RelationalTypeMapping? typeMapping) : SqlExpression(arguments is [var e, ..] ? e.Type : function.Equals(nameof(DbFunctionsExtensions.Count), StringComparison.OrdinalIgnoreCase) ? typeof(int) : typeof(long), typeMapping)
 {
     /// <summary>
     /// Gets the arguments of the window function.
@@ -144,7 +144,16 @@ public class WindowFunctionExpression(
     {
         ArgumentNullException.ThrowIfNull(expressionPrinter);
         expressionPrinter.Append($"{Function}(");
-        expressionPrinter.VisitCollection(Arguments);
+        if (Arguments.Count == 0
+            && Function.Equals(nameof(DbFunctionsExtensions.Count), StringComparison.OrdinalIgnoreCase))
+        {
+            expressionPrinter.Append($"*");
+        }
+        else
+        {
+            expressionPrinter.VisitCollection(Arguments);
+        }
+
         expressionPrinter.Append(") ");
 
         if (NullHandling is { } nullHandling)
