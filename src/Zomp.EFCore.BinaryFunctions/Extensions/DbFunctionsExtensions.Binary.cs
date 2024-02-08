@@ -5,6 +5,8 @@
 /// </summary>
 public static partial class DbFunctionsExtensions
 {
+    private const string UseBinaryFunctions = " One possible cause of this error is that '.UseBinaryFunctions()' was not called on the 'DbContextOptionsBuilder' in 'OnConfiguring'.";
+
     /// <summary>
     /// Returns the specified object value as a byte array.
     /// </summary>
@@ -15,7 +17,7 @@ public static partial class DbFunctionsExtensions
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static byte[] GetBytes<T>(this DbFunctions _, T expression)
         where T : struct
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(GetBytes)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(GetBytes)) + UseBinaryFunctions);
 
     /// <summary>
     /// Returns the specified object value as a byte array.
@@ -27,7 +29,7 @@ public static partial class DbFunctionsExtensions
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static byte[]? GetBytes<T>(this DbFunctions _, T? expression)
         where T : struct
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(GetBytes)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(GetBytes)) + UseBinaryFunctions);
 
     /// <summary>
     /// Concatinates two blob objects.
@@ -38,7 +40,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Blob that was resulted from concatination.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static byte[]? Concat(this DbFunctions _, byte[]? binaryValue1, byte[]? binaryValue2)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Concat)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Concat)) + UseBinaryFunctions);
 
     /// <summary>
     /// Returns part of a binary expression.
@@ -50,7 +52,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Part of a binary expression.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static byte[]? Substring(this DbFunctions _, byte[]? binaryValue, long start, long length)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Substring)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Substring)) + UseBinaryFunctions);
 
     /// <summary>
     /// Converts an array of bytes to a value of a specified type.
@@ -62,7 +64,7 @@ public static partial class DbFunctionsExtensions
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static T? ToValue<T>(this DbFunctions _, byte[]? array)
         where T : unmanaged
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToValue)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToValue)) + UseBinaryFunctions);
 
     /// <summary>
     /// Converts an array of bytes to a value of a specified type.
@@ -75,7 +77,7 @@ public static partial class DbFunctionsExtensions
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static T? ToValue<T>(this DbFunctions _, byte[]? array, long start)
         where T : unmanaged
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToValue)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToValue)) + UseBinaryFunctions);
 
     /// <summary>
     /// Casts from one type to another.
@@ -93,7 +95,7 @@ public static partial class DbFunctionsExtensions
     public static TTo? BinaryCast<TFrom, TTo>(this DbFunctions _, TFrom? expression)
         where TFrom : unmanaged
         where TTo : unmanaged
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(BinaryCast)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(BinaryCast)) + UseBinaryFunctions);
 
     /// <summary>
     /// Casts from one type to another.
@@ -111,5 +113,5 @@ public static partial class DbFunctionsExtensions
     public static TTo BinaryCast<TFrom, TTo>(this DbFunctions _, TFrom expression)
         where TFrom : unmanaged
         where TTo : unmanaged
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(BinaryCast)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(BinaryCast)) + UseBinaryFunctions);
 }

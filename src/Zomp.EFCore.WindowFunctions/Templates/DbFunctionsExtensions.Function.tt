@@ -103,7 +103,7 @@ public static partial class DbFunctionsExtensions
 <#
         }
 #>
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(<#= function #>)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(<#= function #>))  + UseWindowFunctions);
 <#
         if (!lastLine)
         {

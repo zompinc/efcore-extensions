@@ -5,6 +5,8 @@
 /// </summary>
 public static partial class DbFunctionsExtensions
 {
+    private const string UseWindowFunctions = " One possible cause of this error is that '.UseWindowFunctions()' was not called on the 'DbContextOptionsBuilder' in 'OnConfiguring'.";
+
     /// <summary>
     /// The COUNT(*) window function returns the count of all rows.
     /// </summary>
@@ -13,7 +15,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Count for the selected window frame.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static int Count(this DbFunctions _, OverClause over)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Count)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Count)) + UseWindowFunctions);
 
     /// <summary>
     /// The COUNT(*) window function returns the count of all rows.
@@ -24,7 +26,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Count for the selected window frame.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static TResult Count<TResult>(this DbFunctions _, OverClause over)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Count)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Count)) + UseWindowFunctions);
 
     /// <summary>
     /// Returns an instance of the Over clause.
@@ -42,7 +44,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>The OrderByClause.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClause OrderBy<T>(this OverClause _, T expression)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(OrderBy)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(OrderBy)) + UseWindowFunctions);
 
     /// <summary>
     /// Specifies order by expression for sorting in descending order.
@@ -53,7 +55,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>The OrderByClause.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClause OrderByDescending<T>(this OverClause _, T expression)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(OrderByDescending)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(OrderByDescending)) + UseWindowFunctions);
 
     /// <summary>
     /// Specifies subsequent order by expression for sorting in ascending order.
@@ -64,7 +66,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>The OrderByClause.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClause ThenBy<T>(this OrderByClause _, T expression)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ThenBy)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ThenBy)) + UseWindowFunctions);
 
     /// <summary>
     /// Specifies subsequent order by expression for sorting in descending order.
@@ -75,7 +77,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>The OrderByClause.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClause ThenByDescending<T>(this OrderByClause _, T expression)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ThenBy)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ThenByDescending)) + UseWindowFunctions);
 
     /// <summary>
     /// Specifies partiton by expression.
@@ -86,7 +88,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Partition by clause.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static PartitionByClause PartitionBy<T>(this OverClause _, T expression)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(PartitionBy)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(PartitionBy)) + UseWindowFunctions);
 
     /// <summary>
     /// Specifies sunsequent partiton by expression.
@@ -97,7 +99,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Partition by clause.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static PartitionByClause ThenBy<T>(this PartitionByClause _, T expression)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ThenBy)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ThenBy)) + UseWindowFunctions);
 
     /// <summary>
     /// Returns an instance of the Rows clause.
@@ -106,7 +108,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Rows clause.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static RowsClause Rows(this OrderByClause _)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Rows)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Rows)) + UseWindowFunctions);
 
     /// <summary>
     /// Returns an instance of the Range clause.
@@ -115,7 +117,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Range clause.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static RangeClause Range(this OrderByClause _)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Range)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Range)) + UseWindowFunctions);
 
     /// <summary>
     /// Represents the start of the analytics window with bound preceding.
@@ -125,7 +127,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Start of the analytics window.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClauseWithRowsOrRange FromPreceding(this RowsClause _, uint value)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(FromPreceding)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(FromPreceding)) + UseWindowFunctions);
 
     /// <summary>
     /// Represents the start of the analytics window with bound following.
@@ -138,7 +140,7 @@ public static partial class DbFunctionsExtensions
     /// Starts after the current row. Must be used with either <see cref="ToFollowing(IRangeCanBeClosed, uint)"/> or <see cref="ToUnbounded(IRangeCanBeClosed)"/>.
     /// </remarks>
     public static OrderByClauseWithRowsOrRangeNeedToClose FromFollowing(this RowsClause _, uint value)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(FromFollowing)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(FromFollowing)) + UseWindowFunctions);
 
     /// <summary>
     /// Represents the end of the analytics window with bound preceding.
@@ -148,7 +150,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>End of the analytics window.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClauseWithRowsOrRange ToPreceding(this OrderByClauseWithRowsOrRange _, uint value)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToPreceding)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToPreceding)) + UseWindowFunctions);
 
     /// <summary>
     /// Represents the end of the analytics window with bound following.
@@ -158,7 +160,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>End of the analytics window.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClauseWithRowsOrRange ToFollowing(this IRangeCanBeClosed _, uint value)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToFollowing)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToFollowing)) + UseWindowFunctions);
 
     /// <summary>
     /// Represents the start of the analytics window with current row.
@@ -167,7 +169,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Start of the analytics window with current row.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClauseWithRowsOrRange FromCurrentRow(this RowsOrRangeClause _)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(FromCurrentRow)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(FromCurrentRow)) + UseWindowFunctions);
 
     /// <summary>
     /// Represents the end of the analytics window with current row.
@@ -176,7 +178,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>End of the analytics window with current row.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClauseWithRowsOrRange ToCurrentRow(this OrderByClauseWithRowsOrRange _)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToCurrentRow)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToCurrentRow)) + UseWindowFunctions);
 
     /// <summary>
     /// Represents the start of the analytics window with unbounded preceding.
@@ -185,7 +187,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>Start of the analytics window.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClauseWithRowsOrRange FromUnbounded(this RowsOrRangeClause _)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(FromUnbounded)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(FromUnbounded)) + UseWindowFunctions);
 
     /// <summary>
     /// Represents the start of the analytics window with unbounded following.
@@ -194,7 +196,7 @@ public static partial class DbFunctionsExtensions
     /// <returns>End of the analytics window.</returns>
     /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
     public static OrderByClauseWithRowsOrRange ToUnbounded(this IRangeCanBeClosed _)
-        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToUnbounded)));
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(ToUnbounded)) + UseWindowFunctions);
 
     /// <summary>
     /// Executes provided query as a sub query.
