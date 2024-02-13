@@ -7,7 +7,7 @@
 /// <param name="relationalDependencies">Relational type mapping source dependencies.</param>
 /// <param name="queryCompilationContext">The query compilation context object to use.</param>
 /// <param name="sqlServerSingletonOptions">The singleton option.</param>
-public class WindowFunctionsSqlServerQueryableMethodTranslatingExpressionVisitor(QueryableMethodTranslatingExpressionVisitorDependencies dependencies, RelationalQueryableMethodTranslatingExpressionVisitorDependencies relationalDependencies, QueryCompilationContext queryCompilationContext, ISqlServerSingletonOptions sqlServerSingletonOptions)
+public class WindowFunctionsSqlServerQueryableMethodTranslatingExpressionVisitor(QueryableMethodTranslatingExpressionVisitorDependencies dependencies, RelationalQueryableMethodTranslatingExpressionVisitorDependencies relationalDependencies, SqlServerQueryCompilationContext queryCompilationContext, ISqlServerSingletonOptions sqlServerSingletonOptions)
     : SqlServerQueryableMethodTranslatingExpressionVisitor(dependencies, relationalDependencies, queryCompilationContext, sqlServerSingletonOptions)
 {
     /// <inheritdoc/>
