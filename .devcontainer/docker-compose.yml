@@ -20,7 +20,7 @@ services:
     command: |
       bash -c "
         git config --global --add safe.directory /workspace &&
-        .devcontainer/mssql/postCreateCommand.sh 'P@ssw0rd' './bin/Debug/' './.devcontainer/mssql/' &&
+        #.devcontainer/mssql/postCreateCommand.sh 'P@ssw0rd' './bin/Debug/' './.devcontainer/mssql/' &&
         dotnet tool restore  &&
         dotnet restore Zomp.EFCore.Extensions.sln &&
         sleep infinity
