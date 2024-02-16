@@ -5,7 +5,7 @@
       "Group": "Servers",
       "Port": 5432,
       "Username": "npgsql_tests",
-      "Host": "db",
+      "Host": "postgres",
       "SSLMode": "prefer",
       "MaintenanceDB": "npgsql_tests",
       "PassFile": "/.pgpass"

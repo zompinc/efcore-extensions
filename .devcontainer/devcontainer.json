@@ -43,11 +43,5 @@
 
   "forwardPorts": [5432, 5050, 1433],
 
-  "remoteEnv": {
-    "DeveloperBuild": "True",
-    "PATH": "${containerEnv:PATH}:/opt/mssql-tools/bin",
-    "Zomp_EF_Data__ConnectionString": "Server=localhost;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;"
-  },
-
   "postCreateCommand": "dotnet tool restore && dotnet restore Zomp.EFCore.Extensions.sln"
 }
