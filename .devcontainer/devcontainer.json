@@ -42,6 +42,4 @@
   },
 
   "forwardPorts": [5432, 5050, 1433],
-
-  "postCreateCommand": "dotnet tool restore && dotnet restore Zomp.EFCore.Extensions.sln"
 }
