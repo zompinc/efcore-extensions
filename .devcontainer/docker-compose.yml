@@ -6,7 +6,7 @@ services:
     working_dir: /workspace
     userns_mode: keep-id:uid=1001
     build:
-      context: ./mssql
+      context: ./dev
       dockerfile: Dockerfile
     environment:
       DeveloperBuild: True
