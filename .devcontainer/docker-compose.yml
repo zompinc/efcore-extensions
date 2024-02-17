@@ -5,9 +5,7 @@ services:
     user: vscode
     working_dir: /workspace
     userns_mode: keep-id:uid=1001
-    build:
-      context: ./dev
-      dockerfile: Dockerfile
+    image: mcr.microsoft.com/devcontainers/dotnet:8.0-jammy
     environment:
       DeveloperBuild: True
       ADDITIONAL_PATH: /opt/mssql-tools/bin

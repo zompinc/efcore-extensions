@@ -2,13 +2,10 @@
   "name": "Zomp EF Core Extensions",
   "dockerComposeFile": "docker-compose.yml",
   "service": "zomp-efcore-extensions-dev",
-
   "workspaceFolder": "/workspace",
-
   "customizations": {
     "vscode": {
       "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash",
         "remote.extensionKind": {
           "ms-azuretools.vscode-docker": "workspace"
         },
@@ -20,12 +17,12 @@
             "user": "sa",
             "password": "P@ssw0rd",
             "emptyPasswordInput": false,
-            "savePassword": false,
-            "profileName": "mssql-container"
+            "savePassword": true,
+            "trustServerCertificate": true,
+            "profileName": "sql-server"
           }
         ]
       },
-
       "extensions": [
         "ms-dotnettools.charp",
         "ms-dotnettools.csdevkit",
@@ -36,11 +33,9 @@
       ]
     }
   },
-  "features": {
-    "ghcr.io/devcontainers/features/azure-cli:1": {
-      "version": "latest"
-    }
-  },
-
-  "forwardPorts": [5432, 5050, 1433]
+  "forwardPorts": [
+    5432,
+    5050,
+    1433
+  ]
 }
