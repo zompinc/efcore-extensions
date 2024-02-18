@@ -37,6 +37,7 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_WTF_CSRF_ENABLED: 'False'
     volumes:
       - ./pgadmin4/servers.json:/pgadmin4/servers.json
       - ./pgadmin4/config_local.py:/pgadmin4/config_local.py
