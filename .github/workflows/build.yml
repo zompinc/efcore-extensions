@@ -24,9 +24,9 @@ jobs:
           ACCEPT_EULA: 1
           SA_PASSWORD: P@ssw0rd
         ports:
-          - 1433:1433
+          - 31433:1433
       postgres:
-        image: postgres:16
+        image: postgres:alpine
         env:
           POSTGRES_USER: npgsql_tests
           POSTGRES_PASSWORD: npgsql_tests
@@ -75,13 +75,6 @@ jobs:
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
-      - uses: dotnet/nbgv@master
-        id: nbgv
-        with:
-          setAllVars: true
-
-      - run: nbgv cloud
-
       - run: yarn install
 
       - name: Setup .NET
@@ -90,6 +83,13 @@ jobs:
           dotnet-version: |
             8.0.x
           include-prerelease: true
+
+      - uses: dotnet/nbgv@master
+        id: nbgv
+        with:
+          setAllVars: true
+
+      - run: nbgv cloud
 
       - run: dotnet tool restore
 
@@ -103,7 +103,7 @@ jobs:
         run: dotnet build -c Release --no-restore
       - name: Test
         env:
-          Zomp_EF_Data__ConnectionString: Server=localhost;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
+          Zomp_EF_Data__SqlServerConnectionString: Server=localhost,31433;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
         run: dotnet test -c Release --no-build --verbosity normal --settings tests/coverlet.runsettings
       - name: Generate code coverage report
         run: dotnet tool run reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
