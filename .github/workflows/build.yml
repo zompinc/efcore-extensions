@@ -71,18 +71,17 @@ jobs:
             npm install -g yarn
           fi
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
 
       - run: yarn install
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             8.0.x
-          include-prerelease: true
 
       - uses: dotnet/nbgv@master
         id: nbgv
@@ -108,14 +107,14 @@ jobs:
       - name: Generate code coverage report
         run: dotnet tool run reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
       - name: Upload artifacts (code coverage)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: reports/coverage
       - name: Pack
         run: dotnet pack --property:PackageOutputPath=${GITHUB_WORKSPACE}/packages --no-build
       - name: Upload artifacts (.nupkg)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: packages
           path: packages/
@@ -126,7 +125,7 @@ jobs:
 
     steps:
       - name: Download Package artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: packages
           path: packages
