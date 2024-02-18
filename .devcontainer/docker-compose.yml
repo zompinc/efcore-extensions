@@ -8,8 +8,8 @@ services:
     image: mcr.microsoft.com/devcontainers/dotnet:8.0-jammy
     environment:
       DeveloperBuild: True
-      ADDITIONAL_PATH: /opt/mssql-tools/bin
-      Zomp_EF_Data__ConnectionString: Server=localhost;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
+      Zomp_EF_Data__SqlServerConnectionString: Server=localhost,61433;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
+      Zomp_EF_Data__NpgSqlConnectionString: Host=localhost;Port=65432;Database={0};Username=npgsql_tests;Password=npgsql_tests;
       HOME: /home/vscode
     volumes:
       - ..:/workspace:cached
@@ -30,7 +30,7 @@ services:
     volumes:
       - ./postgres/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     ports:
-      - 5432:5432
+      - 65432:5432
 
   pgadmin:
     image: dpage/pgadmin4
@@ -49,7 +49,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     restart: unless-stopped
     ports:
-      - 1433:1433
+      - 61433:1433
     environment:
       SA_PASSWORD: P@ssw0rd
       ACCEPT_EULA: Y

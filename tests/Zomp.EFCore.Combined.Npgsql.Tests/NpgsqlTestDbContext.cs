@@ -2,19 +2,16 @@
 
 namespace Zomp.EFCore.Combined.Npgsql.Tests;
 
-public class NpgsqlTestDbContext : TestDbContext
+public class NpgsqlTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbContext(loggerFactory)
 {
-    public NpgsqlTestDbContext(ILoggerFactory? loggerFactory = null)
-        : base(loggerFactory)
-    {
-    }
+    private static string ConnectionString { get; } = GetNpgsqlConnectionString("Zomp_EfCore_Combined_Tests");
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
 
         optionsBuilder.UseNpgsql(
-            $"Host=localhost;Database=Zomp_EfCore_Combined_Tests;Username=npgsql_tests;Password=npgsql_tests",
+            ConnectionString,
             o => o.UseWindowFunctions().UseBinaryFunctions())
 
             // Fixme: Find a way to remove this line.
