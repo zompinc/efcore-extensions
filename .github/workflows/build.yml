@@ -24,9 +24,9 @@ jobs:
           ACCEPT_EULA: 1
           SA_PASSWORD: P@ssw0rd
         ports:
-          - 1433:1433
+          - 31433:1433
       postgres:
-        image: postgres:16
+        image: postgres:alpine
         env:
           POSTGRES_USER: npgsql_tests
           POSTGRES_PASSWORD: npgsql_tests
@@ -71,9 +71,17 @@ jobs:
             npm install -g yarn
           fi
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 # avoid shallow clone so nbgv can do its work.
+
+      - run: yarn install
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
 
       - uses: dotnet/nbgv@master
         id: nbgv
@@ -81,15 +89,6 @@ jobs:
           setAllVars: true
 
       - run: nbgv cloud
-
-      - run: yarn install
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: |
-            8.0.x
-          include-prerelease: true
 
       - run: dotnet tool restore
 
@@ -103,19 +102,19 @@ jobs:
         run: dotnet build -c Release --no-restore
       - name: Test
         env:
-          Zomp_EF_Data__ConnectionString: Server=localhost;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
+          Zomp_EF_Data__SqlServerConnectionString: Server=localhost,31433;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
         run: dotnet test -c Release --no-build --verbosity normal --settings tests/coverlet.runsettings
       - name: Generate code coverage report
         run: dotnet tool run reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
       - name: Upload artifacts (code coverage)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
           path: reports/coverage
       - name: Pack
         run: dotnet pack --property:PackageOutputPath=${GITHUB_WORKSPACE}/packages --no-build
       - name: Upload artifacts (.nupkg)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: packages
           path: packages/
@@ -126,7 +125,7 @@ jobs:
 
     steps:
       - name: Download Package artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: packages
           path: packages

@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  zomp-efcore-extensions-dev:
+    user: vscode
+    working_dir: /workspace
+    userns_mode: keep-id:uid=1001
+    image: mcr.microsoft.com/devcontainers/dotnet:8.0-jammy
+    environment:
+      DeveloperBuild: True
+      Zomp_EF_Data__SqlServerConnectionString: Server=localhost,61433;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
+      Zomp_EF_Data__NpgSqlConnectionString: Host=localhost;Port=65432;Database={0};Username=npgsql_tests;Password=npgsql_tests;
+      HOME: /home/vscode
+    volumes:
+      - ..:/workspace:cached
+    tty: true
+    network_mode: host
+    command: |
+      bash -c "
+        git config --global --add safe.directory /workspace &&
+        dotnet tool restore &&
+        dotnet restore Zomp.EFCore.Extensions.sln &&
+        sleep infinity
+      "
+
+  postgres:
+    build: ./postgres
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./postgres/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    ports:
+      - 65432:5432
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_WTF_CSRF_ENABLED: 'False'
+    volumes:
+      - ./pgadmin4/servers.json:/pgadmin4/servers.json
+      - ./pgadmin4/config_local.py:/pgadmin4/config_local.py
+    ports:
+      - 5050:80
+    links:
+      - postgres
+
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: unless-stopped
+    ports:
+      - 61433:1433
+    environment:
+      SA_PASSWORD: P@ssw0rd
+      ACCEPT_EULA: Y

@@ -30,6 +30,11 @@
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
 
+  <!-- Remove when https://github.com/dotnet/sdk/issues/13808 is resolved -->
+  <PropertyGroup Condition="'$(container)' == 'podman'">
+    <IntermediateOutputPath>/tmp/$(USER)/project/obj/</IntermediateOutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
   </ItemGroup>

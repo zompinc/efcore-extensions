@@ -1,15 +1,10 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Sqlite.Tests;
 
-public class SqliteTestDbContext : TestDbContext
+public class SqliteTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbContext(loggerFactory)
 {
     ////private static readonly SqliteConnection Connection = new("DataSource=:memory:");
     private static readonly SqliteConnection Connection
         = new($"DataSource=Zomp_EfCore_WindowFunctions_Tests.db");
-
-    public SqliteTestDbContext(ILoggerFactory? loggerFactory = null)
-        : base(loggerFactory)
-    {
-    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
