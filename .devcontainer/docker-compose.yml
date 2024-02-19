@@ -10,6 +10,7 @@ services:
       DeveloperBuild: True
       Zomp_EF_Data__SqlServerConnectionString: Server=localhost,61433;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
       Zomp_EF_Data__NpgSqlConnectionString: Host=localhost;Port=65432;Database={0};Username=npgsql_tests;Password=npgsql_tests;
+      Zomp_EF_Data__OracleConnectionString: User Id=system;Password=oracle_tests;Data Source=localhost:61521/XEPDB1;
       HOME: /home/vscode
     volumes:
       - ..:/workspace:cached
@@ -37,7 +38,7 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_WTF_CSRF_ENABLED: 'False'
+      PGADMIN_CONFIG_WTF_CSRF_ENABLED: "False"
     volumes:
       - ./pgadmin4/servers.json:/pgadmin4/servers.json
       - ./pgadmin4/config_local.py:/pgadmin4/config_local.py
@@ -54,3 +55,10 @@ services:
     environment:
       SA_PASSWORD: P@ssw0rd
       ACCEPT_EULA: Y
+
+  oracledb:
+    image: gvenzl/oracle-xe:21.3.0-slim-faststart
+    environment:
+      ORACLE_PASSWORD: oracle_tests
+    ports:
+      - 61521:1521
