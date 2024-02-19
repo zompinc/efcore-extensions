@@ -6,5 +6,7 @@ public class TestSettings
 
     public string? NpgSqlConnectionString { get; set; }
 
+    public string? OracleConnectionString { get; set; }
+
     public bool PreserveData { get; set; }
 }
