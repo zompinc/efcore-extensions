@@ -20,8 +20,8 @@ public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
     protected static string GetSqlServerConnectionString(string databaseName)
         => GetConnectionString(Settings.SqlServerConnectionString, "Server=(LocalDB)\\MsSqlLocalDB;Database={0};Trusted_Connection=True", databaseName);
 
-    protected static string GetOracleConnectionString(string databaseName)
-        => GetConnectionString("OracleConnectionString", "User Id=system;Password=oracle_tests;Data Source=localhost:1521/XEPDB1;", databaseName);
+    protected static string GetOracleConnectionString()
+        => GetConnectionString(Settings.OracleConnectionString, "User Id=system;Password=oracle_tests;Data Source=localhost:1521/XEPDB1;");
 
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,10 +37,10 @@ public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
         }
     }
 
-    private static string GetConnectionString(string? connectionTemplate, string defaultTemplate, string databaseName)
+    private static string GetConnectionString(string? connectionTemplate, string defaultTemplate, string? databaseName = null)
     {
         var connectionString = connectionTemplate ?? defaultTemplate;
-        return string.Format(connectionString, databaseName);
+        return databaseName is not null ? string.Format(connectionString, databaseName) : connectionString;
     }
 
     private static TestSettings GetSettings()
