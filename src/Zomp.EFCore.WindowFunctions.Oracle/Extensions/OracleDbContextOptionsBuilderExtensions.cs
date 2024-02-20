@@ -32,6 +32,8 @@ public static class OracleDbContextOptionsBuilderExtensions
         coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsRelationalParameterBasedSqlProcessorFactory>();
         coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsOracleQuerySqlGeneratorFactory>();
         coreOptionsBuilder.ReplaceService<IWindowFunctionsTranslatorPluginFactory, WindowFunctionsOracleTranslatorPluginFactory>();
+        coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitorFactory>();
+        coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
 
         return builder;
     }
