@@ -28,7 +28,6 @@
         "ms-dotnettools.charp",
         "ms-dotnettools.csdevkit",
         "ms-mssql.mssql",
-        "formulahendry.dotnet-test-explorer",
         "ms-azuretools.vscode-docker",
         "mutantdino.resourcemonitor"
       ]

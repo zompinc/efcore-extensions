@@ -10,11 +10,13 @@ public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
 
     public bool IsSqlite => Database.ProviderName?.Contains("Sqlite", StringComparison.OrdinalIgnoreCase) ?? false;
 
+    internal static TestSettings Settings { get; } = GetSettings();
+
     protected static string GetNpgsqlConnectionString(string databaseName)
-        => GetConnectionString("NpgSqlConnectionString", "Host=localhost;Database={0};Username=npgsql_tests;Password=npgsql_tests", databaseName);
+        => GetConnectionString(Settings.NpgSqlConnectionString, "Host=localhost;Database={0};Username=npgsql_tests;Password=npgsql_tests", databaseName);
 
     protected static string GetSqlServerConnectionString(string databaseName)
-        => GetConnectionString("SqlServerConnectionString", "Server=(LocalDB)\\MsSqlLocalDB;Database={0};Trusted_Connection=True", databaseName);
+        => GetConnectionString(Settings.SqlServerConnectionString, "Server=(LocalDB)\\MsSqlLocalDB;Database={0};Trusted_Connection=True", databaseName);
 
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -32,15 +34,22 @@ public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
         }
     }
 
-    private static string GetConnectionString(string key, string @default, string databaseName)
+    private static string GetConnectionString(string? connectionTemplate, string defaultTemplate, string databaseName)
+    {
+        var connectionString = connectionTemplate ?? defaultTemplate;
+        return string.Format(connectionString, databaseName);
+    }
+
+    private static TestSettings GetSettings()
     {
         var config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", true)
             .AddEnvironmentVariables("Zomp_EF_")
             .Build();
-        var connectionString = config[$"Data:{key}"]
-            ?? @default;
 
-        return string.Format(connectionString, databaseName);
+        var section = config.GetSection("Data");
+        var settings = section.Get<TestSettings>() ?? new();
+
+        return settings;
     }
 }

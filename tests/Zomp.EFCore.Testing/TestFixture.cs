@@ -29,12 +29,14 @@ public class TestFixture : IAsyncLifetime
     public async virtual Task DisposeAsync()
     {
         ArgumentNullException.ThrowIfNull(TestDBContext);
-        await TestDBContext.Database.EnsureDeletedAsync();
+        if (!TestDbContext.Settings.PreserveData)
+        {
+            await TestDBContext.Database.EnsureDeletedAsync();
+        }
     }
 
     private static ImmutableArray<TestRow> CreateTestRows() =>
-        ImmutableArray.CreateRange(new TestRow[]
-        {
+        [
             new(2, null, new("ab988b94-a7d3-413d-92a0-8a03c47dd0f4"), new(2022, 01, 01), [0, 2]),
             new(3, 10, new("41b1d4c5-e629-4a23-9514-47857e6c5ad2"), new(2022, 01, 02), [0, 3]),
             new(5, -1, new("5a425c36-3a87-4d55-80a0-0f449897daa4"), new(2022, 01, 03), [0, 5]),
@@ -44,5 +46,5 @@ public class TestFixture : IAsyncLifetime
             new(17, null, new("5c3330cd-a93b-4d6f-b31c-efb735315993"), new(2022, 01, 07), [0, 17]),
             new(19, null, new("e1c5f8f1-18ca-423d-a35e-b9c54f6897d4"), new(2022, 01, 08), [0, 19]),
             new(23, 1759, new("d288c0f2-b2a2-4eef-98cc-1f4726f1277c"), new(2022, 01, 09), [0, 23]),
-        });
+        ];
 }

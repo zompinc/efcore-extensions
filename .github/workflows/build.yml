@@ -9,9 +9,7 @@ on:
 env:
   Configuration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  postgis_version: 3
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  pg_major: 16
 
 jobs:
   build:
