@@ -1,13 +1,8 @@
 ﻿namespace Zomp.EFCore.Combined.Testing;
 
-public class CombinedTests
+public class CombinedTests(TestDbContext dbContext)
 {
-    private readonly TestDbContext dbContext;
-
-    public CombinedTests(TestDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
+    private readonly TestDbContext dbContext = dbContext;
 
     public void LastNonNullArithmetic()
     {
@@ -17,7 +12,7 @@ public class CombinedTests
             LastNonNull =
             EF.Functions.BinaryCast<long, int>(
                 EF.Functions.Max(
-                    r.Col1.HasValue ? r.Id * (1L << 32) | r.Col1.Value & uint.MaxValue : (long?)null,
+                    r.Col1.HasValue ? (r.Id * (1L << 32)) | (r.Col1.Value & uint.MaxValue) : (long?)null,
                     EF.Functions.Over().OrderBy(r.Id))),
         });
 

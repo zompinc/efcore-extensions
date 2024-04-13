@@ -3,6 +3,7 @@
 /// <summary>
 /// Query SQL generator for Npgsql which includes binary operations.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class BinaryNpgsqlQuerySqlGenerator : NpgsqlQuerySqlGenerator
 {
 #if !EF_CORE_7 && !EF_CORE_6
@@ -31,6 +32,7 @@ public class BinaryNpgsqlQuerySqlGenerator : NpgsqlQuerySqlGenerator
 #endif
 
     /// <inheritdoc/>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0072:Add missing cases", Justification = "Only interested in Add for binary")]
     protected override string GetOperator(SqlBinaryExpression e)
         => e.OperatorType switch
         {

@@ -3,24 +3,16 @@
 /// <summary>
 /// Window functions translator plugin factory for SQLite provider.
 /// </summary>
-public class SqliteWindowFunctionsTranslatorPluginFactory : WindowFunctionsTranslatorPluginFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="SqliteWindowFunctionsTranslatorPluginFactory"/> class.
+/// </remarks>
+/// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
+public class SqliteWindowFunctionsTranslatorPluginFactory(ISqlExpressionFactory sqlExpressionFactory)
+    : WindowFunctionsTranslatorPluginFactory(sqlExpressionFactory)
 {
-    private readonly ISqlExpressionFactory sqlExpressionFactory;
-    private readonly IRelationalTypeMappingSource relationalTypeMappingSource;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SqliteWindowFunctionsTranslatorPluginFactory"/> class.
-    /// </summary>
-    /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-    /// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
-    public SqliteWindowFunctionsTranslatorPluginFactory(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource)
-        : base(sqlExpressionFactory, relationalTypeMappingSource)
-    {
-        this.sqlExpressionFactory = sqlExpressionFactory;
-        this.relationalTypeMappingSource = relationalTypeMappingSource;
-    }
+    private readonly ISqlExpressionFactory sqlExpressionFactory = sqlExpressionFactory;
 
     /// <inheritdoc/>
     public override WindowFunctionsTranslator Create()
-        => new SqliteWindowFunctionsTranslator(sqlExpressionFactory, relationalTypeMappingSource);
+        => new SqliteWindowFunctionsTranslator(sqlExpressionFactory);
 }

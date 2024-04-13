@@ -3,22 +3,16 @@
 /// <summary>
 /// A SQL translator for binary functions.
 /// </summary>
-public class BinaryTranslator : IMethodCallTranslator
+/// <remarks>
+/// Initializes a new instance of the <see cref="BinaryTranslator"/> class.
+/// </remarks>
+/// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
+/// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
+public class BinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource) : IMethodCallTranslator
 {
     private static readonly bool[] SubstringArgumentsPropagateNullability = [true, true, true];
-    private readonly ISqlExpressionFactory sqlExpressionFactory;
-    private readonly IRelationalTypeMappingSource relationalTypeMappingSource;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BinaryTranslator"/> class.
-    /// </summary>
-    /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-    /// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
-    public BinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource)
-    {
-        this.sqlExpressionFactory = sqlExpressionFactory;
-        this.relationalTypeMappingSource = relationalTypeMappingSource;
-    }
+    private readonly ISqlExpressionFactory sqlExpressionFactory = sqlExpressionFactory;
+    private readonly IRelationalTypeMappingSource relationalTypeMappingSource = relationalTypeMappingSource;
 
     /// <inheritdoc/>
     public SqlExpression? Translate(SqlExpression? instance, MethodInfo method, IReadOnlyList<SqlExpression> arguments, IDiagnosticsLogger<DbLoggerCategory.Query> logger)
@@ -65,7 +59,7 @@ public class BinaryTranslator : IMethodCallTranslator
     /// </remarks>
     protected SqlExpression GetFixedBytes(SqlExpression sqlExpression, Type toType)
     {
-        Type t = Type.MakeGenericSignatureType(typeof(FixedByteArray<>), [toType]);
+        var t = Type.MakeGenericSignatureType(typeof(FixedByteArray<>), [toType]);
         var mapping = relationalTypeMappingSource.FindMapping(t);
         return new SqlUnaryExpression(ExpressionType.Convert, sqlExpressionFactory.ApplyDefaultTypeMapping(sqlExpression), typeof(byte[]), mapping);
     }
@@ -92,19 +86,15 @@ public class BinaryTranslator : IMethodCallTranslator
             Substring(sqlExpression, offset, new SqlConstantExpression(Expression.Constant(Marshal.SizeOf(type)), null)),
             type);
 
-    private SqlFunctionExpression Substring(SqlExpression bytearray, SqlExpression start, SqlExpression length)
-    {
-        return sqlExpressionFactory.Function(
+    private SqlFunctionExpression Substring(SqlExpression bytearray, SqlExpression start, SqlExpression length) => sqlExpressionFactory.Function(
             "SUBSTRING",
-            new[]
-            {
-                    bytearray,
-                    start,
-                    length,
-            },
+            [
+                bytearray,
+                start,
+                length,
+            ],
             nullable: true,
             argumentsPropagateNullability: SubstringArgumentsPropagateNullability,
             bytearray.Type,
             null);
-    }
 }

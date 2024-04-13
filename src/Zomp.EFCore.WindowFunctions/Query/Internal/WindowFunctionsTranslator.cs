@@ -3,21 +3,13 @@
 /// <summary>
 /// A SQL translator for window functions.
 /// </summary>
-public class WindowFunctionsTranslator : IMethodCallTranslator
+/// <remarks>
+/// Initializes a new instance of the <see cref="WindowFunctionsTranslator"/> class.
+/// </remarks>
+/// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
+public class WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactory) : IMethodCallTranslator
 {
-    private readonly ISqlExpressionFactory sqlExpressionFactory;
-    private readonly IRelationalTypeMappingSource relationalTypeMappingSource;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsTranslator"/> class.
-    /// </summary>
-    /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-    /// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
-    public WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource)
-    {
-        this.sqlExpressionFactory = sqlExpressionFactory;
-        this.relationalTypeMappingSource = relationalTypeMappingSource;
-    }
+    private readonly ISqlExpressionFactory sqlExpressionFactory = sqlExpressionFactory;
 
     /// <inheritdoc/>
     public SqlExpression? Translate(SqlExpression? instance, MethodInfo method, IReadOnlyList<SqlExpression> arguments, IDiagnosticsLogger<DbLoggerCategory.Query> logger)
@@ -95,12 +87,9 @@ public class WindowFunctionsTranslator : IMethodCallTranslator
         return new WindowFunctionExpression(functionName, directArgs, nullHandling, over?.PartitionByExpression?.List, over?.OrderingExpression?.List, over?.OrderingExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
     }
 
-    private static OverExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments)
-    {
-        return arguments is not { Count: > 0 } || arguments[0] is not OverExpression orderingSqlExpression
+    private static OverExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments) => arguments is not { Count: > 0 } || arguments[0] is not OverExpression orderingSqlExpression
             ? throw new InvalidOperationException($"Must be applied to {nameof(OverExpression)}")
             : orderingSqlExpression;
-    }
 
     private static BoundedWindowFrame GetWindowFrame(SqlExpression sqlExpression, bool isFollowing)
         => (sqlExpression as SqlConstantExpression) switch

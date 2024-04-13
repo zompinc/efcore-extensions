@@ -10,12 +10,5 @@ public class WindowFunctionsSqlServerEvaluatableExpressionFilter(EvaluatableExpr
 {
     /// <inheritdoc/>
     public override bool IsEvaluatableExpression(Expression expression, IModel model)
-    {
-        if (!WindowFunctionsEvaluatableExpressionFilter.IsEvaluatableExpression(expression))
-        {
-            return false;
-        }
-
-        return base.IsEvaluatableExpression(expression, model);
-    }
+        => WindowFunctionsEvaluatableExpressionFilter.IsEvaluatableExpression(expression) && base.IsEvaluatableExpression(expression, model);
 }

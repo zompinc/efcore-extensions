@@ -3,37 +3,29 @@
 /// <summary>
 /// An expression that represents rows or range clause of the over clause.
 /// </summary>
-public class RowOrRangeExpression : SqlExpression
+/// <remarks>
+/// Initializes a new instance of the <see cref="RowOrRangeExpression"/> class.
+/// </remarks>
+/// <param name="isRows">"ROWS" or "RANGE" keyword.</param>
+/// <param name="start">starting window frame.</param>
+/// <param name="end">ending window frame.</param>
+public class RowOrRangeExpression(bool isRows, WindowFrame start, WindowFrame? end = null)
+    : SqlExpression(typeof(RowOrRangeExpression), null)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RowOrRangeExpression"/> class.
-    /// </summary>
-    /// <param name="isRows">"ROWS" or "RANGE" keyword.</param>
-    /// <param name="start">starting window frame.</param>
-    /// <param name="end">ending window frame.</param>
-    public RowOrRangeExpression(bool isRows, WindowFrame start, WindowFrame? end = null)
-
-        : base(typeof(RowOrRangeExpression), null)
-    {
-        IsRows = isRows;
-        Start = start;
-        End = end;
-    }
-
     /// <summary>
     /// Gets a value indicating whether "ROWS" or "RANGE" is specified.
     /// </summary>
-    public bool IsRows { get; }
+    public bool IsRows { get; } = isRows;
 
     /// <summary>
     /// Gets the starting window frame.
     /// </summary>
-    public WindowFrame Start { get; }
+    public WindowFrame Start { get; } = start;
 
     /// <summary>
     /// Gets the ending window frame.
     /// </summary>
-    public WindowFrame? End { get; }
+    public WindowFrame? End { get; } = end;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)
@@ -57,15 +49,15 @@ public class RowOrRangeExpression : SqlExpression
     protected override void Print(ExpressionPrinter expressionPrinter)
     {
         ArgumentNullException.ThrowIfNull(expressionPrinter);
-        expressionPrinter.Append(" ");
+        _ = expressionPrinter.Append(" ");
 
-        expressionPrinter.Append(IsRows ? "ROWS " : "RANGE ");
+        _ = expressionPrinter.Append(IsRows ? "ROWS " : "RANGE ");
 
-        if (End is { } following)
+        if (End is { })
         {
-            expressionPrinter.Append("BETWEEN ");
+            _ = expressionPrinter.Append("BETWEEN ");
             ProcessWindowFrame(expressionPrinter, Start, false);
-            expressionPrinter.Append(" AND ");
+            _ = expressionPrinter.Append(" AND ");
             ProcessWindowFrame(expressionPrinter, End, true);
             return;
         }
@@ -75,13 +67,13 @@ public class RowOrRangeExpression : SqlExpression
 
     private static void ProcessWindowFrame(ExpressionPrinter expressionPrinter, WindowFrame windowFrame, bool isStart)
     {
-        expressionPrinter.Append(windowFrame.ToString()!);
+        _ = expressionPrinter.Append(windowFrame.ToString()!);
 
         if (windowFrame.IsDirectional)
         {
-            expressionPrinter.Append(" ");
-            bool isFollowing = windowFrame is BoundedWindowFrame bwf ? bwf.IsFollowing : isStart;
-            expressionPrinter.Append(isFollowing ? "FOLLOWING" : "PRECEDING");
+            _ = expressionPrinter.Append(" ");
+            var isFollowing = windowFrame is BoundedWindowFrame bwf ? bwf.IsFollowing : isStart;
+            _ = expressionPrinter.Append(isFollowing ? "FOLLOWING" : "PRECEDING");
         }
     }
 

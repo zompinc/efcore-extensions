@@ -20,9 +20,7 @@ public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
 
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<TestRow>().Property(x => x.Id).ValueGeneratedNever();
-    }
+        => _ = modelBuilder.Entity<TestRow>().Property(x => x.Id).ValueGeneratedNever();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -30,7 +28,7 @@ public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
 
         if (loggerFactory is not null)
         {
-            optionsBuilder.UseLoggerFactory(loggerFactory);
+            _ = optionsBuilder.UseLoggerFactory(loggerFactory);
         }
     }
 

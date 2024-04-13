@@ -13,7 +13,5 @@ public class WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitorFac
 
     /// <inheritdoc/>
     public override QueryableMethodTranslatingExpressionVisitor Create(QueryCompilationContext queryCompilationContext)
-    {
-        return new WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitor(dependencies, relationalDependencies, queryCompilationContext);
-    }
+        => new WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitor(dependencies, relationalDependencies, queryCompilationContext);
 }

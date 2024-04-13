@@ -18,14 +18,9 @@ public class SqlServerDbContextOptionsExtension : IDbContextOptionsExtension
     {
     }
 
-    private sealed class ExtensionInfo : BinaryFunctions.Infrastructure.Internal.ExtensionInfo
+    private sealed class ExtensionInfo(IDbContextOptionsExtension extension) : BinaryFunctions.Infrastructure.Internal.ExtensionInfo(extension)
     {
-        public ExtensionInfo(IDbContextOptionsExtension extension)
-            : base(extension)
-        {
-        }
-
-        private new SqlServerDbContextOptionsExtension Extension
+        public override IDbContextOptionsExtension Extension
             => (SqlServerDbContextOptionsExtension)base.Extension;
     }
 }

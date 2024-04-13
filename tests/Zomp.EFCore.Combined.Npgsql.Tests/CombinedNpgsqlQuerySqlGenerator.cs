@@ -12,6 +12,7 @@ namespace Zomp.EFCore.Combined.Npgsql.Tests;
 /// Query SQL generator for Npgsql which includes binary operations and window functions.
 /// </summary>
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "Temporary")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class CombinedNpgsqlQuerySqlGenerator : BinaryNpgsqlQuerySqlGenerator
 {
 #if !EF_CORE_7 && !EF_CORE_6

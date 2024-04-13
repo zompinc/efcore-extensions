@@ -9,9 +9,6 @@
 public class WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitor(QueryableMethodTranslatingExpressionVisitorDependencies dependencies, RelationalQueryableMethodTranslatingExpressionVisitorDependencies relationalDependencies, QueryCompilationContext queryCompilationContext) : NpgsqlQueryableMethodTranslatingExpressionVisitor(dependencies, relationalDependencies, queryCompilationContext)
 {
     /// <inheritdoc/>
-    protected override Expression VisitMethodCall(MethodCallExpression methodCallExpression)
-    {
-        return SubQueryProcessor.ProcessSubQuery(this, methodCallExpression)
+    protected override Expression VisitMethodCall(MethodCallExpression methodCallExpression) => SubQueryProcessor.ProcessSubQuery(this, methodCallExpression)
             ?? base.VisitMethodCall(methodCallExpression);
-    }
 }

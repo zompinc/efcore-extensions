@@ -3,26 +3,19 @@
 /// <summary>
 /// A SQL translator for binary functions in Postgres.
 /// </summary>
-public class NpgsqlBinaryTranslator : BinaryTranslator
+/// <remarks>
+/// Initializes a new instance of the <see cref="NpgsqlBinaryTranslator"/> class.
+/// </remarks>
+/// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
+/// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
+public class NpgsqlBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource) : BinaryTranslator(sqlExpressionFactory, relationalTypeMappingSource)
 {
     private static readonly bool[] LPadArgumentsPropagateNullability = [true, false, false];
     private static readonly bool[] DecodeArgumentsPropagateNullabilityArray = [true, false];
     private static readonly bool[] ToHexArgumentsPropagateNullabilityArray = [true];
 
-    private readonly ISqlExpressionFactory sqlExpressionFactory;
-    private readonly RelationalTypeMapping? byteArrayTypeMapping;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="NpgsqlBinaryTranslator"/> class.
-    /// </summary>
-    /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-    /// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
-    public NpgsqlBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource)
-        : base(sqlExpressionFactory, relationalTypeMappingSource)
-    {
-        this.sqlExpressionFactory = sqlExpressionFactory;
-        byteArrayTypeMapping = relationalTypeMappingSource.FindMapping(typeof(byte[]));
-    }
+    private readonly ISqlExpressionFactory sqlExpressionFactory = sqlExpressionFactory;
+    private readonly RelationalTypeMapping? byteArrayTypeMapping = relationalTypeMappingSource.FindMapping(typeof(byte[]));
 
     /// <inheritdoc/>
     protected override SqlExpression BinaryCast(SqlExpression sqlExpression, Type toType)
@@ -42,7 +35,7 @@ public class NpgsqlBinaryTranslator : BinaryTranslator
     protected override SqlExpression GetBytes(SqlExpression sqlExpression)
     {
         // Generate an expression like this: decode(LPAD(to_hex(r."SomeInt"), 8, '0'), 'hex')::bytea
-        var toHex = sqlExpressionFactory.Function("to_hex", new[] { sqlExpression }, true, ToHexArgumentsPropagateNullabilityArray, typeof(string));
+        var toHex = sqlExpressionFactory.Function("to_hex", [sqlExpression], true, ToHexArgumentsPropagateNullabilityArray, typeof(string));
         var type = sqlExpression.Type;
         int sizeOfType;
         if (type == typeof(DateTime))
@@ -60,8 +53,8 @@ public class NpgsqlBinaryTranslator : BinaryTranslator
         var byteSize = new SqlConstantExpression(Expression.Constant(sizeOfType * 2), null);
         var zero = new SqlConstantExpression(Expression.Constant("0"), null);
         var hex = new SqlConstantExpression(Expression.Constant("hex"), null);
-        var lPad = sqlExpressionFactory.Function("LPAD", new SqlExpression[] { toHex, byteSize, zero }, true, LPadArgumentsPropagateNullability, typeof(string));
-        var decode = sqlExpressionFactory.Function("decode", new SqlExpression[] { lPad, hex }, true, DecodeArgumentsPropagateNullabilityArray, typeof(string), byteArrayTypeMapping);
+        var lPad = sqlExpressionFactory.Function("LPAD", [toHex, byteSize, zero], true, LPadArgumentsPropagateNullability, typeof(string));
+        var decode = sqlExpressionFactory.Function("decode", [lPad, hex], true, DecodeArgumentsPropagateNullabilityArray, typeof(string), byteArrayTypeMapping);
         return new SqlUnaryExpression(ExpressionType.Convert, decode, typeof(byte[]), byteArrayTypeMapping);
     }
 }

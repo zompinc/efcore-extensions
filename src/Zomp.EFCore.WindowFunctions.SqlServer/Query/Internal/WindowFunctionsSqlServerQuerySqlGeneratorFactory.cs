@@ -3,6 +3,7 @@
 /// <summary>
 /// Factory for generating <see cref="WindowFunctionsSqlServerQuerySqlGenerator"/> instances.
 /// </summary>
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class WindowFunctionsSqlServerQuerySqlGeneratorFactory : SqlServerQuerySqlGeneratorFactory
 {
 #if !EF_CORE_7 && !EF_CORE_6
@@ -47,14 +48,16 @@ public class WindowFunctionsSqlServerQuerySqlGeneratorFactory : SqlServerQuerySq
     }
 #endif
 
-    /// <inheritdoc/>
 #if !EF_CORE_7 && !EF_CORE_6
+    /// <inheritdoc/>
     public override QuerySqlGenerator Create()
         => new WindowFunctionsSqlServerQuerySqlGenerator(Dependencies, typeMappingSource, sqlServerSingletonOptions);
 #elif !EF_CORE_6
+    /// <inheritdoc/>
     public override QuerySqlGenerator Create()
         => new WindowFunctionsSqlServerQuerySqlGenerator(Dependencies, typeMappingSource);
 #else
+    /// <inheritdoc/>
     public override QuerySqlGenerator Create()
         => new WindowFunctionsSqlServerQuerySqlGenerator(Dependencies);
 #endif

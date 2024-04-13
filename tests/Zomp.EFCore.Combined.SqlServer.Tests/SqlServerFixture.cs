@@ -1,6 +1,6 @@
 ﻿namespace Zomp.EFCore.Combined.SqlServer.Tests;
 
-public class SqlServerFixture : TestFixture
+public sealed class SqlServerFixture : TestFixture
 {
     public async override Task InitializeAsync()
     {

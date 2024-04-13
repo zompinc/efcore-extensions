@@ -10,12 +10,10 @@ public class NpgsqlTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbC
     {
         base.OnConfiguring(optionsBuilder);
 
-        optionsBuilder.UseNpgsql(
+        _ = optionsBuilder.UseNpgsql(
             ConnectionString,
             o => o.UseWindowFunctions().UseBinaryFunctions())
-
-            // Fixme: Find a way to remove this line.
-            .ReplaceService<IQuerySqlGeneratorFactory, CombinedNpgsqlQuerySqlGeneratorFactory>();
+            .ReplaceService<IQuerySqlGeneratorFactory, CombinedNpgsqlQuerySqlGeneratorFactory>(); /*Fixme: Find a way to remove this line.*/
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

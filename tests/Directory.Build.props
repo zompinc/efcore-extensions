@@ -12,6 +12,9 @@
     <!-- Don't care about the naming in testing projects -->
     <NoWarn>$(NoWarn);CA1711;CA1707</NoWarn>
 
+    <!-- Don't care about making classes internal -->
+    <NoWarn>$(NoWarn);CA1515</NoWarn>
+
     <!-- No UI thread -->
     <NoWarn>$(NoWarn);CA2007</NoWarn>
 

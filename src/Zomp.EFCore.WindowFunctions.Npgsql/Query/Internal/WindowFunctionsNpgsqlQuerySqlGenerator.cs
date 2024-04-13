@@ -3,6 +3,7 @@
 /// <summary>
 /// Query SQL generator for Npgsql which includes window functions operations.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class WindowFunctionsNpgsqlQuerySqlGenerator : NpgsqlQuerySqlGenerator
 {
 #if !EF_CORE_7 && !EF_CORE_6

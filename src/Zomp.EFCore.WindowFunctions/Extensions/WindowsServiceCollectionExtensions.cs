@@ -13,7 +13,7 @@ public static class WindowsServiceCollectionExtensions
     public static IServiceCollection AddWindowedFunctionsExtension(
         this IServiceCollection serviceCollection)
     {
-        new EntityFrameworkRelationalServicesBuilder(serviceCollection)
+        _ = new EntityFrameworkRelationalServicesBuilder(serviceCollection)
             .TryAdd<IMethodCallTranslatorPlugin, WindowFunctionsTranslatorPlugin>()
             .TryAddProviderSpecificServices(b => b
                 .TryAddScoped<IWindowFunctionsTranslatorPluginFactory, WindowFunctionsTranslatorPluginFactory>());

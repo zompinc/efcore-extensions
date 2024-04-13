@@ -17,12 +17,12 @@ public class TestFixture : IAsyncLifetime
     public async virtual Task InitializeAsync()
     {
         ArgumentNullException.ThrowIfNull(TestDBContext);
-        await TestDBContext.Database.EnsureDeletedAsync();
-        await TestDBContext.Database.EnsureCreatedAsync();
+        _ = await TestDBContext.Database.EnsureDeletedAsync();
+        _ = await TestDBContext.Database.EnsureCreatedAsync();
 
         await TestDBContext.AddRangeAsync(TestRows);
 
-        await TestDBContext.SaveChangesAsync();
+        _ = await TestDBContext.SaveChangesAsync();
     }
 
     /// <inheritdoc/>
@@ -31,7 +31,7 @@ public class TestFixture : IAsyncLifetime
         ArgumentNullException.ThrowIfNull(TestDBContext);
         if (!TestDbContext.Settings.PreserveData)
         {
-            await TestDBContext.Database.EnsureDeletedAsync();
+            _ = await TestDBContext.Database.EnsureDeletedAsync();
         }
     }
 

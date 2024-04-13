@@ -3,17 +3,13 @@
 /// <summary>
 /// A factory for creating <see cref="WindowQuerySqlGenerator" /> instances.
 /// </summary>
-public class WindowQuerySqlGeneratorFactory : QuerySqlGeneratorFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="WindowQuerySqlGeneratorFactory"/> class.
+/// </remarks>
+/// <param name="dependencies">Query Sql Generator Dependencies.</param>
+public class WindowQuerySqlGeneratorFactory(QuerySqlGeneratorDependencies dependencies)
+    : QuerySqlGeneratorFactory(dependencies)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowQuerySqlGeneratorFactory"/> class.
-    /// </summary>
-    /// <param name="dependencies">Query Sql Generator Dependencies.</param>
-    public WindowQuerySqlGeneratorFactory(QuerySqlGeneratorDependencies dependencies)
-        : base(dependencies)
-    {
-    }
-
     /// <inheritdoc/>
     public override QuerySqlGenerator Create()
         => new WindowQuerySqlGenerator(Dependencies);

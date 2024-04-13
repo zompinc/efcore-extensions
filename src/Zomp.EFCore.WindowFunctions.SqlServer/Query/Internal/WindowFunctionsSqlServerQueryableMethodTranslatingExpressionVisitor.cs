@@ -11,9 +11,6 @@ public class WindowFunctionsSqlServerQueryableMethodTranslatingExpressionVisitor
     : SqlServerQueryableMethodTranslatingExpressionVisitor(dependencies, relationalDependencies, queryCompilationContext, sqlServerSingletonOptions)
 {
     /// <inheritdoc/>
-    protected override Expression VisitMethodCall(MethodCallExpression methodCallExpression)
-    {
-        return SubQueryProcessor.ProcessSubQuery(this, methodCallExpression)
+    protected override Expression VisitMethodCall(MethodCallExpression methodCallExpression) => SubQueryProcessor.ProcessSubQuery(this, methodCallExpression)
             ?? base.VisitMethodCall(methodCallExpression);
-    }
 }

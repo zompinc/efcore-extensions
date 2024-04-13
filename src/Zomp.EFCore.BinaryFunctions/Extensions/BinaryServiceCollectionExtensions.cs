@@ -13,7 +13,7 @@ public static class BinaryServiceCollectionExtensions
     public static IServiceCollection AddBinaryFunctionsExtension(
         this IServiceCollection serviceCollection)
     {
-        new EntityFrameworkRelationalServicesBuilder(serviceCollection)
+        _ = new EntityFrameworkRelationalServicesBuilder(serviceCollection)
             .TryAdd<IMethodCallTranslatorPlugin, BinaryFunctionsTranslatorPlugin>()
             .TryAddProviderSpecificServices(b => b
                 .TryAddScoped<IBinaryTranslatorPluginFactory, BinaryTranslatorPluginFactory>());

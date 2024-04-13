@@ -3,22 +3,17 @@
 /// <summary>
 /// A SQL translator for binary functions in SQLite.
 /// </summary>
-public class SqliteBinaryTranslator : BinaryTranslator
+/// <remarks>
+/// Initializes a new instance of the <see cref="SqliteBinaryTranslator"/> class.
+/// </remarks>
+/// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
+/// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
+public class SqliteBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource) : BinaryTranslator(sqlExpressionFactory, relationalTypeMappingSource)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SqliteBinaryTranslator"/> class.
-    /// </summary>
-    /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-    /// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
-    public SqliteBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource)
-        : base(sqlExpressionFactory, relationalTypeMappingSource)
-    {
-    }
-
     /// <inheritdoc/>
     protected override SqlExpression BinaryCast(SqlExpression sqlExpression, Type toType)
     {
-        Type fromType = sqlExpression.Type;
+        var fromType = sqlExpression.Type;
 
         if (fromType == typeof(double) || fromType == typeof(float))
         {

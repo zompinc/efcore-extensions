@@ -13,7 +13,7 @@ public static class SqlServerDbContextOptionsBuilderExtensions
     public static SqlServerDbContextOptionsBuilder UseWindowFunctions(
        this SqlServerDbContextOptionsBuilder builder)
     {
-        builder.AddOrUpdateExtension();
+        _ = builder.AddOrUpdateExtension();
         return builder;
     }
 
@@ -26,11 +26,11 @@ public static class SqlServerDbContextOptionsBuilderExtensions
         var extension = coreOptionsBuilder.Options.FindExtension<SqlServerDbContextOptionsExtension>() ?? new SqlServerDbContextOptionsExtension();
 
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
-        coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsSqlServerParameterBasedSqlProcessorFactory>();
-        coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsSqlServerQuerySqlGeneratorFactory>();
-        coreOptionsBuilder.ReplaceService<IEvaluatableExpressionFilter, WindowFunctionsSqlServerEvaluatableExpressionFilter>();
-        coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsSqlServerQueryableMethodTranslatingExpressionVisitorFactory>();
-        coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsSqlServerParameterBasedSqlProcessorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsSqlServerQuerySqlGeneratorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IEvaluatableExpressionFilter, WindowFunctionsSqlServerEvaluatableExpressionFilter>();
+        _ = coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsSqlServerQueryableMethodTranslatingExpressionVisitorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
 
         return builder;
     }

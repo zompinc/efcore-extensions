@@ -13,7 +13,7 @@ public static class SqlServerDbContextOptionsBuilderExtensions
     public static SqlServerDbContextOptionsBuilder UseBinaryFunctions(
        this SqlServerDbContextOptionsBuilder builder)
     {
-        builder.AddOrUpdateExtension();
+        _ = builder.AddOrUpdateExtension();
         return builder;
     }
 
@@ -26,8 +26,8 @@ public static class SqlServerDbContextOptionsBuilderExtensions
         var extension = coreOptionsBuilder.Options.FindExtension<SqlServerDbContextOptionsExtension>() ?? new SqlServerDbContextOptionsExtension();
 
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
-        coreOptionsBuilder.ReplaceService<IRelationalTypeMappingSource, BinarySqlServerTypeMappingSource>();
-        coreOptionsBuilder.ReplaceService<IBinaryTranslatorPluginFactory, SqlServerBinaryTranslatorPluginFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IRelationalTypeMappingSource, BinarySqlServerTypeMappingSource>();
+        _ = coreOptionsBuilder.ReplaceService<IBinaryTranslatorPluginFactory, SqlServerBinaryTranslatorPluginFactory>();
 
         return builder;
     }

@@ -8,7 +8,7 @@ public class SqlServerTestDbContext(ILoggerFactory? loggerFactory = null) : Test
     {
         base.OnConfiguring(optionsBuilder);
 
-        optionsBuilder.UseSqlServer(
+        _ = optionsBuilder.UseSqlServer(
             ConnectionString,
             sqlOptions => sqlOptions.UseWindowFunctions().UseBinaryFunctions());
     }

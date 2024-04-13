@@ -10,7 +10,7 @@ public class SqliteTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbC
     {
         base.OnConfiguring(optionsBuilder);
 
-        optionsBuilder.UseSqlite(
+        _ = optionsBuilder.UseSqlite(
             Connection,
             sqlOptions => sqlOptions.UseWindowFunctions().UseBinaryFunctions());
     }
@@ -20,7 +20,7 @@ public class SqliteTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbC
         base.OnModelCreating(modelBuilder);
 
         // Convert https://github.com/dotnet/efcore/issues/15078#issuecomment-475784385
-        modelBuilder.Entity<TestRow>().Property(r => r.SomeGuid)
+        _ = modelBuilder.Entity<TestRow>().Property(r => r.SomeGuid)
            .HasConversion(
                 g => g.ToByteArray(),
                 b => new Guid(b));

@@ -25,44 +25,44 @@ public static class ExpressionVisitorExtensions
     {
         // Fixme: need a way to avoid reflection of private fields.
         var fi = typeof(QuerySqlGenerator).GetField("_relationalCommandBuilder", BindingFlags.NonPublic | BindingFlags.Instance);
-        IRelationalCommandBuilder relationalCommandBuilder = (IRelationalCommandBuilder)fi!.GetValue(expressionVisitor)!;
-        relationalCommandBuilder.Append($"{windowFunctionExpression.Function}(");
+        var relationalCommandBuilder = (IRelationalCommandBuilder)fi!.GetValue(expressionVisitor)!;
+        _ = relationalCommandBuilder.Append($"{windowFunctionExpression.Function}(");
 
         if (windowFunctionExpression.Arguments.Count == 0
             && windowFunctionExpression.Function.Equals(nameof(DbFunctionsExtensions.Count), StringComparison.OrdinalIgnoreCase))
         {
-            relationalCommandBuilder.Append($"*");
+            _ = relationalCommandBuilder.Append($"*");
         }
         else
         {
             GenerateList(relationalCommandBuilder, windowFunctionExpression.Arguments, e => expressionVisitor.Visit(e));
         }
 
-        relationalCommandBuilder.Append(") ");
+        _ = relationalCommandBuilder.Append(") ");
 
         if (windowFunctionExpression.NullHandling is { } nullHandling)
         {
-            relationalCommandBuilder.Append(nullHandling == NullHandling.RespectNulls
+            _ = relationalCommandBuilder.Append(nullHandling == NullHandling.RespectNulls
                 ? "RESPECT NULLS " : "IGNORE NULLS ");
         }
 
-        relationalCommandBuilder.Append("OVER(");
+        _ = relationalCommandBuilder.Append("OVER(");
         if (windowFunctionExpression.Partitions.Any())
         {
-            relationalCommandBuilder.Append("PARTITION BY ");
+            _ = relationalCommandBuilder.Append("PARTITION BY ");
             GenerateList(relationalCommandBuilder, windowFunctionExpression.Partitions, e => expressionVisitor.Visit(e));
-            relationalCommandBuilder.Append(" ");
+            _ = relationalCommandBuilder.Append(" ");
         }
 
         if (windowFunctionExpression.Orderings.Any())
         {
-            relationalCommandBuilder.Append("ORDER BY ");
+            _ = relationalCommandBuilder.Append("ORDER BY ");
             GenerateList(relationalCommandBuilder, windowFunctionExpression.Orderings, e => expressionVisitor.Visit(e));
 
             ProcessRowOrRange(windowFunctionExpression, relationalCommandBuilder);
         }
 
-        relationalCommandBuilder.Append(")");
+        _ = relationalCommandBuilder.Append(")");
 
         return windowFunctionExpression;
     }
@@ -74,15 +74,15 @@ public static class ExpressionVisitorExtensions
             return;
         }
 
-        relationalCommandBuilder.Append(" ");
+        _ = relationalCommandBuilder.Append(" ");
 
-        relationalCommandBuilder.Append(windowFunctionExpression.RowOrRange.IsRows ? "ROWS " : "RANGE ");
+        _ = relationalCommandBuilder.Append(windowFunctionExpression.RowOrRange.IsRows ? "ROWS " : "RANGE ");
 
-        if (windowFunctionExpression.RowOrRange.End is { } following)
+        if (windowFunctionExpression.RowOrRange.End is { })
         {
-            relationalCommandBuilder.Append("BETWEEN ");
+            _ = relationalCommandBuilder.Append("BETWEEN ");
             ProcessWindowFrame(relationalCommandBuilder, windowFunctionExpression.RowOrRange.Start, false);
-            relationalCommandBuilder.Append(" AND ");
+            _ = relationalCommandBuilder.Append(" AND ");
             ProcessWindowFrame(relationalCommandBuilder, windowFunctionExpression.RowOrRange.End, true);
             return;
         }
@@ -92,13 +92,13 @@ public static class ExpressionVisitorExtensions
 
     private static void ProcessWindowFrame(IRelationalCommandBuilder relationalCommandBuilder, WindowFrame windowFrame, bool isStart)
     {
-        relationalCommandBuilder.Append(windowFrame.ToString()!);
+        _ = relationalCommandBuilder.Append(windowFrame.ToString()!);
 
         if (windowFrame.IsDirectional)
         {
-            relationalCommandBuilder.Append(" ");
-            bool isFollowing = windowFrame is BoundedWindowFrame bwf ? bwf.IsFollowing : isStart;
-            relationalCommandBuilder.Append(isFollowing ? "FOLLOWING" : "PRECEDING");
+            _ = relationalCommandBuilder.Append(" ");
+            var isFollowing = windowFrame is BoundedWindowFrame bwf ? bwf.IsFollowing : isStart;
+            _ = relationalCommandBuilder.Append(isFollowing ? "FOLLOWING" : "PRECEDING");
         }
     }
 
@@ -127,8 +127,6 @@ public static class ExpressionVisitorExtensions
         private readonly Expression target = target;
 
         protected override Expression VisitParameter(ParameterExpression node)
-        {
-            return node == source ? target : base.VisitParameter(node);
-        }
+            => node == source ? target : base.VisitParameter(node);
     }
 }

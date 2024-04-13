@@ -1,20 +1,11 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Query.SqlExpressions;
 
-internal abstract class ChainedSqlExpression<T> : SqlExpression
+internal abstract class ChainedSqlExpression<T>(T first) : SqlExpression(typeof(ChainedSqlExpression<T>), null)
     where T : Expression
 {
-    public ChainedSqlExpression(T first)
-        : base(typeof(ChainedSqlExpression<T>), null)
-    {
-        List = new List<T>(new T[] { first });
-    }
-
-    public IReadOnlyList<T> List { get; }
+    public IReadOnlyList<T> List { get; } = new List<T>([first]);
 
     public void Add(T item) => ((List<T>)List).Add(item);
 
-    protected override void Print(ExpressionPrinter expressionPrinter)
-    {
-        expressionPrinter.VisitCollection(List);
-    }
+    protected override void Print(ExpressionPrinter expressionPrinter) => expressionPrinter.VisitCollection(List);
 }

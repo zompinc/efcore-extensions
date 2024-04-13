@@ -1,6 +1,6 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Sqlite.Tests;
 
-public class SqliteFixture : TestFixture
+public sealed class SqliteFixture : TestFixture
 {
     public async override Task InitializeAsync()
     {

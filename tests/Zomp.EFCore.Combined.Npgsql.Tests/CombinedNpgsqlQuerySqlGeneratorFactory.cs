@@ -11,6 +11,7 @@ namespace Zomp.EFCore.Combined.Npgsql.Tests;
 /// Factory for generating <see cref="CombinedNpgsqlQuerySqlGenerator"/>.
 /// </summary>
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "EF1001:Internal EF Core API usage.", Justification = "Temporary")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class CombinedNpgsqlQuerySqlGeneratorFactory : BinaryNpgsqlQuerySqlGeneratorFactory
 {
     private readonly QuerySqlGeneratorDependencies dependencies;
