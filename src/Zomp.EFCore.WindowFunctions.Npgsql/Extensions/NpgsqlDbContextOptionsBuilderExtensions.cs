@@ -11,10 +11,7 @@ public static class NpgsqlDbContextOptionsBuilderExtensions
     /// <param name="builder">The build being used to configure Postgres.</param>
     /// <returns>The same builder so that further configuration can be chained.</returns>
     public static NpgsqlDbContextOptionsBuilder UseWindowFunctions(
-        this NpgsqlDbContextOptionsBuilder builder)
-    {
-        return builder.AddOrUpdateExtension();
-    }
+        this NpgsqlDbContextOptionsBuilder builder) => builder.AddOrUpdateExtension();
 
     private static NpgsqlDbContextOptionsBuilder AddOrUpdateExtension(
         this NpgsqlDbContextOptionsBuilder builder)
@@ -25,11 +22,11 @@ public static class NpgsqlDbContextOptionsBuilderExtensions
         var extension = coreOptionsBuilder.Options.FindExtension<NpgsqlDbContextOptionsExtension>() ?? new NpgsqlDbContextOptionsExtension();
 
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
-        coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsNpgsqlParameterBasedSqlProcessorFactory>();
-        coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsNpgsqlQuerySqlGeneratorFactory>();
-        coreOptionsBuilder.ReplaceService<IEvaluatableExpressionFilter, WindowFunctionsNpgsqlEvaluatableExpressionFilter>();
-        coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitorFactory>();
-        coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsNpgsqlParameterBasedSqlProcessorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsNpgsqlQuerySqlGeneratorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IEvaluatableExpressionFilter, WindowFunctionsNpgsqlEvaluatableExpressionFilter>();
+        _ = coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
 
         return builder;
     }

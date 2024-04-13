@@ -11,7 +11,7 @@ public abstract partial class AvgTests<TResult>
 
         var result = query.ToList().Distinct();
 
-        Assert.Single(result);
+        _ = Assert.Single(result);
 
         var expected = ExpectedAverage(TestRows, r => r.Id);
 

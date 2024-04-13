@@ -3,6 +3,7 @@
 /// <summary>
 /// Factory for generating <see cref="WindowFunctionsSqlServerQuerySqlGenerator"/> instances.
 /// </summary>
+[SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class WindowFunctionsSqlServerQuerySqlGeneratorFactory : SqlServerQuerySqlGeneratorFactory
 {
 #if !EF_CORE_7 && !EF_CORE_6

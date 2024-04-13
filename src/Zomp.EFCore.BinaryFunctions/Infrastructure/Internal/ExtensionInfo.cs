@@ -3,17 +3,12 @@
 /// <summary>
 /// Information/metadata for the extension.
 /// </summary>
-public class ExtensionInfo : DbContextOptionsExtensionInfo
+/// <remarks>
+/// Initializes a new instance of the <see cref="ExtensionInfo"/> class.
+/// </remarks>
+/// <param name="extension">The extension.</param>
+public class ExtensionInfo(IDbContextOptionsExtension extension) : DbContextOptionsExtensionInfo(extension)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ExtensionInfo"/> class.
-    /// </summary>
-    /// <param name="extension">The extension.</param>
-    public ExtensionInfo(IDbContextOptionsExtension extension)
-        : base(extension)
-    {
-    }
-
     /// <inheritdoc/>
     public override bool IsDatabaseProvider
         => false;

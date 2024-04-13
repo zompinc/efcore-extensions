@@ -70,7 +70,7 @@ public partial class RankTests
     [Fact]
     public void PercentRankBasic()
     {
-        bool nullsLast = DbContext.IsPostgreSQL;
+        var nullsLast = DbContext.IsPostgreSQL;
 
         var query = DbContext.TestRows
         .Select(r => EF.Functions.PercentRank(EF.Functions.Over().OrderBy(r.Col1)));

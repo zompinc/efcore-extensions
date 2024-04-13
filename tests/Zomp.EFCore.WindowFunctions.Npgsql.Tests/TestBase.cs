@@ -1,15 +1,8 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Npgsql.Tests;
 
-public class TestBase : IDisposable
+public class TestBase(ITestOutputHelper output) : IDisposable
 {
-    private readonly NpgsqlTestDbContext dbContext;
-
-    public TestBase(ITestOutputHelper output)
-    {
-        dbContext = new NpgsqlTestDbContext(output.ToLoggerFactory());
-    }
-
-    protected NpgsqlTestDbContext DbContext => dbContext;
+    protected NpgsqlTestDbContext DbContext { get; } = new NpgsqlTestDbContext(output.ToLoggerFactory());
 
     public void Dispose()
     {
@@ -21,10 +14,7 @@ public class TestBase : IDisposable
     {
         if (disposing)
         {
-            if (dbContext != null)
-            {
-                dbContext.Dispose();
-            }
+            DbContext?.Dispose();
         }
     }
 }

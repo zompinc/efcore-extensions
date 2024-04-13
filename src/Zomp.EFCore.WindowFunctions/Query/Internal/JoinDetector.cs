@@ -14,7 +14,7 @@ internal sealed class JoinDetector : ExpressionVisitor
             types => new[] { typeof(IEnumerable<>).MakeGenericType(types[0]), typeof(Func<,>).MakeGenericType(types[0], typeof(bool)) });
     */
 
-    public IList<MethodCallExpression> WindowFunctionsCollection { get; } = new List<MethodCallExpression>();
+    public IList<MethodCallExpression> WindowFunctionsCollection { get; } = [];
 
     /// <inheritdoc/>
     protected override Expression VisitMethodCall(MethodCallExpression node)

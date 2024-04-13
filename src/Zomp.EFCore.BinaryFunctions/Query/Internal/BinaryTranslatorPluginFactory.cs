@@ -3,25 +3,16 @@
 /// <summary>
 /// Factory for BinaryTranslatorPlugin.
 /// </summary>
-public class BinaryTranslatorPluginFactory : IBinaryTranslatorPluginFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="BinaryTranslatorPluginFactory"/> class.
+/// </remarks>
+/// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
+/// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
+public class BinaryTranslatorPluginFactory(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource) : IBinaryTranslatorPluginFactory
 {
-    private readonly ISqlExpressionFactory sqlExpressionFactory;
-    private readonly IRelationalTypeMappingSource relationalTypeMappingSource;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BinaryTranslatorPluginFactory"/> class.
-    /// </summary>
-    /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-    /// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
-    public BinaryTranslatorPluginFactory(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource)
-    {
-        this.sqlExpressionFactory = sqlExpressionFactory;
-        this.relationalTypeMappingSource = relationalTypeMappingSource;
-    }
+    private readonly ISqlExpressionFactory sqlExpressionFactory = sqlExpressionFactory;
+    private readonly IRelationalTypeMappingSource relationalTypeMappingSource = relationalTypeMappingSource;
 
     /// <inheritdoc/>
-    public virtual BinaryTranslator Create()
-    {
-        return new BinaryTranslator(sqlExpressionFactory, relationalTypeMappingSource);
-    }
+    public virtual BinaryTranslator Create() => new(sqlExpressionFactory, relationalTypeMappingSource);
 }

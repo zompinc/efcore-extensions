@@ -11,10 +11,7 @@ public static class NpgsqlDbContextOptionsBuilderExtensions
     /// <param name="builder">The build being used to configure Postgres.</param>
     /// <returns>The same builder so that further configuration can be chained.</returns>
     public static NpgsqlDbContextOptionsBuilder UseBinaryFunctions(
-        this NpgsqlDbContextOptionsBuilder builder)
-    {
-        return builder.AddOrUpdateExtension();
-    }
+        this NpgsqlDbContextOptionsBuilder builder) => builder.AddOrUpdateExtension();
 
     private static NpgsqlDbContextOptionsBuilder AddOrUpdateExtension(
         this NpgsqlDbContextOptionsBuilder builder)
@@ -25,9 +22,9 @@ public static class NpgsqlDbContextOptionsBuilderExtensions
         var extension = coreOptionsBuilder.Options.FindExtension<NpgsqlDbContextOptionsExtension>() ?? new NpgsqlDbContextOptionsExtension();
 
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
-        coreOptionsBuilder.ReplaceService<IRelationalTypeMappingSource, BinaryNpgsqlTypeMappingSource>();
-        coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, BinaryNpgsqlQuerySqlGeneratorFactory>();
-        coreOptionsBuilder.ReplaceService<IBinaryTranslatorPluginFactory, NpgsqlBinaryTranslatorPluginFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IRelationalTypeMappingSource, BinaryNpgsqlTypeMappingSource>();
+        _ = coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, BinaryNpgsqlQuerySqlGeneratorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IBinaryTranslatorPluginFactory, NpgsqlBinaryTranslatorPluginFactory>();
 
         return builder;
     }

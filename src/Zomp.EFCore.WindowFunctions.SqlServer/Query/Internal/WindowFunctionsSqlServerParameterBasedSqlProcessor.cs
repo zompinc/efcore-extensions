@@ -3,6 +3,7 @@
 /// <summary>
 /// A class that processes the <see cref="SelectExpression" /> including  window functions.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class WindowFunctionsSqlServerParameterBasedSqlProcessor : SqlServerParameterBasedSqlProcessor
 {
     /// <summary>
@@ -15,12 +16,13 @@ public class WindowFunctionsSqlServerParameterBasedSqlProcessor : SqlServerParam
     {
     }
 
-    /// <inheritdoc/>
 #if !EF_CORE_6
+    /// <inheritdoc/>
     protected override Expression ProcessSqlNullability(Expression selectExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
         => new WindowFunctionsSqlServerSqlNullabilityProcessor(Dependencies, UseRelationalNulls).Process(
             selectExpression, parametersValues, out canCache);
 #else
+    /// <inheritdoc/>
     protected override SelectExpression ProcessSqlNullability(SelectExpression selectExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
         => new WindowFunctionsSqlServerSqlNullabilityProcessor(Dependencies, UseRelationalNulls).Process(
             selectExpression, parametersValues, out canCache);

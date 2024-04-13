@@ -15,8 +15,6 @@ public class WindowFunctionsSqlServerQueryableMethodTranslatingExpressionVisitor
 
     /// <inheritdoc/>
     public override QueryableMethodTranslatingExpressionVisitor Create(QueryCompilationContext queryCompilationContext)
-    {
-        return new WindowFunctionsSqlServerQueryableMethodTranslatingExpressionVisitor(
+        => new WindowFunctionsSqlServerQueryableMethodTranslatingExpressionVisitor(
             dependencies, relationalDependencies, (SqlServerQueryCompilationContext)queryCompilationContext, sqlServerSingletonOptions);
-    }
 }

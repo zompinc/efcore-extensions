@@ -18,14 +18,9 @@ public class NpgsqlDbContextOptionsExtension : IDbContextOptionsExtension
     {
     }
 
-    private sealed class ExtensionInfo : BinaryFunctions.Infrastructure.Internal.ExtensionInfo
+    private sealed class ExtensionInfo(IDbContextOptionsExtension extension) : BinaryFunctions.Infrastructure.Internal.ExtensionInfo(extension)
     {
-        public ExtensionInfo(IDbContextOptionsExtension extension)
-            : base(extension)
-        {
-        }
-
-        private new NpgsqlDbContextOptionsExtension Extension
+        public override IDbContextOptionsExtension Extension
             => (NpgsqlDbContextOptionsExtension)base.Extension;
     }
 }

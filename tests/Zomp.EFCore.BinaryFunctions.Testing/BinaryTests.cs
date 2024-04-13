@@ -158,7 +158,7 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
     private static byte[] ReverseEndianAndCombine(Guid x, int y)
     {
         var bytes = new byte[20];
-        x.TryWriteBytes(bytes);
+        _ = x.TryWriteBytes(bytes);
         BinaryPrimitives.WriteInt32BigEndian(bytes.AsSpan(16), y);
         return bytes;
     }

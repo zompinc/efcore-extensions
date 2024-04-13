@@ -10,7 +10,7 @@ public class NpgsqlTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbC
     {
         base.OnConfiguring(optionsBuilder);
 
-        optionsBuilder.UseNpgsql(
+        _ = optionsBuilder.UseNpgsql(
             ConnectionString,
             o => o.UseWindowFunctions().UseBinaryFunctions())
 

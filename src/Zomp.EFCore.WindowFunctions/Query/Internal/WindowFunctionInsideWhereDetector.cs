@@ -36,7 +36,7 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
 
         if (suspendWhereStack is not null)
         {
-            clauseStack.Pop();
+            _ = clauseStack.Pop();
         }
 
         SubqueryType? subqueryType = node.Method.DeclaringType != typeof(Queryable) ? null
@@ -54,7 +54,7 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
         var wfNode = WindowFunctionsEvaluatableExpressionFilter.WindowFunctionMethods.Contains(node.Method, CompareNameAndDeclaringType.Default)
             ? node : null;
 
-        clauseStack.TryPeek(out var clause);
+        _ = clauseStack.TryPeek(out var clause);
 
         if (wfNode is not null)
         {
@@ -75,7 +75,7 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
         if (wfNode is not null)
         {
             _ = clause ?? throw new InvalidOperationException("Window Function outside of select or where?");
-            clause.WindowFunctionStack.Pop();
+            _ = clause.WindowFunctionStack.Pop();
         }
 
         var method = @base.Method;
@@ -169,7 +169,7 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
         var parameter = lambda.Parameters[0];
         var newParameter = parameter;
         var lastLevel = isWhere ? 0 : 1;
-        var subqueryList = windowFunctions[^1];
+        var subqueryList = windowFunctions[^1].ToList();
         IDictionary<MethodCallExpression, Name_Type_And_Replacement> replacementMap;
         var level = windowFunctions.Count - 1;
         WindowFunctionRewriter wfr;

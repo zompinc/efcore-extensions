@@ -10,7 +10,5 @@ public class WindowFunctionsRelationalQueryTranslationPreprocessorFactory(QueryT
 {
     /// <inheritdoc/>
     public override QueryTranslationPreprocessor Create(QueryCompilationContext queryCompilationContext)
-    {
-        return new WindowFunctionsRelationalQueryTranslationPreprocessor(Dependencies, RelationalDependencies, queryCompilationContext);
-    }
+        => new WindowFunctionsRelationalQueryTranslationPreprocessor(Dependencies, RelationalDependencies, queryCompilationContext);
 }

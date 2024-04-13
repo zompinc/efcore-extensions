@@ -3,7 +3,12 @@
 /// <summary>
 /// A SQL translator for binary functions in SQL Server.
 /// </summary>
-public class SqlServerBinaryTranslator : BinaryTranslator
+/// <remarks>
+/// Initializes a new instance of the <see cref="SqlServerBinaryTranslator"/> class.
+/// </remarks>
+/// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
+/// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
+public class SqlServerBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource) : BinaryTranslator(sqlExpressionFactory, relationalTypeMappingSource)
 {
     private static readonly bool[] SignArgumentsPropagateNullability = [true];
     private static readonly bool[] PowerArgumentsPropagateNullability = [false, false];
@@ -26,18 +31,7 @@ public class SqlServerBinaryTranslator : BinaryTranslator
         var x0010000000000000 = GetBytes(new SqlConstantExpression(Expression.Constant(0x0010000000000000), null));
      * */
 
-    private readonly ISqlExpressionFactory sqlExpressionFactory;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SqlServerBinaryTranslator"/> class.
-    /// </summary>
-    /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-    /// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
-    public SqlServerBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource)
-        : base(sqlExpressionFactory, relationalTypeMappingSource)
-    {
-        this.sqlExpressionFactory = sqlExpressionFactory;
-    }
+    private readonly ISqlExpressionFactory sqlExpressionFactory = sqlExpressionFactory;
 
     /// <inheritdoc/>
     protected override SqlExpression ToValue(SqlExpression sqlExpression, Type type)
@@ -60,7 +54,7 @@ public class SqlServerBinaryTranslator : BinaryTranslator
         var sql1023 = new SqlConstantExpression(Expression.Constant(1023), null);
 
         // Line 1
-        var l1 = sqlExpressionFactory.Function("SIGN", new[] { colNameBigInt }, true, SignArgumentsPropagateNullability, colNameBigInt.Type);
+        var l1 = sqlExpressionFactory.Function("SIGN", [colNameBigInt], true, SignArgumentsPropagateNullability, colNameBigInt.Type);
 
         // Line 2
         var l2e1 = new SqlBinaryExpression(ExpressionType.And, colNameBigInt, X000FFFFFFFFFFFFF, typeof(long), null);
@@ -72,7 +66,7 @@ public class SqlServerBinaryTranslator : BinaryTranslator
         var l3e1 = new SqlBinaryExpression(ExpressionType.And, colNameBigInt, X7ff0000000000000, typeof(long), null);
         var l3e2 = new SqlBinaryExpression(ExpressionType.Divide, l3e1, X0010000000000000, typeof(long), null);
         var l3e3 = new SqlBinaryExpression(ExpressionType.Subtract, l3e2, sql1023, typeof(long), null);
-        var l3 = sqlExpressionFactory.Function("POWER", new SqlExpression[] { TwoFloat, l3e3 }, false, PowerArgumentsPropagateNullability, colNameBigInt.Type);
+        var l3 = sqlExpressionFactory.Function("POWER", [TwoFloat, l3e3], false, PowerArgumentsPropagateNullability, colNameBigInt.Type);
 
         var l1l2 = new SqlBinaryExpression(ExpressionType.Multiply, l1, l2, typeof(double), null);
         var final = new SqlBinaryExpression(ExpressionType.Multiply, l1l2, l3, typeof(double), null);

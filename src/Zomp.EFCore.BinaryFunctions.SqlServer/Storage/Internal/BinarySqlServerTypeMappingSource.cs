@@ -3,6 +3,7 @@
 /// <summary>
 /// Binary type mapping source for SQL Server provider.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class BinarySqlServerTypeMappingSource : SqlServerTypeMappingSource
 {
 #if !EF_CORE_6 && !EF_CORE_7
@@ -48,7 +49,7 @@ public class BinarySqlServerTypeMappingSource : SqlServerTypeMappingSource
 
         var clrType = underlyingMapping.ClrType;
 
-        int fixedSize
+        var fixedSize
             = clrType == typeof(DateTime) ? 9
             : clrType == typeof(bool) ? 1
             : Marshal.SizeOf(clrType);

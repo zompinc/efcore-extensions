@@ -3,6 +3,7 @@
 /// <summary>
 /// Factory for generating <see cref="WindowFunctionsNpgsqlQuerySqlGenerator"/>.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class WindowFunctionsNpgsqlQuerySqlGeneratorFactory : NpgsqlQuerySqlGeneratorFactory
 {
     private readonly QuerySqlGeneratorDependencies dependencies;
@@ -39,11 +40,12 @@ public class WindowFunctionsNpgsqlQuerySqlGeneratorFactory : NpgsqlQuerySqlGener
     }
 #endif
 
-    /// <inheritdoc/>
 #if !EF_CORE_7 && !EF_CORE_6
+    /// <inheritdoc/>
     public override QuerySqlGenerator Create()
         => new WindowFunctionsNpgsqlQuerySqlGenerator(dependencies, relationalTypeMappingSource, npgsqlOptions.ReverseNullOrderingEnabled, npgsqlOptions.PostgresVersion);
 #else
+    /// <inheritdoc/>
     public override QuerySqlGenerator Create()
         => new WindowFunctionsNpgsqlQuerySqlGenerator(dependencies, npgsqlOptions.ReverseNullOrderingEnabled, npgsqlOptions.PostgresVersion);
 #endif

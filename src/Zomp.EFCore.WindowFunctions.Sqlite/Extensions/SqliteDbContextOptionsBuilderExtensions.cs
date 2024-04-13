@@ -11,10 +11,7 @@ public static class SqliteDbContextOptionsBuilderExtensions
     /// <param name="builder">The build being used to configure Postgres.</param>
     /// <returns>The same builder so that further configuration can be chained.</returns>
     public static SqliteDbContextOptionsBuilder UseWindowFunctions(
-        this SqliteDbContextOptionsBuilder builder)
-    {
-        return builder.AddOrUpdateExtension();
-    }
+        this SqliteDbContextOptionsBuilder builder) => builder.AddOrUpdateExtension();
 
     private static SqliteDbContextOptionsBuilder AddOrUpdateExtension(
         this SqliteDbContextOptionsBuilder sqliteOptionsBuilder)

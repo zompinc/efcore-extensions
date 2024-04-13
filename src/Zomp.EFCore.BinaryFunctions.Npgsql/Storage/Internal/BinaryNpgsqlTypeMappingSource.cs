@@ -3,20 +3,15 @@
 /// <summary>
 /// Binary type mapping source for Postgres provider.
 /// </summary>
-public class BinaryNpgsqlTypeMappingSource : NpgsqlTypeMappingSource
+/// <remarks>
+/// Initializes a new instance of the <see cref="BinaryNpgsqlTypeMappingSource"/> class.
+/// </remarks>
+/// <param name="dependencies">Type mapping source dependencies.</param>
+/// <param name="relationalDependencies">Relational type mapping source dependencies.</param>
+/// <param name="sqlGenerationHelper">sqlGenerationHelper.</param>
+/// <param name="npgsqlOptions">Npgsql Options.</param>
+public class BinaryNpgsqlTypeMappingSource(TypeMappingSourceDependencies dependencies, RelationalTypeMappingSourceDependencies relationalDependencies, ISqlGenerationHelper sqlGenerationHelper, INpgsqlSingletonOptions npgsqlOptions) : NpgsqlTypeMappingSource(dependencies, relationalDependencies, sqlGenerationHelper, npgsqlOptions)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BinaryNpgsqlTypeMappingSource"/> class.
-    /// </summary>
-    /// <param name="dependencies">Type mapping source dependencies.</param>
-    /// <param name="relationalDependencies">Relational type mapping source dependencies.</param>
-    /// <param name="sqlGenerationHelper">sqlGenerationHelper.</param>
-    /// <param name="npgsqlOptions">Npgsql Options.</param>
-    public BinaryNpgsqlTypeMappingSource(TypeMappingSourceDependencies dependencies, RelationalTypeMappingSourceDependencies relationalDependencies, ISqlGenerationHelper sqlGenerationHelper, INpgsqlSingletonOptions npgsqlOptions)
-        : base(dependencies, relationalDependencies, sqlGenerationHelper, npgsqlOptions)
-    {
-    }
-
     /*
     protected override RelationalTypeMapping? FindMapping(in RelationalTypeMappingInfo mappingInfo)
     {
@@ -29,7 +24,7 @@ public class BinaryNpgsqlTypeMappingSource : NpgsqlTypeMappingSource
     */
 
     // This is to turn an expression into a bit array.
-    // Unfortinately I didn't come across a good way of translating bit(n) into bytea
+    // Unfortunately I didn't come across a good way of translating bit(n) into bytea
 
     /// <inheritdoc/>
     protected override RelationalTypeMapping? FindBaseMapping(in RelationalTypeMappingInfo mappingInfo)

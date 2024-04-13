@@ -3,25 +3,15 @@
 /// <summary>
 /// Factory for WindowFunctionsTranslatorPlugin.
 /// </summary>
-public class WindowFunctionsTranslatorPluginFactory : IWindowFunctionsTranslatorPluginFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="WindowFunctionsTranslatorPluginFactory"/> class.
+/// </remarks>
+/// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
+public class WindowFunctionsTranslatorPluginFactory(ISqlExpressionFactory sqlExpressionFactory)
+    : IWindowFunctionsTranslatorPluginFactory
 {
-    private readonly ISqlExpressionFactory sqlExpressionFactory;
-    private readonly IRelationalTypeMappingSource relationalTypeMappingSource;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsTranslatorPluginFactory"/> class.
-    /// </summary>
-    /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-    /// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
-    public WindowFunctionsTranslatorPluginFactory(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource)
-    {
-        this.sqlExpressionFactory = sqlExpressionFactory;
-        this.relationalTypeMappingSource = relationalTypeMappingSource;
-    }
+    private readonly ISqlExpressionFactory sqlExpressionFactory = sqlExpressionFactory;
 
     /// <inheritdoc/>
-    public virtual WindowFunctionsTranslator Create()
-    {
-        return new WindowFunctionsTranslator(sqlExpressionFactory, relationalTypeMappingSource);
-    }
+    public virtual WindowFunctionsTranslator Create() => new(sqlExpressionFactory);
 }

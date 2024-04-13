@@ -11,10 +11,7 @@ public static class SqliteDbContextOptionsBuilderExtensions
     /// <param name="builder">The build being used to configure Postgres.</param>
     /// <returns>The same builder so that further configuration can be chained.</returns>
     public static SqliteDbContextOptionsBuilder UseBinaryFunctions(
-        this SqliteDbContextOptionsBuilder builder)
-    {
-        return builder.AddOrUpdateExtension();
-    }
+        this SqliteDbContextOptionsBuilder builder) => builder.AddOrUpdateExtension();
 
     private static SqliteDbContextOptionsBuilder AddOrUpdateExtension(
         this SqliteDbContextOptionsBuilder sqliteOptionsBuilder)
@@ -25,8 +22,8 @@ public static class SqliteDbContextOptionsBuilderExtensions
         var extension = coreOptionsBuilder.Options.FindExtension<SqliteDbContextOptionsExtension>() ?? new SqliteDbContextOptionsExtension();
 
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
-        coreOptionsBuilder.ReplaceService<IRelationalTypeMappingSource, BinarySqliteTypeMappingSource>();
-        coreOptionsBuilder.ReplaceService<IBinaryTranslatorPluginFactory, SqliteBinaryTranslatorPluginFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IRelationalTypeMappingSource, BinarySqliteTypeMappingSource>()
+            .ReplaceService<IBinaryTranslatorPluginFactory, SqliteBinaryTranslatorPluginFactory>();
 
         return sqliteOptionsBuilder;
     }

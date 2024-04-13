@@ -42,12 +42,12 @@ public class WindowFunctionExpression(
     /// <summary>
     /// Gets the list of expressions used in partitioning.
     /// </summary>
-    public virtual IReadOnlyList<SqlExpression> Partitions { get; } = partitions ?? Array.Empty<SqlExpression>();
+    public virtual IReadOnlyList<SqlExpression> Partitions { get; } = partitions ?? [];
 
     /// <summary>
     /// Gets list of ordering expressions used to order inside the given partition.
     /// </summary>
-    public virtual IReadOnlyList<OrderingExpression> Orderings { get; } = orderings ?? Array.Empty<OrderingExpression>();
+    public virtual IReadOnlyList<OrderingExpression> Orderings { get; } = orderings ?? [];
 
     /// <summary>
     /// Gets the function name.
@@ -143,43 +143,43 @@ public class WindowFunctionExpression(
     protected override void Print(ExpressionPrinter expressionPrinter)
     {
         ArgumentNullException.ThrowIfNull(expressionPrinter);
-        expressionPrinter.Append($"{Function}(");
+        _ = expressionPrinter.Append($"{Function}(");
         if (Arguments.Count == 0
             && Function.Equals(nameof(DbFunctionsExtensions.Count), StringComparison.OrdinalIgnoreCase))
         {
-            expressionPrinter.Append($"*");
+            _ = expressionPrinter.Append($"*");
         }
         else
         {
             expressionPrinter.VisitCollection(Arguments);
         }
 
-        expressionPrinter.Append(") ");
+        _ = expressionPrinter.Append(") ");
 
         if (NullHandling is { } nullHandling)
         {
-            expressionPrinter.Append(nullHandling == WindowFunctions.NullHandling.RespectNulls
+            _ = expressionPrinter.Append(nullHandling == WindowFunctions.NullHandling.RespectNulls
                 ? "RESPECT NULLS " : "IGNORE NULLS ");
         }
 
-        expressionPrinter.Append("OVER(");
+        _ = expressionPrinter.Append("OVER(");
 
         if (Partitions.Any())
         {
-            expressionPrinter.Append("PARTITION BY ");
+            _ = expressionPrinter.Append("PARTITION BY ");
             expressionPrinter.VisitCollection(Partitions);
-            expressionPrinter.Append(" ");
+            _ = expressionPrinter.Append(" ");
         }
 
         if (Orderings.Any())
         {
-            expressionPrinter.Append("ORDER BY ");
+            _ = expressionPrinter.Append("ORDER BY ");
             expressionPrinter.VisitCollection(Orderings);
 
-            expressionPrinter.Visit(RowOrRange);
+            _ = expressionPrinter.Visit(RowOrRange);
         }
 
-        expressionPrinter.Append(")");
+        _ = expressionPrinter.Append(")");
     }
 
     private bool Equals(WindowFunctionExpression windowFunctionsExpression)

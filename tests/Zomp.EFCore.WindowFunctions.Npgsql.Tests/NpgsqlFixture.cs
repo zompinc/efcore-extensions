@@ -1,6 +1,6 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Npgsql.Tests;
 
-public class NpgsqlFixture : TestFixture
+public sealed class NpgsqlFixture : TestFixture
 {
     public async override Task InitializeAsync()
     {
