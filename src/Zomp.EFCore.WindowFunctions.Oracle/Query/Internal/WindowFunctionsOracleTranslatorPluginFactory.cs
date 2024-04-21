@@ -3,24 +3,15 @@
 /// <summary>
 /// Window functions translator plugin factory for SQLite provider.
 /// </summary>
-public class WindowFunctionsOracleTranslatorPluginFactory : WindowFunctionsTranslatorPluginFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="WindowFunctionsOracleTranslatorPluginFactory"/> class.
+/// </remarks>
+/// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
+public class WindowFunctionsOracleTranslatorPluginFactory(ISqlExpressionFactory sqlExpressionFactory) : WindowFunctionsTranslatorPluginFactory(sqlExpressionFactory)
 {
-    private readonly ISqlExpressionFactory sqlExpressionFactory;
-    private readonly IRelationalTypeMappingSource relationalTypeMappingSource;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsOracleTranslatorPluginFactory"/> class.
-    /// </summary>
-    /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-    /// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
-    public WindowFunctionsOracleTranslatorPluginFactory(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource)
-        : base(sqlExpressionFactory, relationalTypeMappingSource)
-    {
-        this.sqlExpressionFactory = sqlExpressionFactory;
-        this.relationalTypeMappingSource = relationalTypeMappingSource;
-    }
+    private readonly ISqlExpressionFactory sqlExpressionFactory = sqlExpressionFactory;
 
     /// <inheritdoc/>
     public override WindowFunctionsTranslator Create()
-        => new WindowFunctionsOracleTranslator(sqlExpressionFactory, relationalTypeMappingSource);
+        => new WindowFunctionsOracleTranslator(sqlExpressionFactory);
 }

@@ -18,14 +18,9 @@ public class OracleDbContextOptionsExtension : IDbContextOptionsExtension
     {
     }
 
-    private sealed class ExtensionInfo : WindowFunctions.Infrastructure.Internal.ExtensionInfo
+    private sealed class ExtensionInfo(IDbContextOptionsExtension extension) : WindowFunctions.Infrastructure.Internal.ExtensionInfo(extension)
     {
-        public ExtensionInfo(IDbContextOptionsExtension extension)
-            : base(extension)
-        {
-        }
-
-        private new OracleDbContextOptionsExtension Extension
+        public override IDbContextOptionsExtension Extension
             => (OracleDbContextOptionsExtension)base.Extension;
     }
 }

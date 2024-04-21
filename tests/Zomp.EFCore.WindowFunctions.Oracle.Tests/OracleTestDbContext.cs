@@ -8,7 +8,7 @@ public class OracleTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbC
     {
         base.OnConfiguring(optionsBuilder);
 
-        optionsBuilder.UseOracle(
+        _ = optionsBuilder.UseOracle(
             ConnectionString, o => o.UseWindowFunctions());
     }
 }

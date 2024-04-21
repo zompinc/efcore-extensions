@@ -3,17 +3,12 @@
 /// <summary>
 /// Factory for producing <see cref="WindowFunctionsRelationalParameterBasedSqlProcessor"/> instances.
 /// </summary>
-public class WindowFunctionsRelationalParameterBasedSqlProcessorFactory : RelationalParameterBasedSqlProcessorFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="WindowFunctionsRelationalParameterBasedSqlProcessorFactory"/> class.
+/// </remarks>
+/// <param name="dependencies">Relational Parameter Based Sql ProcessorDependencies.</param>
+public class WindowFunctionsRelationalParameterBasedSqlProcessorFactory(RelationalParameterBasedSqlProcessorDependencies dependencies) : RelationalParameterBasedSqlProcessorFactory(dependencies)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsRelationalParameterBasedSqlProcessorFactory"/> class.
-    /// </summary>
-    /// <param name="dependencies">Relational Parameter Based Sql ProcessorDependencies.</param>
-    public WindowFunctionsRelationalParameterBasedSqlProcessorFactory(RelationalParameterBasedSqlProcessorDependencies dependencies)
-        : base(dependencies)
-    {
-    }
-
     /// <inheritdoc/>
     public override RelationalParameterBasedSqlProcessor Create(bool useRelationalNulls)
         => new WindowFunctionsRelationalParameterBasedSqlProcessor(Dependencies, useRelationalNulls);

@@ -3,18 +3,12 @@
 /// <summary>
 /// A SQL translator for window functions in SQLite.
 /// </summary>
-public class WindowFunctionsOracleTranslator : WindowFunctionsTranslator
+/// <remarks>
+/// Initializes a new instance of the <see cref="WindowFunctionsOracleTranslator"/> class.
+/// </remarks>
+/// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
+public class WindowFunctionsOracleTranslator(ISqlExpressionFactory sqlExpressionFactory) : WindowFunctionsTranslator(sqlExpressionFactory)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsOracleTranslator"/> class.
-    /// </summary>
-    /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-    /// <param name="relationalTypeMappingSource">Instance relational type mapping source.</param>
-    public WindowFunctionsOracleTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource)
-        : base(sqlExpressionFactory, relationalTypeMappingSource)
-    {
-    }
-
     /// <inheritdoc/>
     protected override SqlExpression Parse(IReadOnlyList<SqlExpression> arguments, string functionName)
     {

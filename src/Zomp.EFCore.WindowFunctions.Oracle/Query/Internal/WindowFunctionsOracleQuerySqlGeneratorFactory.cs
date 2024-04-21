@@ -5,6 +5,7 @@ namespace Zomp.EFCore.WindowFunctions.Oracle.Query.Internal;
 /// <summary>
 /// Factory for generating <see cref="WindowFunctionsOracleQuerySqlGenerator"/> instances.
 /// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class WindowFunctionsOracleQuerySqlGeneratorFactory : OracleQuerySqlGeneratorFactory
 {
 #if !EF_CORE_7 && !EF_CORE_6
@@ -49,14 +50,16 @@ public class WindowFunctionsOracleQuerySqlGeneratorFactory : OracleQuerySqlGener
     }
 #endif
 
-    /// <inheritdoc/>
 #if !EF_CORE_7 && !EF_CORE_6
+    /// <inheritdoc/>
     public override QuerySqlGenerator Create()
         => new WindowFunctionsOracleQuerySqlGenerator(Dependencies, typeMappingSource, oracleOptions.OracleSQLCompatibility);
 #elif !EF_CORE_6
+    /// <inheritdoc/>
     public override QuerySqlGenerator Create()
         => new WindowFunctionsOracleQuerySqlGenerator(Dependencies, typeMappingSource);
 #else
+    /// <inheritdoc/>
     public override QuerySqlGenerator Create()
         => new WindowFunctionsOracleQuerySqlGenerator(Dependencies);
 #endif

@@ -6,10 +6,10 @@ public class OracleFixture : TestFixture
     {
         TestDBContext = new OracleTestDbContext(Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
         await RemoveTestTableAsync(TestDBContext);
-        await TestDBContext.Database.EnsureCreatedAsync();
+        _ = await TestDBContext.Database.EnsureCreatedAsync();
         await TestDBContext.AddRangeAsync(TestRows);
 
-        await TestDBContext.SaveChangesAsync();
+        _ = await TestDBContext.SaveChangesAsync();
     }
 
     public async override Task DisposeAsync()
@@ -23,7 +23,7 @@ public class OracleFixture : TestFixture
 
     private static async Task RemoveTestTableAsync(TestDbContext dbContext)
     {
-        await dbContext.Database.ExecuteSqlAsync($"""
+        _ = await dbContext.Database.ExecuteSqlAsync($"""
         DECLARE cnt NUMBER;
         BEGIN
           SELECT COUNT(*) INTO cnt FROM user_tables WHERE table_name = '{nameof(TestRows)}';
