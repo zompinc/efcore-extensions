@@ -13,7 +13,7 @@ public static class OracleDbContextOptionsBuilderExtensions
     public static OracleDbContextOptionsBuilder UseWindowFunctions(
        this OracleDbContextOptionsBuilder builder)
     {
-        builder.AddOrUpdateExtension();
+        _ = builder.AddOrUpdateExtension();
         return builder;
     }
 

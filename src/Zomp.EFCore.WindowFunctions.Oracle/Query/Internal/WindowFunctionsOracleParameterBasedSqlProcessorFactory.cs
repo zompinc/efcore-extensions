@@ -3,17 +3,12 @@
 /// <summary>
 /// Factory for generating <see cref="WindowFunctionsOracleParameterBasedSqlProcessor"/> instances.
 /// </summary>
-public class WindowFunctionsOracleParameterBasedSqlProcessorFactory : OracleParameterBasedSqlProcessorFactory
+/// <remarks>
+/// Initializes a new instance of the <see cref="WindowFunctionsOracleParameterBasedSqlProcessorFactory"/> class.
+/// </remarks>
+/// <param name="dependencies">Service dependencies.</param>
+public class WindowFunctionsOracleParameterBasedSqlProcessorFactory(RelationalParameterBasedSqlProcessorDependencies dependencies) : OracleParameterBasedSqlProcessorFactory(dependencies)
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsOracleParameterBasedSqlProcessorFactory"/> class.
-    /// </summary>
-    /// <param name="dependencies">Service dependencies.</param>
-    public WindowFunctionsOracleParameterBasedSqlProcessorFactory(RelationalParameterBasedSqlProcessorDependencies dependencies)
-        : base(dependencies)
-    {
-    }
-
     /// <inheritdoc/>
     public override RelationalParameterBasedSqlProcessor Create(bool useRelationalNulls)
         => new WindowFunctionsOracleParameterBasedSqlProcessor(Dependencies, useRelationalNulls);

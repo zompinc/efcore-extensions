@@ -1,15 +1,8 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Oracle.Tests;
 
-public class TestBase : IDisposable
+public class TestBase(ITestOutputHelper output) : IDisposable
 {
-    private readonly OracleTestDbContext dbContext;
-
-    public TestBase(ITestOutputHelper output)
-    {
-        dbContext = new OracleTestDbContext(output.ToLoggerFactory());
-    }
-
-    protected OracleTestDbContext DbContext => dbContext;
+    protected OracleTestDbContext DbContext { get; } = new OracleTestDbContext(output.ToLoggerFactory());
 
     public void Dispose()
     {
@@ -21,10 +14,7 @@ public class TestBase : IDisposable
     {
         if (disposing)
         {
-            if (dbContext != null)
-            {
-                dbContext.Dispose();
-            }
+            DbContext?.Dispose();
         }
     }
 }
