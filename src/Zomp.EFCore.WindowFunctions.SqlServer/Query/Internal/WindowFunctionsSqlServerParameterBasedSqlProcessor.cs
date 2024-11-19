@@ -16,15 +16,8 @@ public class WindowFunctionsSqlServerParameterBasedSqlProcessor : SqlServerParam
     {
     }
 
-#if !EF_CORE_6
     /// <inheritdoc/>
     protected override Expression ProcessSqlNullability(Expression selectExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
         => new WindowFunctionsSqlServerSqlNullabilityProcessor(Dependencies, UseRelationalNulls).Process(
             selectExpression, parametersValues, out canCache);
-#else
-    /// <inheritdoc/>
-    protected override SelectExpression ProcessSqlNullability(SelectExpression selectExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
-        => new WindowFunctionsSqlServerSqlNullabilityProcessor(Dependencies, UseRelationalNulls).Process(
-            selectExpression, parametersValues, out canCache);
-#endif
 }

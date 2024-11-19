@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFrameworks Condition="$(DefineConstants.Contains(EF_CORE_6)) or $(DefineConstants.Contains(EF_CORE_7))">net6.0</TargetFrameworks>
-    <TargetFrameworks Condition="!$(DefineConstants.Contains(EF_CORE_6)) and !$(DefineConstants.Contains(EF_CORE_7))">net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <Copyright>© Zomp Inc. All rights reserved.</Copyright>
     <Company>Zomp</Company>
     <Authors>Victor Irzak</Authors>
@@ -16,6 +15,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <DefineConstants>$(DefineConstants);EF_CORE_8</DefineConstants>
 
     <!-- Don't enforce file header -->
     <NoWarn>$(NoWarn);SA1633</NoWarn>

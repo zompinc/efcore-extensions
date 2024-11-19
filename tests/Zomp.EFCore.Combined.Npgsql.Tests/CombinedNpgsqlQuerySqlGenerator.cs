@@ -15,17 +15,10 @@ namespace Zomp.EFCore.Combined.Npgsql.Tests;
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class CombinedNpgsqlQuerySqlGenerator : BinaryNpgsqlQuerySqlGenerator
 {
-#if !EF_CORE_7 && !EF_CORE_6
     public CombinedNpgsqlQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies, IRelationalTypeMappingSource relationalTypeMappingSource, bool reverseNullOrderingEnabled, Version postgresVersion)
         : base(dependencies, relationalTypeMappingSource, reverseNullOrderingEnabled, postgresVersion)
     {
     }
-#else
-    public CombinedNpgsqlQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies, bool reverseNullOrderingEnabled, Version postgresVersion)
-        : base(dependencies, reverseNullOrderingEnabled, postgresVersion)
-    {
-    }
-#endif
 
     protected override Expression VisitExtension(Expression extensionExpression)
         => extensionExpression switch

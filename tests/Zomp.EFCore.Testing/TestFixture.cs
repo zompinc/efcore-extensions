@@ -14,7 +14,7 @@ public class TestFixture : IAsyncLifetime
     public TestDbContext? TestDBContext { get; set; }
 
     /// <inheritdoc/>
-    public async virtual Task InitializeAsync()
+    public virtual async Task InitializeAsync()
     {
         ArgumentNullException.ThrowIfNull(TestDBContext);
         _ = await TestDBContext.Database.EnsureDeletedAsync();
@@ -26,7 +26,7 @@ public class TestFixture : IAsyncLifetime
     }
 
     /// <inheritdoc/>
-    public async virtual Task DisposeAsync()
+    public virtual async Task DisposeAsync()
     {
         ArgumentNullException.ThrowIfNull(TestDBContext);
         if (!TestDbContext.Settings.PreserveData)

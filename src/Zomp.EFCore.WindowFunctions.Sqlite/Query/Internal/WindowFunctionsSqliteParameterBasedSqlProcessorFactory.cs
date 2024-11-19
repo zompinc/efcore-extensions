@@ -1,5 +1,4 @@
-﻿#if !EF_CORE_7 && !EF_CORE_6
-namespace Zomp.EFCore.WindowFunctions.Sqlite.Query.Internal;
+﻿namespace Zomp.EFCore.WindowFunctions.Sqlite.Query.Internal;
 
 /// <summary>
 /// Factory for producing <see cref="WindowFunctionsSqliteParameterBasedSqlProcessor"/> instances.
@@ -17,4 +16,3 @@ public class WindowFunctionsSqliteParameterBasedSqlProcessorFactory(RelationalPa
     public override RelationalParameterBasedSqlProcessor Create(bool useRelationalNulls)
         => new WindowFunctionsSqliteParameterBasedSqlProcessor(dependencies, useRelationalNulls);
 }
-#endif

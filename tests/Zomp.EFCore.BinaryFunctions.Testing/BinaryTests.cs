@@ -112,12 +112,8 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
         var expectedSequence = TestFixture.TestRows
             .Select(r =>
             {
-#if !EF_CORE_7 && !EF_CORE_6
                 var @ref = r.Id + shortOverflow;
                 return MemoryMarshal.GetReference(MemoryMarshal.Cast<int, short>(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(ref @ref), 1)));
-#else
-                return MemoryMarshal.GetReference(MemoryMarshal.Cast<int, short>(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(r.Id + shortOverflow), 1)));
-#endif
             });
 
         Assert.Equal(expectedSequence, result);
@@ -134,12 +130,8 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
         var expectedSequence = TestFixture.TestRows
             .Select(r =>
             {
-#if !EF_CORE_7 && !EF_CORE_6
                 var @ref = (r.Id / 2d) + shortOverflow;
                 return MemoryMarshal.GetReference(MemoryMarshal.Cast<double, long>(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(ref @ref), 1)));
-#else
-                return MemoryMarshal.GetReference(MemoryMarshal.Cast<double, long>(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef((r.Id / 2d) + shortOverflow), 1)));
-#endif
             });
 
         Assert.Equal(expectedSequence, result);
