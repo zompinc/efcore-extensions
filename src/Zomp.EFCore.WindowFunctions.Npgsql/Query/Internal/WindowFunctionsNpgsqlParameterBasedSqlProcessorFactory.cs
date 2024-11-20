@@ -6,13 +6,45 @@
 /// <remarks>
 /// Initializes a new instance of the <see cref="WindowFunctionsNpgsqlParameterBasedSqlProcessorFactory"/> class.
 /// </remarks>
-/// <param name="dependencies">Relational Parameter Based Sql ProcessorDependencies.</param>
-public class WindowFunctionsNpgsqlParameterBasedSqlProcessorFactory(RelationalParameterBasedSqlProcessorDependencies dependencies)
-    : NpgsqlParameterBasedSqlProcessorFactory(dependencies)
+public class WindowFunctionsNpgsqlParameterBasedSqlProcessorFactory : NpgsqlParameterBasedSqlProcessorFactory
 {
-    private readonly RelationalParameterBasedSqlProcessorDependencies dependencies = dependencies;
+    private readonly RelationalParameterBasedSqlProcessorDependencies dependencies;
 
+#if !EF_CORE_8
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WindowFunctionsNpgsqlParameterBasedSqlProcessorFactory"/> class.
+    /// </summary>
+    /// <param name="dependencies">Relational Parameter Based Sql ProcessorDependencies.</param>
+    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "EF Core 8")]
+    public WindowFunctionsNpgsqlParameterBasedSqlProcessorFactory(RelationalParameterBasedSqlProcessorDependencies dependencies)
+        : base(dependencies)
+    {
+        this.dependencies = dependencies;
+    }
+#else
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WindowFunctionsNpgsqlParameterBasedSqlProcessorFactory"/> class.
+    /// </summary>
+    /// <param name="dependencies">Relational Parameter Based Sql ProcessorDependencies.</param>
+    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "EF Core 8")]
+    public WindowFunctionsNpgsqlParameterBasedSqlProcessorFactory(RelationalParameterBasedSqlProcessorDependencies dependencies)
+        : base(dependencies)
+    {
+        this.dependencies = dependencies;
+    }
+#endif
+
+#if !EF_CORE_8
+    /// <summary>
+    /// This will be removed.
+    /// </summary>
+    /// <param name="parameters">Processor parameters.</param>
+    /// <returns>This will be removed soon.</returns>
+    public new RelationalParameterBasedSqlProcessor Create(RelationalParameterBasedSqlProcessorParameters parameters)
+        => new WindowFunctionsNpgsqlParameterBasedSqlProcessor(dependencies, parameters);
+#else
     /// <inheritdoc/>
     public override RelationalParameterBasedSqlProcessor Create(bool useRelationalNulls)
         => new WindowFunctionsNpgsqlParameterBasedSqlProcessor(dependencies, useRelationalNulls);
+#endif
 }

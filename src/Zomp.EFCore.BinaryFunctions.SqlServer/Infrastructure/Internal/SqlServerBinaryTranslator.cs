@@ -15,9 +15,16 @@ public class SqlServerBinaryTranslator(ISqlExpressionFactory sqlExpressionFactor
 
     // Constants
     private static readonly double TwoToThePowerOfMinus52 = Math.Pow(2d, -52);
+
+#if !EF_CORE_8
+    private static readonly SqlExpression TwoToThePowerOfMinus52Sql = new SqlConstantExpression(TwoToThePowerOfMinus52, null);
+    private static readonly SqlExpression OneFloat = new SqlConstantExpression(1d, null);
+    private static readonly SqlExpression TwoFloat = new SqlConstantExpression(2d, null);
+#else
     private static readonly SqlExpression TwoToThePowerOfMinus52Sql = new SqlConstantExpression(Expression.Constant(TwoToThePowerOfMinus52), null);
     private static readonly SqlExpression OneFloat = new SqlConstantExpression(Expression.Constant(1d), null);
     private static readonly SqlExpression TwoFloat = new SqlConstantExpression(Expression.Constant(2d), null);
+#endif
 
     // Must be varbinary.
     private static readonly SqlExpression X000FFFFFFFFFFFFF = new SqlFragmentExpression("0x000FFFFFFFFFFFFF");
@@ -51,7 +58,11 @@ public class SqlServerBinaryTranslator(ISqlExpressionFactory sqlExpressionFactor
     {
         var colNameBigInt = new SqlUnaryExpression(ExpressionType.Convert, sqlExpression, typeof(long), null);
 
+#if !EF_CORE_8
+        var sql1023 = new SqlConstantExpression(1023, null);
+#else
         var sql1023 = new SqlConstantExpression(Expression.Constant(1023), null);
+#endif
 
         // Line 1
         var l1 = sqlExpressionFactory.Function("SIGN", [colNameBigInt], true, SignArgumentsPropagateNullability, colNameBigInt.Type);

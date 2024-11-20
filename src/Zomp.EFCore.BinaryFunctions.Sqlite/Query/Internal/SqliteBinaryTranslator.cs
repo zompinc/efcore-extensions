@@ -26,8 +26,13 @@ public class SqliteBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, 
         var maxValue = 1L << (sizeInBytes * 8);
         var maxValueSigned = 1L << ((sizeInBytes * 8) - 1);
 
+#if !EF_CORE_8
+        var maxValueSql = new SqlConstantExpression(maxValue, null);
+        var maxValueSignedSql = new SqlConstantExpression(maxValueSigned, null);
+#else
         var maxValueSql = new SqlConstantExpression(Expression.Constant(maxValue), null);
         var maxValueSignedSql = new SqlConstantExpression(Expression.Constant(maxValueSigned), null);
+#endif
 
         // Equivalent of substring on binary data
         var modResult = new SqlBinaryExpression(ExpressionType.Modulo, sqlExpression, maxValueSql, fromType, null);

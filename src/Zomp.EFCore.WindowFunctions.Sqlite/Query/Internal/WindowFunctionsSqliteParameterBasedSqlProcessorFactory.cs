@@ -12,7 +12,13 @@ public class WindowFunctionsSqliteParameterBasedSqlProcessorFactory(RelationalPa
 {
     private readonly RelationalParameterBasedSqlProcessorDependencies dependencies = dependencies;
 
+#if !EF_CORE_8
+    /// <inheritdoc/>
+    public override RelationalParameterBasedSqlProcessor Create(RelationalParameterBasedSqlProcessorParameters parameters)
+        => new WindowFunctionsSqliteParameterBasedSqlProcessor(dependencies, parameters);
+#else
     /// <inheritdoc/>
     public override RelationalParameterBasedSqlProcessor Create(bool useRelationalNulls)
         => new WindowFunctionsSqliteParameterBasedSqlProcessor(dependencies, useRelationalNulls);
+#endif
 }
