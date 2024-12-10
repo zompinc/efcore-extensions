@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_8))">
     <NetRuntime>9.0.0</NetRuntime>
-    <NpgsqlVersion>9.0.1</NpgsqlVersion>
+    <NpgsqlVersion>9.0.2</NpgsqlVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
@@ -24,12 +24,12 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.6.146" />
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.7.112" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlVersion)" />
     <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.10" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
     <PackageVersion Include="xunit" Version="2.9.2" />
-    <PackageVersion Include="xunit.skippablefact" Version="1.4.13" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageVersion Include="xunit.skippablefact" Version="1.5.23" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" />
   </ItemGroup>
 </Project>

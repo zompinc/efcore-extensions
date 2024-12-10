@@ -35,12 +35,8 @@ public class WindowFunctionsNpgsqlParameterBasedSqlProcessorFactory : NpgsqlPara
 #endif
 
 #if !EF_CORE_8
-    /// <summary>
-    /// This will be removed.
-    /// </summary>
-    /// <param name="parameters">Processor parameters.</param>
-    /// <returns>This will be removed soon.</returns>
-    public new RelationalParameterBasedSqlProcessor Create(RelationalParameterBasedSqlProcessorParameters parameters)
+    /// <inheritdoc/>
+    public override RelationalParameterBasedSqlProcessor Create(RelationalParameterBasedSqlProcessorParameters parameters)
         => new WindowFunctionsNpgsqlParameterBasedSqlProcessor(dependencies, parameters);
 #else
     /// <inheritdoc/>
