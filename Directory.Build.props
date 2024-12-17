@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFrameworks Condition="$(DefineConstants.Contains(EF_CORE_6)) or $(DefineConstants.Contains(EF_CORE_7))">net6.0</TargetFrameworks>
-    <TargetFrameworks Condition="!$(DefineConstants.Contains(EF_CORE_6)) and !$(DefineConstants.Contains(EF_CORE_7))">net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0</TargetFrameworks>
     <Copyright>© Zomp Inc. All rights reserved.</Copyright>
     <Company>Zomp</Company>
     <Authors>Victor Irzak</Authors>
@@ -22,9 +21,6 @@
 
     <!-- Don't enforce prefixing local calls with this -->
     <NoWarn>$(NoWarn);SA1101</NoWarn>
-
-    <!-- Remove when fixed: https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/3687 -->
-    <NoWarn>$(NoWarn);SA1010</NoWarn>
 
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>

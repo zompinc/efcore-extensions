@@ -35,6 +35,7 @@
     <Using Include="Microsoft.EntityFrameworkCore.Metadata" />
     <Using Include="Microsoft.EntityFrameworkCore.Storage" />
     <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="System.Linq.Expressions" />
   </ItemGroup>
 

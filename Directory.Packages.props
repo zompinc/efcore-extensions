@@ -1,39 +1,35 @@
 <Project>
-  <PropertyGroup Condition="$(DefineConstants.Contains(EF_CORE_6))">
-    <NetRuntime>6.0.0</NetRuntime>
-    <NpgsqlVersion>6.0.5</NpgsqlVersion>
+  <PropertyGroup Condition="$(DefineConstants.Contains(EF_CORE_8))">
+    <NetRuntime>8.0.11</NetRuntime>
+    <NpgsqlVersion>8.0.10</NpgsqlVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_6)) and $(DefineConstants.Contains(EF_CORE_7))">
-    <NetRuntime>7.0.0</NetRuntime>
-    <NpgsqlVersion>7.0.0</NpgsqlVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_6)) and !$(DefineConstants.Contains(EF_CORE_7))">
-    <NetRuntime>8.0.6</NetRuntime>
-    <NpgsqlVersion>8.0.4</NpgsqlVersion>
+  <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_8))">
+    <NetRuntime>9.0.0</NetRuntime>
+    <NpgsqlVersion>9.0.2</NpgsqlVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
-    <PackageVersion Include="Fody" Version="6.8.1" />
+    <PackageVersion Include="Fody" Version="6.9.1" />
     <PackageVersion Include="InfoOf.Fody" Version="2.2.0" />
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.4.0" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0-preview.24225.1" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="9.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(NetRuntime)" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.1" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
-    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.6.139" />
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.7.112" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlVersion)" />
-    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.8" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.10" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
-    <PackageVersion Include="xunit" Version="2.8.1" />
-    <PackageVersion Include="xunit.skippablefact" Version="1.4.13" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.1" />
+    <PackageVersion Include="xunit" Version="2.9.2" />
+    <PackageVersion Include="xunit.skippablefact" Version="1.5.23" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" />
   </ItemGroup>
 </Project>

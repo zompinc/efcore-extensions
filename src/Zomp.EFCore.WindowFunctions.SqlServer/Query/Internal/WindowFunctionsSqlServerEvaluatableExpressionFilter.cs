@@ -1,4 +1,4 @@
-﻿namespace Zomp.EFCore.WindowFunctions.Sqlite.Query.Internal;
+﻿namespace Zomp.EFCore.WindowFunctions.SqlServer.Query.Internal;
 
 /// <summary>
 /// Filters which methods avoid client evalutation.

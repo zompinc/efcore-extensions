@@ -6,7 +6,6 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class WindowFunctionsNpgsqlQuerySqlGenerator : NpgsqlQuerySqlGenerator
 {
-#if !EF_CORE_7 && !EF_CORE_6
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowFunctionsNpgsqlQuerySqlGenerator"/> class.
     /// </summary>
@@ -18,18 +17,6 @@ public class WindowFunctionsNpgsqlQuerySqlGenerator : NpgsqlQuerySqlGenerator
         : base(dependencies, relationalTypeMappingSource, reverseNullOrderingEnabled, postgresVersion)
     {
     }
-#else
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsNpgsqlQuerySqlGenerator"/> class.
-    /// </summary>
-    /// <param name="dependencies">Service dependencies.</param>
-    /// <param name="reverseNullOrderingEnabled">Null Ordering.</param>
-    /// <param name="postgresVersion">Postgres Version.</param>
-    public WindowFunctionsNpgsqlQuerySqlGenerator(QuerySqlGeneratorDependencies dependencies, bool reverseNullOrderingEnabled, Version postgresVersion)
-        : base(dependencies, reverseNullOrderingEnabled, postgresVersion)
-    {
-    }
-#endif
 
     /// <inheritdoc/>
     protected override Expression VisitExtension(Expression extensionExpression)

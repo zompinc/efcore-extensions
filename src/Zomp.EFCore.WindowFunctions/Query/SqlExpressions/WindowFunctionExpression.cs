@@ -105,6 +105,11 @@ public class WindowFunctionExpression(
         return hash.ToHashCode();
     }
 
+#if !EF_CORE_8
+    /// <inheritdoc/>
+    public override Expression Quote() => throw new NotImplementedException();
+#endif
+
     /// <inheritdoc />
     protected override Expression VisitChildren(ExpressionVisitor visitor)
     {

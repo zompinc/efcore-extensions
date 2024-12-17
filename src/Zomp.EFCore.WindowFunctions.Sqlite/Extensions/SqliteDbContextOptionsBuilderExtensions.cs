@@ -1,4 +1,6 @@
-﻿namespace Zomp.EFCore.WindowFunctions.Sqlite;
+﻿#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace Zomp.EFCore.WindowFunctions.Sqlite;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Window function extension methods for <see cref="SqliteDbContextOptionsBuilder" />.
@@ -22,19 +24,15 @@ public static class SqliteDbContextOptionsBuilderExtensions
         var extension = coreOptionsBuilder.Options.FindExtension<SqliteDbContextOptionsExtension>() ?? new SqliteDbContextOptionsExtension();
 
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
-        coreOptionsBuilder.ReplaceService<
+        _ = coreOptionsBuilder.ReplaceService<
             IRelationalParameterBasedSqlProcessorFactory,
-#if !EF_CORE_7 && !EF_CORE_6
             WindowFunctionsSqliteParameterBasedSqlProcessorFactory
-#else
-            WindowFunctionsRelationalParameterBasedSqlProcessorFactory
-#endif
-        >();
-        coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowQuerySqlGeneratorFactory>();
-        coreOptionsBuilder.ReplaceService<IWindowFunctionsTranslatorPluginFactory, SqliteWindowFunctionsTranslatorPluginFactory>();
-        coreOptionsBuilder.ReplaceService<IEvaluatableExpressionFilter, SqliteWindowFunctionsEvaluatableExpressionFilter>();
-        coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsSqliteQueryableMethodTranslatingExpressionVisitorFactory>();
-        coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
+        >()
+        .ReplaceService<IQuerySqlGeneratorFactory, WindowQuerySqlGeneratorFactory>()
+        .ReplaceService<IWindowFunctionsTranslatorPluginFactory, SqliteWindowFunctionsTranslatorPluginFactory>()
+        .ReplaceService<IEvaluatableExpressionFilter, SqliteWindowFunctionsEvaluatableExpressionFilter>()
+        .ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsSqliteQueryableMethodTranslatingExpressionVisitorFactory>()
+        .ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
 
         return sqliteOptionsBuilder;
     }

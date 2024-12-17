@@ -2,13 +2,13 @@
 
 public sealed class SqliteFixture : TestFixture
 {
-    public async override Task InitializeAsync()
+    public override async Task InitializeAsync()
     {
         TestDBContext = new SqliteTestDbContext();
         await base.InitializeAsync();
     }
 
-    public async override Task DisposeAsync()
+    public override async Task DisposeAsync()
     {
         await base.DisposeAsync();
         if (TestDBContext is not null)

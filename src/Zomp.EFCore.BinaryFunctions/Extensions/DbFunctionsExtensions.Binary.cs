@@ -1,4 +1,6 @@
-﻿namespace Zomp.EFCore.BinaryFunctions;
+﻿#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace Zomp.EFCore.BinaryFunctions;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Provides extension methods for functions manipulating binary data.

@@ -1,4 +1,6 @@
-﻿namespace Zomp.EFCore.WindowFunctions.SqlServer;
+﻿#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace Zomp.EFCore.WindowFunctions.SqlServer;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Filters which methods avoid client evalutation.
