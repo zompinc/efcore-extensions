@@ -10,6 +10,7 @@ env:
   Configuration: Release
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  ACT:
 
 jobs:
   build:
@@ -121,6 +122,9 @@ jobs:
   publish:
     needs: build
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Download Package artifact
@@ -129,20 +133,36 @@ jobs:
           name: packages
           path: packages
 
-      - run: dotnet tool install nugetkeyvaultsigntool --tool-path . --version 3.2.3
+      - name: Set path for nektos/act
+        if: ${{ runner.os == 'Windows' && env.ACT }}
+        run: echo "C:\Program Files\Git\bin" >> $GITHUB_PATH
+        shell: '"C:\Program Files\Git\bin\bash.exe" -c {0}'
 
-      - name: Sign Nuget Files
-        run: .\NuGetKeyVaultSignTool sign packages\*.nupkg -kvt ${{ secrets.AZURE_TENANT_ID }} -kvu ${{ secrets.AZURE_KEY_VAULT_URL }} -kvi ${{ secrets.AZURE_KEY_VAULT_CLIENT_ID }} -kvs ${{ secrets.AZURE_KEY_VAULT_CLIENT_SECRET }} -kvc ${{ secrets.AZURE_KEY_VAULT_CERTIFICATE }} -tr ${{ secrets.TIMESTAMP_RFC3161 }}
+      - name: Install sign tool
+        run: dotnet tool install sign --tool-path . --version 0.9.1-beta.24529.1
 
-      - name: Verify signatures
-        run: .\NuGetKeyVaultSignTool verify packages\*.nupkg
+      - name: Sign
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_SIGNER_CLIENT_SECRET }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_SIGNER_CLIENT_ID }}
+        if: ${{ env.AZURE_CLIENT_SECRET != '' }}
+
+        run: |
+          ./sign code trusted-signing \
+          --base-directory "${{ github.workspace }}/packages" \
+          "*.nupkg" \
+          --trusted-signing-endpoint "${{ secrets.TRUSTED_SIGNING_ENDPOINT }}" \
+          --trusted-signing-account "${{ secrets.TRUSTED_SIGNING_ACCOUNT }}" \
+          --trusted-signing-certificate-profile "${{ secrets.TRUSTED_SIGNING_CERTIFICATE_PROFILE }}" \
+          -v trace
 
       - name: Push to MyGet
         if: ${{ env.MYGET_PUSH_KEY != '' }}
-        run: dotnet nuget push packages\*.nupkg -s https://www.myget.org/F/zomp-efcore-extensions/api/v3/index.json -k ${{ secrets.MYGET_PUSH_KEY }}
+        run: dotnet nuget push packages/*.nupkg -s https://www.myget.org/F/zomp-efcore-extensions/api/v3/index.json -k ${{ secrets.MYGET_PUSH_KEY }}
         env:
           MYGET_PUSH_KEY: ${{ secrets.MYGET_PUSH_KEY }}
 
       - name: Push to NuGet
         if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
-        run: dotnet nuget push packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
+        run: dotnet nuget push packages/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
