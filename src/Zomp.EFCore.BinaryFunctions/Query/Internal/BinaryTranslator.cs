@@ -19,6 +19,11 @@ public class BinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelat
     {
         ArgumentNullException.ThrowIfNull(method);
 
+        if (method.DeclaringType != typeof(DbFunctionsExtensions))
+        {
+            return null;
+        }
+
         return method.Name switch
         {
             nameof(DbFunctionsExtensions.GetBytes) => GetBytes(arguments[1]),

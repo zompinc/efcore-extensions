@@ -13,7 +13,13 @@ public class WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactor
 
     /// <inheritdoc/>
     public SqlExpression? Translate(SqlExpression? instance, MethodInfo method, IReadOnlyList<SqlExpression> arguments, IDiagnosticsLogger<DbLoggerCategory.Query> logger)
-        => method.Name switch
+    {
+        if (method.DeclaringType != typeof(DbFunctionsExtensions))
+        {
+            return null;
+        }
+
+        return method.Name switch
         {
             nameof(DbFunctionsExtensions.Min) => Parse(arguments, "MIN"),
             nameof(DbFunctionsExtensions.Max) => Parse(arguments, "MAX"),
@@ -48,6 +54,7 @@ public class WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactor
 
             _ => null,
         };
+    }
 
     /// <summary>
     /// Returns max or min sql expression.
