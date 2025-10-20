@@ -31,7 +31,7 @@ jobs:
           POSTGRES_PASSWORD: npgsql_tests
         ports:
           - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
+        # needed because the postgres container does not provide a health check
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     defaults:
@@ -80,8 +80,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            8.0.x
-            9.0.x
+            10.0.x
 
       - uses: dotnet/nbgv@master
         id: nbgv

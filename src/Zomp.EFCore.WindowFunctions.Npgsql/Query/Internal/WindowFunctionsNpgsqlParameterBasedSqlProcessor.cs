@@ -32,7 +32,12 @@ public class WindowFunctionsNpgsqlParameterBasedSqlProcessor : NpgsqlParameterBa
     }
 #endif
 
-#if !EF_CORE_8
+#if !EF_CORE_8 && !EF_CORE_9
+    /// <inheritdoc/>
+    protected override Expression ProcessSqlNullability(Expression selectExpression, ParametersCacheDecorator parametersDecorator)
+        => new WindowFunctionsNpgsqlSqlNullabilityProcessor(Dependencies, Parameters)
+            .Process(selectExpression, parametersDecorator);
+#elif !EF_CORE_8 && EF_CORE_9
     /// <inheritdoc/>
     protected override Expression ProcessSqlNullability(Expression selectExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
         => new WindowFunctionsNpgsqlSqlNullabilityProcessor(Dependencies, Parameters)

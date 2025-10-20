@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="$(DefineConstants.Contains(EF_CORE_8)) or $(DefineConstants.Contains(EF_CORE_9))">net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="!$(DefineConstants.Contains(EF_CORE_8)) and !$(DefineConstants.Contains(EF_CORE_9))">net10.0</TargetFrameworks>
     <Copyright>© Zomp Inc. All rights reserved.</Copyright>
     <Company>Zomp</Company>
     <Authors>Victor Irzak</Authors>

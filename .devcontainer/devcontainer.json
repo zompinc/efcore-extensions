@@ -12,7 +12,7 @@
         "mssql.connections": [
           {
             "server": "localhost",
-            "port": 61433,
+            "port": 62433,
             "database": "",
             "authenticationType": "SqlLogin",
             "user": "sa",
@@ -33,5 +33,5 @@
       ]
     }
   },
-  "forwardPorts": [61433, 65432, 5050]
+  "forwardPorts": [62433, 65432, 5050]
 }

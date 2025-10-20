@@ -5,10 +5,10 @@ services:
     user: vscode
     working_dir: /workspace
     userns_mode: keep-id:uid=1001
-    image: mcr.microsoft.com/devcontainers/dotnet:8.0-jammy
+    image: mcr.microsoft.com/devcontainers/dotnet:10.0
     environment:
       DeveloperBuild: True
-      Zomp_EF_Data__SqlServerConnectionString: Server=localhost,61433;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
+      Zomp_EF_Data__SqlServerConnectionString: Server=localhost,62433;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
       Zomp_EF_Data__NpgSqlConnectionString: Host=localhost;Port=65432;Database={0};Username=npgsql_tests;Password=npgsql_tests;
       HOME: /home/vscode
     volumes:
@@ -50,7 +50,10 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     restart: unless-stopped
     ports:
-      - 61433:1433
+      - 62433:1433
     environment:
       SA_PASSWORD: P@ssw0rd
       ACCEPT_EULA: Y
+
+x-podman:
+  in_pod: false
