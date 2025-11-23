@@ -65,7 +65,7 @@
 
     <Message Text="Generate $(Function)" Importance="High" Condition="!Exists('$(IntermediateOutputPath)DbFunctionsExtensions.Function.$(Function).g.cs')" />
 
-    <Exec Command="dotnet tool run t4 Templates/DbFunctionsExtensions.Function.tt -o $(IntermediateOutputPath)DbFunctionsExtensions.Function.$(Function).g.cs -p:function=$(Function) -p:functionType=$(FunctionType) -p:summary=&quot;$(Summary)&quot; -p:variationType=$(VariationType) -p:customReturnType=$(CustomReturnType) -p:nonNullableReturnType=$(NonNullableReturnType) -p:specificReturnType=$(SpecificReturnType)" Condition="!Exists('$(IntermediateOutputPath)DbFunctionsExtensions.Function.$(Function).g.cs')" />
+    <Exec Command="dotnet dnx --yes dotnet-t4 Templates/DbFunctionsExtensions.Function.tt -o $(IntermediateOutputPath)DbFunctionsExtensions.Function.$(Function).g.cs -p:function=$(Function) -p:functionType=$(FunctionType) -p:summary=&quot;$(Summary)&quot; -p:variationType=$(VariationType) -p:customReturnType=$(CustomReturnType) -p:nonNullableReturnType=$(NonNullableReturnType) -p:specificReturnType=$(SpecificReturnType) --allow-roll-forward" Condition="!Exists('$(IntermediateOutputPath)DbFunctionsExtensions.Function.$(Function).g.cs')" />
   </Target>
 
   <ItemGroup>

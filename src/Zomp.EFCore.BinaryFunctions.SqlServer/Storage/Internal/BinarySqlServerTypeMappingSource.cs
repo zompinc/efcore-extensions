@@ -6,6 +6,18 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Multiple versions")]
 public class BinarySqlServerTypeMappingSource : SqlServerTypeMappingSource
 {
+#if !EF_CORE_8 && !EF_CORE_9
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BinarySqlServerTypeMappingSource"/> class.
+    /// </summary>
+    /// <param name="dependencies">Type mapping source dependencies.</param>
+    /// <param name="relationalDependencies">Relational type mapping source dependencies.</param>
+    /// <param name="sqlServerSingletonOptions">The singleton option.</param>
+    public BinarySqlServerTypeMappingSource(TypeMappingSourceDependencies dependencies, RelationalTypeMappingSourceDependencies relationalDependencies, ISqlServerSingletonOptions sqlServerSingletonOptions)
+        : base(dependencies, relationalDependencies, sqlServerSingletonOptions)
+    {
+    }
+#else
     /// <summary>
     /// Initializes a new instance of the <see cref="BinarySqlServerTypeMappingSource"/> class.
     /// </summary>
@@ -15,6 +27,7 @@ public class BinarySqlServerTypeMappingSource : SqlServerTypeMappingSource
         : base(dependencies, relationalDependencies)
     {
     }
+#endif
 
     /// <inheritdoc/>
     protected override RelationalTypeMapping? FindMapping(in RelationalTypeMappingInfo mappingInfo)

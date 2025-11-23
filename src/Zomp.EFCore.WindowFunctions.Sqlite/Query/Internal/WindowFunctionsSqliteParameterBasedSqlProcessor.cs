@@ -32,7 +32,12 @@ public class WindowFunctionsSqliteParameterBasedSqlProcessor : SqliteParameterBa
     }
 #endif
 
-#if !EF_CORE_8
+#if !EF_CORE_8 && !EF_CORE_9
+    /// <inheritdoc/>
+    protected override Expression ProcessSqlNullability(Expression queryExpression, ParametersCacheDecorator parametersDecorator)
+        => new WindowFunctionsSqliteSqlNullabilityProcessor(Dependencies, Parameters)
+            .Process(queryExpression, parametersDecorator);
+#elif !EF_CORE_8 && EF_CORE_9
     /// <inheritdoc/>
     protected override Expression ProcessSqlNullability(Expression queryExpression, IReadOnlyDictionary<string, object?> parametersValues, out bool canCache)
         => new WindowFunctionsSqliteSqlNullabilityProcessor(Dependencies, Parameters)

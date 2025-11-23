@@ -1,0 +1,57 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="LICENSE" />
+    <File Path="NuGet.Config" />
+    <File Path="package.json" />
+    <File Path="README.md" />
+    <File Path="stylecop.json" />
+    <File Path="switcher.json" />
+    <File Path="version.json" />
+  </Folder>
+  <Folder Name="/Solution Items/.config/">
+    <File Path=".config/dotnet-tools.json" />
+  </Folder>
+  <Folder Name="/Solution Items/.github/" />
+  <Folder Name="/Solution Items/.github/workflows/">
+    <File Path=".github/workflows/build.yml" />
+  </Folder>
+  <Folder Name="/Solution Items/.husky/">
+    <File Path=".husky/pre-commit" />
+  </Folder>
+  <Folder Name="/Solution Items/.vscode/">
+    <File Path=".vscode/spellright.dict" />
+    <File Path=".vscode/tasks.json" />
+  </Folder>
+  <Folder Name="/src/">
+    <File Path="src/Directory.Build.props" />
+    <Project Path="src/Zomp.EFCore.BinaryFunctions.Npgsql/Zomp.EFCore.BinaryFunctions.Npgsql.csproj" />
+    <Project Path="src/Zomp.EFCore.BinaryFunctions.Sqlite/Zomp.EFCore.BinaryFunctions.Sqlite.csproj" />
+    <Project Path="src/Zomp.EFCore.BinaryFunctions.SqlServer/Zomp.EFCore.BinaryFunctions.SqlServer.csproj" />
+    <Project Path="src/Zomp.EFCore.BinaryFunctions/Zomp.EFCore.BinaryFunctions.csproj" />
+    <Project Path="src/Zomp.EFCore.WindowFunctions.Npgsql/Zomp.EFCore.WindowFunctions.Npgsql.csproj" />
+    <Project Path="src/Zomp.EFCore.WindowFunctions.Sqlite/Zomp.EFCore.WindowFunctions.Sqlite.csproj" />
+    <Project Path="src/Zomp.EFCore.WindowFunctions.SqlServer/Zomp.EFCore.WindowFunctions.SqlServer.csproj" />
+    <Project Path="src/Zomp.EFCore.WindowFunctions/Zomp.EFCore.WindowFunctions.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <File Path="tests/Directory.Build.props" />
+    <Project Path="tests/Zomp.EFCore.BinaryFunctions.Npgsql.Tests/Zomp.EFCore.BinaryFunctions.Npgsql.Tests.csproj" />
+    <Project Path="tests/Zomp.EFCore.BinaryFunctions.Sqlite.Tests/Zomp.EFCore.BinaryFunctions.Sqlite.Tests.csproj" />
+    <Project Path="tests/Zomp.EFCore.BinaryFunctions.SqlServer.Tests/Zomp.EFCore.BinaryFunctions.SqlServer.Tests.csproj" />
+    <Project Path="tests/Zomp.EFCore.BinaryFunctions.Testing/Zomp.EFCore.BinaryFunctions.Testing.csproj" />
+    <Project Path="tests/Zomp.EFCore.Combined.Npgsql.Tests/Zomp.EFCore.Combined.Npgsql.Tests.csproj" />
+    <Project Path="tests/Zomp.EFCore.Combined.Sqlite.Tests/Zomp.EFCore.Combined.Sqlite.Tests.csproj" />
+    <Project Path="tests/Zomp.EFCore.Combined.SqlServer.Tests/Zomp.EFCore.Combined.SqlServer.Tests.csproj" />
+    <Project Path="tests/Zomp.EFCore.Combined.Testing/Zomp.EFCore.Combined.Testing.csproj" />
+    <Project Path="tests/Zomp.EFCore.Testing/Zomp.EFCore.Testing.csproj" />
+    <Project Path="tests/Zomp.EFCore.WindowFunctions.Npgsql.Tests/Zomp.EFCore.WindowFunctions.Npgsql.Tests.csproj" />
+    <Project Path="tests/Zomp.EFCore.WindowFunctions.Sqlite.Tests/Zomp.EFCore.WindowFunctions.Sqlite.Tests.csproj" />
+    <Project Path="tests/Zomp.EFCore.WindowFunctions.SqlServer.Tests/Zomp.EFCore.WindowFunctions.SqlServer.Tests.csproj" />
+    <Project Path="tests/Zomp.EFCore.WindowFunctions.Testing/Zomp.EFCore.WindowFunctions.Testing.shproj" />
+  </Folder>
+</Solution>

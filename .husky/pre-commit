@@ -16,5 +16,5 @@ else
 fi
 
 EXIT_STATUS=0
-$dotnet tool run dotnet-format --verify-no-changes Zomp.EFCore.Extensions.sln -v $formatLevel whitespace || EXIT_STATUS=$?
+$dotnet format --verify-no-changes Zomp.EFCore.Extensions.slnx -v $formatLevel whitespace || EXIT_STATUS=$?
 exit $EXIT_STATUS
