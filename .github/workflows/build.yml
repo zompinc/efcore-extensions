@@ -89,8 +89,6 @@ jobs:
 
       - run: nbgv cloud
 
-      - run: dotnet tool restore
-
       - name: "Run pre-commit hooks"
         shell: bash
         run: sh $(git config core.hooksPath)/pre-commit normal
@@ -104,7 +102,7 @@ jobs:
           Zomp_EF_Data__SqlServerConnectionString: Server=localhost,31433;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
         run: dotnet test -c Release --no-build --verbosity normal --settings tests/coverlet.runsettings
       - name: Generate code coverage report
-        run: dotnet tool run reportgenerator -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
+        run: dotnet dnx --yes dotnet-reportgenerator-globaltool -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
       - name: Upload artifacts (code coverage)
         uses: actions/upload-artifact@v4
         with:
@@ -132,13 +130,16 @@ jobs:
           name: packages
           path: packages
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            10.0.x
+
       - name: Set path for nektos/act
         if: ${{ runner.os == 'Windows' && env.ACT }}
         run: echo "C:\Program Files\Git\bin" >> $GITHUB_PATH
         shell: '"C:\Program Files\Git\bin\bash.exe" -c {0}'
-
-      - name: Install sign tool
-        run: dotnet tool install sign --tool-path . --version 0.9.1-beta.24529.1
 
       - name: Sign
         env:
@@ -148,13 +149,13 @@ jobs:
         if: ${{ env.AZURE_CLIENT_SECRET != '' }}
 
         run: |
-          ./sign code trusted-signing \
+          dotnet dnx --prerelease --yes sign code trusted-signing \
           --base-directory "${{ github.workspace }}/packages" \
           "*.nupkg" \
           --trusted-signing-endpoint "${{ secrets.TRUSTED_SIGNING_ENDPOINT }}" \
           --trusted-signing-account "${{ secrets.TRUSTED_SIGNING_ACCOUNT }}" \
           --trusted-signing-certificate-profile "${{ secrets.TRUSTED_SIGNING_CERTIFICATE_PROFILE }}" \
-          -v trace
+          -v normal
 
       - name: Push to MyGet
         if: ${{ env.MYGET_PUSH_KEY != '' }}
