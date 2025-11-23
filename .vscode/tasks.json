@@ -20,7 +20,7 @@
       "group": "test",
       "args": [
         "test",
-        "${workspaceFolder}/Zomp.EFCore.WindowFunctions.sln",
+        "${workspaceFolder}/Zomp.EFCore.WindowFunctions.slnx",
         "--settings",
         "tests/coverlet.runsettings"
       ],

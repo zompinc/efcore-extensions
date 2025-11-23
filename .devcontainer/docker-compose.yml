@@ -19,7 +19,7 @@ services:
       bash -c "
         git config --global --add safe.directory /workspace &&
         dotnet tool restore &&
-        dotnet restore Zomp.EFCore.Extensions.sln &&
+        dotnet restore Zomp.EFCore.Extensions.slnx &&
         sleep infinity
       "
 
