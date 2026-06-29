@@ -8,6 +8,8 @@ This repository is home to two packages which extend [Entity Framework Core](htt
 - Zomp.EFCore.WindowFunctions
 - Zomp.EFCore.BinaryFunctions
 
+📺 Watch the [presentation](https://www.youtube.com/live/Z9SkvUuU9Sc) for an overview of these extensions.
+
 ## Zomp.EFCore.WindowFunctions
 
 Provides Window functions or analytics functions for providers. Currently supported for:
