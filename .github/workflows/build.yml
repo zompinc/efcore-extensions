@@ -118,7 +118,7 @@ jobs:
 
   publish:
     needs: build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
@@ -136,11 +136,6 @@ jobs:
           dotnet-version: |
             10.0.x
 
-      - name: Set path for nektos/act
-        if: ${{ runner.os == 'Windows' && env.ACT }}
-        run: echo "C:\Program Files\Git\bin" >> $GITHUB_PATH
-        shell: '"C:\Program Files\Git\bin\bash.exe" -c {0}'
-
       - name: Sign
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -148,14 +143,24 @@ jobs:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_SIGNER_CLIENT_ID }}
         if: ${{ env.AZURE_CLIENT_SECRET != '' }}
 
+        # --trust-signing-root is required on Linux: Trusted Signing issues from a root
+        # Linux trust stores do not carry, and NuGet refuses to sign against a chain it
+        # cannot build. Without it this fails with only "Certificate chain validation failed".
         run: |
-          dotnet dnx --prerelease --yes sign code trusted-signing \
-          --base-directory "${{ github.workspace }}/packages" \
-          "*.nupkg" \
-          --trusted-signing-endpoint "${{ secrets.TRUSTED_SIGNING_ENDPOINT }}" \
-          --trusted-signing-account "${{ secrets.TRUSTED_SIGNING_ACCOUNT }}" \
-          --trusted-signing-certificate-profile "${{ secrets.TRUSTED_SIGNING_CERTIFICATE_PROFILE }}" \
-          -v normal
+          dotnet dnx SignUniversal@1.0.26-alpha --yes sign packages/*.nupkg \
+            --trust-signing-root \
+            --trusted-signing-endpoint "${{ secrets.TRUSTED_SIGNING_ENDPOINT }}" \
+            --trusted-signing-account "${{ secrets.TRUSTED_SIGNING_ACCOUNT }}" \
+            --trusted-signing-certificate-profile "${{ secrets.TRUSTED_SIGNING_CERTIFICATE_PROFILE }}"
+
+      # Catches a signing step that quietly produced nothing usable, before anything is
+      # pushed. A real Trusted Signing certificate chains to a root in NuGet's own bundle,
+      # so anything short of a clean pass means nobody downstream could validate it either.
+      - name: Verify signature
+        env:
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_SIGNER_CLIENT_SECRET }}
+        if: ${{ env.AZURE_CLIENT_SECRET != '' }}
+        run: dotnet nuget verify packages/*.nupkg --all
 
       - name: Push to MyGet
         if: ${{ env.MYGET_PUSH_KEY != '' }}
