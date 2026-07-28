@@ -147,7 +147,7 @@ jobs:
         # Linux trust stores do not carry, and NuGet refuses to sign against a chain it
         # cannot build. Without it this fails with only "Certificate chain validation failed".
         run: |
-          dotnet dnx SignUniversal@1.0.26-alpha --yes sign packages/*.nupkg \
+          dotnet dnx SignUniversal.Cli@1.0.31-alpha --yes sign packages/*.nupkg \
             --trust-signing-root \
             --trusted-signing-endpoint "${{ secrets.TRUSTED_SIGNING_ENDPOINT }}" \
             --trusted-signing-account "${{ secrets.TRUSTED_SIGNING_ACCOUNT }}" \
