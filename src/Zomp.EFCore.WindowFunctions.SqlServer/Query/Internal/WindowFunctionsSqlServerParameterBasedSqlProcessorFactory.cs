@@ -15,6 +15,7 @@ public class WindowFunctionsSqlServerParameterBasedSqlProcessorFactory : SqlServ
     /// </summary>
     /// <param name="dependencies">Service dependencies.</param>
     /// <param name="sqlServerSingletonOptions">The singleton option.</param>
+    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Conditional compilation")]
     public WindowFunctionsSqlServerParameterBasedSqlProcessorFactory(RelationalParameterBasedSqlProcessorDependencies dependencies, ISqlServerSingletonOptions sqlServerSingletonOptions)
         : base(dependencies, sqlServerSingletonOptions)
     {

@@ -1,4 +1,4 @@
-namespace Zomp.EFCore.WindowFunctions.Testing;
+﻿namespace Zomp.EFCore.WindowFunctions.Testing;
 
 public partial class RankTests
 {
@@ -46,8 +46,7 @@ public partial class RankTests
             .Select(r => r.Id / 10)
             .Select(v => (long)groups
                 .Where(g => g.Key < v)
-                .Select(g => g.Count())
-                .Sum() + 1);
+                .Sum(g => g.Count()) + 1);
 
         Assert.Equal(expectedSequence, result);
     }
@@ -86,8 +85,7 @@ public partial class RankTests
             .OrderBy(x => x, comparer)
             .Select(v => groups
                 .Where(g => comparer.Compare(g.Key, v) < 0)
-                .Select(g => g.Count())
-                .Sum() / (double)(TestRows.Length - 1));
+                .Sum(g => g.Count()) / (double)(TestRows.Length - 1));
 
         Assert.Equal(expectedSequence, result.Select(r => r));
     }

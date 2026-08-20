@@ -229,7 +229,7 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
             }
 
             var replacing = windowFunctions[level];
-            subqueryList = replacing.Select(z => (MethodCallExpression)wfr.Visit(z)).ToList();
+            subqueryList = [.. replacing.Select(z => (MethodCallExpression)wfr.Visit(z))];
         }
 
         var newBody = wfr.Visit(lambda.Body);
@@ -302,7 +302,7 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
         cil.Emit(OpCodes.Ret);
 
         // Return the type to the caller
-        return dynamicAnonymousType.CreateType()!;
+        return dynamicAnonymousType.CreateType();
     }
 
     private static MethodInfo GetMethod(string name, int genericParameterCount, Func<Type[], Type[]> parameterGenerator)

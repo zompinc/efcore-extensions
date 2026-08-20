@@ -47,14 +47,14 @@ public static class ExpressionVisitorExtensions
         }
 
         _ = relationalCommandBuilder.Append("OVER(");
-        if (windowFunctionExpression.Partitions.Any())
+        if (windowFunctionExpression.Partitions.Count > 0)
         {
             _ = relationalCommandBuilder.Append("PARTITION BY ");
             GenerateList(relationalCommandBuilder, windowFunctionExpression.Partitions, e => expressionVisitor.Visit(e));
             _ = relationalCommandBuilder.Append(" ");
         }
 
-        if (windowFunctionExpression.Orderings.Any())
+        if (windowFunctionExpression.Orderings.Count > 0)
         {
             _ = relationalCommandBuilder.Append("ORDER BY ");
             GenerateList(relationalCommandBuilder, windowFunctionExpression.Orderings, e => expressionVisitor.Visit(e));
@@ -92,7 +92,7 @@ public static class ExpressionVisitorExtensions
 
     private static void ProcessWindowFrame(IRelationalCommandBuilder relationalCommandBuilder, WindowFrame windowFrame, bool isStart)
     {
-        _ = relationalCommandBuilder.Append(windowFrame.ToString()!);
+        _ = relationalCommandBuilder.Append(windowFrame.ToString());
 
         if (windowFrame.IsDirectional)
         {

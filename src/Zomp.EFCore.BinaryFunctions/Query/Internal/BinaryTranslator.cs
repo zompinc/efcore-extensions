@@ -19,21 +19,18 @@ public class BinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelat
     {
         ArgumentNullException.ThrowIfNull(method);
 
-        if (method.DeclaringType != typeof(DbFunctionsExtensions))
-        {
-            return null;
-        }
-
-        return method.Name switch
-        {
-            nameof(DbFunctionsExtensions.GetBytes) => GetBytes(arguments[1]),
-            nameof(DbFunctionsExtensions.Concat) => Concat(arguments),
-            nameof(DbFunctionsExtensions.Substring) => Substring(arguments[1], arguments[2], arguments[3]),
-            nameof(DbFunctionsExtensions.ToValue) when arguments.Count > 2 => ToValue(arguments[1], arguments[2], method.GetGenericArguments()[0]),
-            nameof(DbFunctionsExtensions.ToValue) => ToValue(arguments[1], method.GetGenericArguments()[0]),
-            nameof(DbFunctionsExtensions.BinaryCast) => BinaryCast(arguments[1], method.GetGenericArguments()[1]),
-            _ => null,
-        };
+        return method.DeclaringType != typeof(DbFunctionsExtensions)
+            ? null
+            : method.Name switch
+            {
+                nameof(DbFunctionsExtensions.GetBytes) => GetBytes(arguments[1]),
+                nameof(DbFunctionsExtensions.Concat) => Concat(arguments),
+                nameof(DbFunctionsExtensions.Substring) => Substring(arguments[1], arguments[2], arguments[3]),
+                nameof(DbFunctionsExtensions.ToValue) when arguments.Count > 2 => ToValue(arguments[1], arguments[2], method.GetGenericArguments()[0]),
+                nameof(DbFunctionsExtensions.ToValue) => ToValue(arguments[1], method.GetGenericArguments()[0]),
+                nameof(DbFunctionsExtensions.BinaryCast) => BinaryCast(arguments[1], method.GetGenericArguments()[1]),
+                _ => null,
+            };
     }
 
     /// <summary>

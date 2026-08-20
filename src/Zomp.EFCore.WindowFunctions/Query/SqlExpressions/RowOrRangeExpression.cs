@@ -72,7 +72,7 @@ public class RowOrRangeExpression(bool isRows, WindowFrame start, WindowFrame? e
 
     private static void ProcessWindowFrame(ExpressionPrinter expressionPrinter, WindowFrame windowFrame, bool isStart)
     {
-        _ = expressionPrinter.Append(windowFrame.ToString()!);
+        _ = expressionPrinter.Append(windowFrame.ToString());
 
         if (windowFrame.IsDirectional)
         {
