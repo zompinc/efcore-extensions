@@ -16,6 +16,8 @@
     <PackageVersion Include="Fody" Version="6.9.3" />
     <PackageVersion Include="InfoOf.Fody" Version="2.2.0" />
     <PackageVersion Include="MartinCostello.Logging.XUnit" Version="0.7.0" />
+    <!-- Roslyn shipped with the .NET 8 SDK, the oldest SDK the source generator must load in -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.100" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(NetRuntime)" />
