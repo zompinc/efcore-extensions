@@ -33,10 +33,7 @@ public static class WindowFunctionsSqlNullabilityProcessorHelper
                 }
             }
 
-            if (arguments is not null)
-            {
-                arguments[i] = visitedArgument;
-            }
+            arguments?[i] = visitedArgument;
         }
 
         SqlExpression[]? partitions = null;
@@ -54,10 +51,7 @@ public static class WindowFunctionsSqlNullabilityProcessorHelper
                 }
             }
 
-            if (partitions is not null)
-            {
-                partitions[i] = visitedPartition!;
-            }
+            partitions?[i] = visitedPartition!;
         }
 
         OrderingExpression[]? orderings = null;
@@ -75,10 +69,7 @@ public static class WindowFunctionsSqlNullabilityProcessorHelper
                 }
             }
 
-            if (orderings is not null)
-            {
-                orderings[i] = visitedOrdering;
-            }
+            orderings?[i] = visitedOrdering;
         }
 
         return arguments is not null || orderings is not null || partitions is not null

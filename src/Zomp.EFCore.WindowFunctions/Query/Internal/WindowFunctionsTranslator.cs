@@ -14,46 +14,43 @@ public class WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactor
     /// <inheritdoc/>
     public SqlExpression? Translate(SqlExpression? instance, MethodInfo method, IReadOnlyList<SqlExpression> arguments, IDiagnosticsLogger<DbLoggerCategory.Query> logger)
     {
-        if (method.DeclaringType != typeof(DbFunctionsExtensions))
-        {
-            return null;
-        }
+        return method.DeclaringType != typeof(DbFunctionsExtensions)
+            ? null
+            : method.Name switch
+            {
+                nameof(DbFunctionsExtensions.Min) => Parse(arguments, "MIN"),
+                nameof(DbFunctionsExtensions.Max) => Parse(arguments, "MAX"),
+                nameof(DbFunctionsExtensions.Lead) => Parse(arguments, "LEAD"),
+                nameof(DbFunctionsExtensions.Lag) => Parse(arguments, "LAG"),
+                nameof(DbFunctionsExtensions.Sum) => Parse(arguments, "SUM"),
+                nameof(DbFunctionsExtensions.Avg) => Parse(arguments, "AVG"),
+                nameof(DbFunctionsExtensions.Count) => Parse(arguments, "COUNT"),
+                nameof(DbFunctionsExtensions.RowNumber) => Parse(arguments, "ROW_NUMBER"),
+                nameof(DbFunctionsExtensions.Rank) => Parse(arguments, "RANK"),
+                nameof(DbFunctionsExtensions.DenseRank) => Parse(arguments, "DENSE_RANK"),
+                nameof(DbFunctionsExtensions.PercentRank) => Parse(arguments, "PERCENT_RANK"),
 
-        return method.Name switch
-        {
-            nameof(DbFunctionsExtensions.Min) => Parse(arguments, "MIN"),
-            nameof(DbFunctionsExtensions.Max) => Parse(arguments, "MAX"),
-            nameof(DbFunctionsExtensions.Lead) => Parse(arguments, "LEAD"),
-            nameof(DbFunctionsExtensions.Lag) => Parse(arguments, "LAG"),
-            nameof(DbFunctionsExtensions.Sum) => Parse(arguments, "SUM"),
-            nameof(DbFunctionsExtensions.Avg) => Parse(arguments, "AVG"),
-            nameof(DbFunctionsExtensions.Count) => Parse(arguments, "COUNT"),
-            nameof(DbFunctionsExtensions.RowNumber) => Parse(arguments, "ROW_NUMBER"),
-            nameof(DbFunctionsExtensions.Rank) => Parse(arguments, "RANK"),
-            nameof(DbFunctionsExtensions.DenseRank) => Parse(arguments, "DENSE_RANK"),
-            nameof(DbFunctionsExtensions.PercentRank) => Parse(arguments, "PERCENT_RANK"),
+                nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
+                nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
+                nameof(DbFunctionsExtensions.PartitionBy) => PartitionBy(arguments),
+                nameof(DbFunctionsExtensions.ThenBy) => ThenBy(arguments, true),
+                nameof(DbFunctionsExtensions.ThenByDescending) => ThenBy(arguments, false),
 
-            nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
-            nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
-            nameof(DbFunctionsExtensions.PartitionBy) => PartitionBy(arguments),
-            nameof(DbFunctionsExtensions.ThenBy) => ThenBy(arguments, true),
-            nameof(DbFunctionsExtensions.ThenByDescending) => ThenBy(arguments, false),
+                nameof(DbFunctionsExtensions.Rows) => RowsOrRange(arguments, true),
+                nameof(DbFunctionsExtensions.Range) => RowsOrRange(arguments, false),
 
-            nameof(DbFunctionsExtensions.Rows) => RowsOrRange(arguments, true),
-            nameof(DbFunctionsExtensions.Range) => RowsOrRange(arguments, false),
+                nameof(DbFunctionsExtensions.FromPreceding) => From(arguments, false),
+                nameof(DbFunctionsExtensions.FromFollowing) => From(arguments, true),
+                nameof(DbFunctionsExtensions.FromCurrentRow) => FromWindowFrame(GetOrderingSqlExpression(arguments), WindowFrame.CurrentRow),
+                nameof(DbFunctionsExtensions.FromUnbounded) => FromWindowFrame(GetOrderingSqlExpression(arguments), WindowFrame.Unbounded),
 
-            nameof(DbFunctionsExtensions.FromPreceding) => From(arguments, false),
-            nameof(DbFunctionsExtensions.FromFollowing) => From(arguments, true),
-            nameof(DbFunctionsExtensions.FromCurrentRow) => FromWindowFrame(GetOrderingSqlExpression(arguments), WindowFrame.CurrentRow),
-            nameof(DbFunctionsExtensions.FromUnbounded) => FromWindowFrame(GetOrderingSqlExpression(arguments), WindowFrame.Unbounded),
+                nameof(DbFunctionsExtensions.ToFollowing) => To(arguments, true),
+                nameof(DbFunctionsExtensions.ToCurrentRow) => ToWindowFrame(GetOrderingSqlExpression(arguments), WindowFrame.CurrentRow),
+                nameof(DbFunctionsExtensions.ToUnbounded) => ToWindowFrame(GetOrderingSqlExpression(arguments), WindowFrame.Unbounded),
+                nameof(DbFunctionsExtensions.ToPreceding) => To(arguments, false),
 
-            nameof(DbFunctionsExtensions.ToFollowing) => To(arguments, true),
-            nameof(DbFunctionsExtensions.ToCurrentRow) => ToWindowFrame(GetOrderingSqlExpression(arguments), WindowFrame.CurrentRow),
-            nameof(DbFunctionsExtensions.ToUnbounded) => ToWindowFrame(GetOrderingSqlExpression(arguments), WindowFrame.Unbounded),
-            nameof(DbFunctionsExtensions.ToPreceding) => To(arguments, false),
-
-            _ => null,
-        };
+                _ => null,
+            };
     }
 
     /// <summary>

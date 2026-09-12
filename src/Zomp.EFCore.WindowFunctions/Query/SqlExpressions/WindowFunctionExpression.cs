@@ -169,14 +169,14 @@ public class WindowFunctionExpression(
 
         _ = expressionPrinter.Append("OVER(");
 
-        if (Partitions.Any())
+        if (Partitions.Count > 0)
         {
             _ = expressionPrinter.Append("PARTITION BY ");
             expressionPrinter.VisitCollection(Partitions);
             _ = expressionPrinter.Append(" ");
         }
 
-        if (Orderings.Any())
+        if (Orderings.Count > 0)
         {
             _ = expressionPrinter.Append("ORDER BY ");
             expressionPrinter.VisitCollection(Orderings);

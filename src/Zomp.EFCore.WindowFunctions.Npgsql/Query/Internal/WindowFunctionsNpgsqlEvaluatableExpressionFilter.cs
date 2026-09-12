@@ -15,6 +15,7 @@ public class WindowFunctionsNpgsqlEvaluatableExpressionFilter : NpgsqlEvaluatabl
     /// <param name="dependencies">Service dependencies.</param>
     /// <param name="relationalDependencies">Relational service dependencies.</param>
     /// <param name="npgsqlSingletonOptions">NpgSql Singleton Options.</param>
+    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Conditional compilation")]
     public WindowFunctionsNpgsqlEvaluatableExpressionFilter(EvaluatableExpressionFilterDependencies dependencies, RelationalEvaluatableExpressionFilterDependencies relationalDependencies, INpgsqlSingletonOptions npgsqlSingletonOptions)
         : base(dependencies, relationalDependencies, npgsqlSingletonOptions)
     {

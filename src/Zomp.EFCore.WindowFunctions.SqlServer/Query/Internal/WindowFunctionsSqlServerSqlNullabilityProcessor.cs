@@ -15,6 +15,7 @@ public class WindowFunctionsSqlServerSqlNullabilityProcessor : SqlServerSqlNulla
     /// <param name="dependencies">Relational Parameter Based Sql Processor Dependencies.</param>
     /// <param name="parameters">Relational parameters.</param>
     /// <param name="sqlServerSingletonOptions">The singleton option.</param>
+    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Conditional compilation")]
     public WindowFunctionsSqlServerSqlNullabilityProcessor(RelationalParameterBasedSqlProcessorDependencies dependencies, RelationalParameterBasedSqlProcessorParameters parameters, ISqlServerSingletonOptions sqlServerSingletonOptions)
         : base(dependencies, parameters, sqlServerSingletonOptions)
     {
