@@ -8,8 +8,9 @@
 /// </remarks>
 public class WindowFunctionsSqlServerParameterBasedSqlProcessorFactory : SqlServerParameterBasedSqlProcessorFactory
 {
-    private readonly ISqlServerSingletonOptions sqlServerSingletonOptions;
 #if !EF_CORE_8 && !EF_CORE_9
+    private readonly ISqlServerSingletonOptions sqlServerSingletonOptions;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerParameterBasedSqlProcessorFactory"/> class.
     /// </summary>
@@ -26,6 +27,7 @@ public class WindowFunctionsSqlServerParameterBasedSqlProcessorFactory : SqlServ
     /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerParameterBasedSqlProcessorFactory"/> class.
     /// </summary>
     /// <param name="dependencies">Service dependencies.</param>
+    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Conditional compilation")]
     public WindowFunctionsSqlServerParameterBasedSqlProcessorFactory(RelationalParameterBasedSqlProcessorDependencies dependencies)
         : base(dependencies)
     {
