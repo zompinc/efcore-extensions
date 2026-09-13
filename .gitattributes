@@ -1,4 +1,6 @@
-* text=auto
+# Check out LF everywhere to match end_of_line in .editorconfig, which the
+# pre-commit whitespace check enforces.
+* text=auto eol=lf
 
 # Force bash scripts to always use lf line endings so that if a repo is accessed
 # in Unix via a file share from Windows, the scripts will work.
