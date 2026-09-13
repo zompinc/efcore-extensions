@@ -1,7 +1,23 @@
 <Project>
+  <Choose>
+    <When Condition="$(DefineConstants.Contains(EF_CORE_8)) or $(DefineConstants.Contains(EF_CORE_9))">
+      <PropertyGroup>
+        <TargetFrameworks>net8.0</TargetFrameworks>
+      </PropertyGroup>
+    </When>
+    <When Condition="$(DefineConstants.Contains(EF_CORE_11))">
+      <PropertyGroup>
+        <TargetFrameworks>net11.0</TargetFrameworks>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <TargetFrameworks>net10.0</TargetFrameworks>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
   <PropertyGroup>
-    <TargetFrameworks Condition="$(DefineConstants.Contains(EF_CORE_8)) or $(DefineConstants.Contains(EF_CORE_9))">net8.0</TargetFrameworks>
-    <TargetFrameworks Condition="!$(DefineConstants.Contains(EF_CORE_8)) and !$(DefineConstants.Contains(EF_CORE_9))">net10.0</TargetFrameworks>
     <Copyright>© Zomp Inc. All rights reserved.</Copyright>
     <Company>Zomp</Company>
     <Authors>Victor Irzak</Authors>

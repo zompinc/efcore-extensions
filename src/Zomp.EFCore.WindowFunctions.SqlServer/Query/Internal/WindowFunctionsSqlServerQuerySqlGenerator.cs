@@ -18,6 +18,7 @@ public class WindowFunctionsSqlServerQuerySqlGenerator : SqlServerQuerySqlGenera
     }
 
     /// <inheritdoc/>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1725:Parameter names should match base declaration", Justification = "EF Core 11 renamed the base parameter; one name serves every EF Core version")]
     protected override Expression VisitExtension(Expression extensionExpression)
         => extensionExpression switch
         {
