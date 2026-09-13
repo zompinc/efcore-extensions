@@ -63,7 +63,18 @@ public class BinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelat
     {
         var t = Type.MakeGenericSignatureType(typeof(FixedByteArray<>), [toType]);
         var mapping = relationalTypeMappingSource.FindMapping(t);
-        return new SqlUnaryExpression(ExpressionType.Convert, sqlExpressionFactory.ApplyDefaultTypeMapping(sqlExpression), typeof(byte[]), mapping);
+        var operand = sqlExpressionFactory.ApplyDefaultTypeMapping(sqlExpression);
+
+#if !EF_CORE_8
+        // A column that already has the target store type (e.g. a Guid stored as BLOB through a value converter) needs
+        // no CAST. EF Core 11 strips such a CAST and the projection keeps the column's CLR type and converter, so read
+        // the column itself as byte[] instead.
+        return operand is ColumnExpression column && mapping is not null && column.TypeMapping?.StoreType == mapping.StoreType
+            ? new ColumnExpression(column.Name, column.TableAlias, typeof(byte[]), mapping, column.IsNullable)
+            : new SqlUnaryExpression(ExpressionType.Convert, operand, typeof(byte[]), mapping);
+#else
+        return new SqlUnaryExpression(ExpressionType.Convert, operand, typeof(byte[]), mapping);
+#endif
     }
 
     /// <summary>
