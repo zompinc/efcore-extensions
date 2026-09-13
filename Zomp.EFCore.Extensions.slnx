@@ -33,6 +33,7 @@
     <Project Path="src/Zomp.EFCore.BinaryFunctions.Sqlite/Zomp.EFCore.BinaryFunctions.Sqlite.csproj" />
     <Project Path="src/Zomp.EFCore.BinaryFunctions.SqlServer/Zomp.EFCore.BinaryFunctions.SqlServer.csproj" />
     <Project Path="src/Zomp.EFCore.BinaryFunctions/Zomp.EFCore.BinaryFunctions.csproj" />
+    <Project Path="src/Zomp.EFCore.WindowFunctions.Generators/Zomp.EFCore.WindowFunctions.Generators.csproj" />
     <Project Path="src/Zomp.EFCore.WindowFunctions.Npgsql/Zomp.EFCore.WindowFunctions.Npgsql.csproj" />
     <Project Path="src/Zomp.EFCore.WindowFunctions.Sqlite/Zomp.EFCore.WindowFunctions.Sqlite.csproj" />
     <Project Path="src/Zomp.EFCore.WindowFunctions.SqlServer/Zomp.EFCore.WindowFunctions.SqlServer.csproj" />
