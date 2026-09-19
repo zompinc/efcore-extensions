@@ -198,4 +198,20 @@ public partial class SubQueryTests
 
         var queryStr = query.ToQueryString();
     }
+
+    [Fact]
+    public void RowNumberWithWhereAfterJoin()
+    {
+        // After navigation expansion the Where lambda takes EF Core's private TransparentIdentifier struct.
+        var query = DbContext.TestRows
+            .Join(DbContext.TestRows, l => l.Id, r => r.Id, (l, r) => new { l, r })
+            .Where(z => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(z.r.Id)) == 1)
+            .Select(z => z.l);
+
+        var result = query.ToList();
+
+        var expected = TestRows.First();
+
+        Assert.Equal(expected, result.Single(), TestRowEqualityComparer.Default);
+    }
 }
