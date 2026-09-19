@@ -238,14 +238,83 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
         return rewrittenLambda;
     }
 
+    private static void AddAssembliesWithNonVisibleTypes(Type type, HashSet<string> assemblyNames)
+    {
+        if (!type.IsVisible)
+        {
+            _ = assemblyNames.Add(type.Assembly.GetName().Name!);
+        }
+
+        if (type.HasElementType)
+        {
+            AddAssembliesWithNonVisibleTypes(type.GetElementType()!, assemblyNames);
+        }
+
+        if (type.IsGenericType)
+        {
+            foreach (var argument in type.GetGenericArguments())
+            {
+                if (!argument.IsGenericParameter)
+                {
+                    AddAssembliesWithNonVisibleTypes(argument, assemblyNames);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Emits System.Runtime.CompilerServices.IgnoresAccessChecksToAttribute, which the runtime recognizes by name
+    /// but the base class library does not define.
+    /// </summary>
+    private static ConstructorInfo DefineIgnoresAccessChecksToAttribute(ModuleBuilder module)
+    {
+        var baseConstructor = typeof(Attribute).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, Type.EmptyTypes)
+            ?? throw new InvalidOperationException("Attribute must have a parameterless constructor.");
+
+        var attributeType = module.DefineType(
+            "System.Runtime.CompilerServices.IgnoresAccessChecksToAttribute",
+            TypeAttributes.Public | TypeAttributes.Sealed,
+            typeof(Attribute));
+
+        var constructor = attributeType.DefineConstructor(
+            MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+            CallingConventions.Standard,
+            [typeof(string)]);
+
+        var il = constructor.GetILGenerator();
+        il.Emit(OpCodes.Ldarg_0);
+        il.Emit(OpCodes.Call, baseConstructor);
+        il.Emit(OpCodes.Ret);
+
+        return attributeType.CreateType().GetConstructor([typeof(string)])
+            ?? throw new InvalidOperationException("Can't be null, it was just created.");
+    }
+
     ///// From : https://www.codeproject.com/Articles/121568/Dynamic-Type-Using-Reflection-Emit
     [SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "Not relevant")]
-    private static Type CreateNewType(IEnumerable<Name_Type_And_Replacement> info)
+    private static Type CreateNewType(IReadOnlyList<Name_Type_And_Replacement> info)
     {
         // Let's start by creating a new assembly
         var dynamicAssemblyName = new AssemblyName("MyAsm");
         var dynamicAssembly = AssemblyBuilder.DefineDynamicAssembly(dynamicAssemblyName, AssemblyBuilderAccess.Run);
         var dynamicModule = dynamicAssembly.DefineDynamicModule("MyAsm");
+
+        // Property types can be non-public, e.g. EF Core's private TransparentIdentifier struct after a join or a
+        // navigation. The runtime refuses to load the new type unless its assembly may ignore access checks to theirs.
+        var assemblyNames = new HashSet<string>();
+        foreach (var (_, type, _) in info)
+        {
+            AddAssembliesWithNonVisibleTypes(type, assemblyNames);
+        }
+
+        if (assemblyNames.Count > 0)
+        {
+            var ignoresAccessChecksTo = DefineIgnoresAccessChecksToAttribute(dynamicModule);
+            foreach (var assemblyName in assemblyNames)
+            {
+                dynamicAssembly.SetCustomAttribute(new CustomAttributeBuilder(ignoresAccessChecksTo, [assemblyName]));
+            }
+        }
 
         // Now let's build a new type
         var dynamicAnonymousType = dynamicModule.DefineType("MyAnon", TypeAttributes.Public);
