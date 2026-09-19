@@ -418,4 +418,28 @@ public partial class SubQueryTests
 
         Assert.Equal(expectedSequence, result);
     }
+
+#if NET10_0_OR_GREATER
+    [Fact]
+    public void LeftJoinAfterWindowFunctionProjectionJoinsNumberedRows()
+    {
+        // A left join keeps every outer row, so it takes several matches per row to disturb the numbering.
+        var query = DbContext.TestRows
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
+            .LeftJoin(DbContext.TestRows, l => l.Id / 10, r => r.Id / 10, (l, r) => new { l.Id, l.RowNumber, InnerId = r!.Id })
+            .OrderBy(j => j.Id)
+            .ThenBy(j => j.InnerId);
+
+        var result = query.ToList();
+
+        var expectedSequence = TestRows
+            .OrderBy(t => t.Id)
+            .Select((t, i) => new { t.Id, RowNumber = i + 1L })
+            .SelectMany(l => TestRows.Where(r => r.Id / 10 == l.Id / 10), (l, r) => new { l.Id, l.RowNumber, InnerId = r.Id })
+            .OrderBy(j => j.Id)
+            .ThenBy(j => j.InnerId);
+
+        Assert.Equal(expectedSequence, result);
+    }
+#endif
 }
