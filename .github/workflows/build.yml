@@ -2,9 +2,16 @@ name: Build
 
 on:
   push:
+    branches: [master]
   pull_request:
     branches: [master]
   workflow_dispatch:
+
+# Topic branches build once, through their PR. A newer push supersedes a run still in
+# progress, except on master where a cancelled run could stop halfway through publishing.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 env:
   Configuration: Release
