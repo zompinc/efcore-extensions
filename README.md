@@ -109,6 +109,29 @@ var query = dbContext.TestRows
 });
 ```
 
+### Experimental APIs
+
+Window functions used inside `Where`, a join or another window function are pushed down into a subquery automatically. `AsSubQuery()` forces the pushdown where nothing detects the need for it:
+
+```cs
+var query = dbContext.TestRows
+.Select(r => new
+{
+    r.Id,
+    RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(r.Id)),
+})
+.AsSubQuery()
+.Where(r => r.Id > 2);
+```
+
+Without the call EF Core applies the filter first and the rows are numbered from 1 after filtering. It also works without any window function, for instance to stop a projected subquery from being repeated in a later `Where` ([dotnet/efcore#20291](https://github.com/dotnet/efcore/issues/20291)).
+
+`AsSubQuery()` is marked `[Experimental]` and may be removed once EF Core no longer needs the hint. Opt in by suppressing `ZOMPEF001`:
+
+```xml
+<NoWarn>$(NoWarn);ZOMPEF001</NoWarn>
+```
+
 ## Zomp.EFCore.BinaryFunctions
 
 Provides Window functions or analytics functions for providers. Currently supported for:

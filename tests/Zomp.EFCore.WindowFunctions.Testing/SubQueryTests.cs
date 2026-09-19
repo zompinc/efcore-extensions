@@ -214,4 +214,24 @@ public partial class SubQueryTests
 
         Assert.Equal(expected, result.Single(), TestRowEqualityComparer.Default);
     }
+
+    [Fact]
+    public void AsSubQueryNumbersRowsBeforeFiltering()
+    {
+        // The filter has no window function in it, so nothing is pushed down without the hint.
+        var query = DbContext.TestRows
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
+            .AsSubQuery()
+            .Where(w => w.Id > 2)
+            .OrderBy(w => w.Id);
+
+        var result = query.ToList();
+
+        var expectedSequence = TestRows
+            .OrderBy(t => t.Id)
+            .Select((t, i) => new { t.Id, RowNumber = i + 1L })
+            .Where(w => w.Id > 2);
+
+        Assert.Equal(expectedSequence, result);
+    }
 }

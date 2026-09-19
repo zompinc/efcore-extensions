@@ -201,11 +201,17 @@ public static partial class DbFunctionsExtensions
     /// <summary>
     /// Executes provided query as a sub query.
     /// </summary>
+    /// <remarks>
+    /// Window functions used in a where clause, a join or another window function are pushed down automatically.
+    /// This method is for the remaining cases, such as avoiding a projection being repeated in a later operator
+    /// (https://github.com/dotnet/efcore/issues/20291). It is experimental and may be removed once EF Core no longer needs the hint.
+    /// </remarks>
     /// <param name="source">Query to execute as as sub query.</param>
     /// <typeparam name="TEntity">Type of the entity.</typeparam>
     /// <returns>Query that will be executed as a sub query.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
-    internal static IQueryable<TEntity> AsSubQuery<TEntity>(this IQueryable<TEntity> source)
+    [Experimental("ZOMPEF001", UrlFormat = "https://github.com/zompinc/efcore-extensions#experimental-apis")]
+    public static IQueryable<TEntity> AsSubQuery<TEntity>(this IQueryable<TEntity> source)
     {
         ArgumentNullException.ThrowIfNull(source);
 
