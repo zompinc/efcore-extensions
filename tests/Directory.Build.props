@@ -26,6 +26,9 @@
 
     <NoWarn>$(NoWarn);SA1601</NoWarn>
     <NoWarn>$(NoWarn);SA1502</NoWarn>
+
+    <!-- Tests exercise the experimental AsSubQuery -->
+    <NoWarn>$(NoWarn);ZOMPEF001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">
