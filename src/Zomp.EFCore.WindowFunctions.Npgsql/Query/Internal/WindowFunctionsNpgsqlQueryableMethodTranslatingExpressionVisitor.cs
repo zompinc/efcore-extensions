@@ -36,7 +36,20 @@ public class WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitor : 
     }
 #endif
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitor"/> class.
+    /// </summary>
+    /// <param name="parentVisitor">The visitor translating the query this subquery belongs to.</param>
+    protected WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitor(WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitor parentVisitor)
+        : base(parentVisitor)
+    {
+    }
+
     /// <inheritdoc/>
     protected override Expression VisitMethodCall(MethodCallExpression methodCallExpression) => SubQueryProcessor.ProcessSubQuery(this, methodCallExpression)
             ?? base.VisitMethodCall(methodCallExpression);
+
+    /// <inheritdoc/>
+    protected override QueryableMethodTranslatingExpressionVisitor CreateSubqueryVisitor()
+        => new WindowFunctionsNpgsqlQueryableMethodTranslatingExpressionVisitor(this);
 }
