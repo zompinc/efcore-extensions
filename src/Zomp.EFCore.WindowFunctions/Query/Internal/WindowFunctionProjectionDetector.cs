@@ -1,7 +1,8 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Query.Internal;
 
 /// <summary>
-/// Pushes a projection containing a window function into a subquery when an operator that SQL evaluates before the window function follows it.
+/// Pushes a query into a subquery where SQL would otherwise evaluate an operator and a window function in the opposite order to LINQ:
+/// a projection with a window function followed by a filter, aggregate or GROUP BY, and a row limit followed by a window function.
 /// </summary>
 /// <remarks>
 /// Has to run before navigation expansion, which moves every projection to the end of the query and with it the information that the projection came first.
@@ -35,6 +36,27 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
         nameof(Queryable.SingleOrDefault),
     ];
 
+    /// <summary>
+    /// Operators SQL applies after the window functions of the same SELECT.
+    /// </summary>
+    private static readonly FrozenSet<string> RowLimitingOperators =
+    [
+        nameof(Queryable.Skip),
+        nameof(Queryable.Take),
+    ];
+
+    /// <summary>
+    /// Operators a row limit stays in the same SELECT with.
+    /// </summary>
+    private static readonly FrozenSet<string> OperatorsKeepingRowLimit =
+    [
+        nameof(Queryable.OrderBy),
+        nameof(Queryable.OrderByDescending),
+        nameof(Queryable.Select),
+        nameof(Queryable.ThenBy),
+        nameof(Queryable.ThenByDescending),
+    ];
+
     private static readonly FrozenSet<string> ProjectingOperators =
     [
         nameof(Queryable.GroupJoin),
@@ -48,9 +70,18 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
     {
         var visited = (MethodCallExpression)base.VisitMethodCall(node);
 
-        if (visited.Method.DeclaringType != typeof(Queryable)
-            || !IsEvaluatedBeforeWindowFunction(visited)
-            || !ProjectsWindowFunction(visited.Arguments[0]))
+        if (visited.Method.DeclaringType != typeof(Queryable))
+        {
+            return visited;
+        }
+
+        var needsSubquery = IsEvaluatedBeforeWindowFunction(visited)
+            ? ProjectsWindowFunction(visited.Arguments[0])
+            : ProjectingOperators.Contains(visited.Method.Name)
+                && ContainsWindowFunction(visited)
+                && IsRowLimited(visited.Arguments[0]);
+
+        if (!needsSubquery)
         {
             return visited;
         }
@@ -60,6 +91,40 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
         var asSubQueryMethod = WindowFunctionsEvaluatableExpressionFilter.AsSubQueryMethod.MakeGenericMethod(elementType);
 
         return visited.Update(null, [Expression.Call(null, asSubQueryMethod, source), .. visited.Arguments.Skip(1)]);
+    }
+
+    private static bool ContainsWindowFunction(MethodCallExpression call)
+    {
+        var detector = new WindowFunctionDetectorInternal();
+        foreach (var argument in call.Arguments.Skip(1))
+        {
+            _ = detector.Visit(argument);
+        }
+
+        return detector.WindowFunctionsCollection.Count > 0;
+    }
+
+    /// <summary>
+    /// Checks whether Skip or Take ends up in the same SELECT as a projection over <paramref name="source"/>.
+    /// </summary>
+    private static bool IsRowLimited(Expression source)
+    {
+        while (source is MethodCallExpression { Method: var method } call && method.DeclaringType == typeof(Queryable))
+        {
+            if (RowLimitingOperators.Contains(method.Name))
+            {
+                return true;
+            }
+
+            if (!OperatorsKeepingRowLimit.Contains(method.Name))
+            {
+                return false;
+            }
+
+            source = call.Arguments[0];
+        }
+
+        return false;
     }
 
     private static bool IsEvaluatedBeforeWindowFunction(MethodCallExpression call)
@@ -81,18 +146,11 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
                 return false;
             }
 
-            if (call.Method.DeclaringType == typeof(Queryable) && ProjectingOperators.Contains(call.Method.Name))
+            if (call.Method.DeclaringType == typeof(Queryable)
+                && ProjectingOperators.Contains(call.Method.Name)
+                && ContainsWindowFunction(call))
             {
-                var detector = new WindowFunctionDetectorInternal();
-                foreach (var argument in call.Arguments.Skip(1))
-                {
-                    _ = detector.Visit(argument);
-                }
-
-                if (detector.WindowFunctionsCollection.Count > 0)
-                {
-                    return true;
-                }
+                return true;
             }
 
             source = call.Arguments[0];
