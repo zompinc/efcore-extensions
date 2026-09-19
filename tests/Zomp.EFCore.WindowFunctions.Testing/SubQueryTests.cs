@@ -301,4 +301,38 @@ public partial class SubQueryTests
 
         Assert.Equal(expectedSequence, result);
     }
+
+    [Fact]
+    public void WhereAfterWindowFunctionProjectionFiltersNumberedRows()
+    {
+        // LINQ numbers the rows and then filters them. Filtering first restarts the numbering at 1.
+        var query = DbContext.TestRows
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
+            .Where(w => w.Id > 2)
+            .OrderBy(w => w.Id);
+
+        var result = query.ToList();
+
+        var expectedSequence = TestRows
+            .OrderBy(t => t.Id)
+            .Select((t, i) => new { t.Id, RowNumber = i + 1L })
+            .Where(w => w.Id > 2);
+
+        Assert.Equal(expectedSequence, result);
+    }
+
+    [Fact]
+    public void WhereOnWindowFunctionKeepsItsValue()
+    {
+        // The projected row number has to be the one that was filtered on, not one recomputed afterwards.
+        var query = DbContext.TestRows
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
+            .Where(w => w.RowNumber == 3);
+
+        var result = query.ToList();
+
+        var expected = new { TestRows.OrderBy(t => t.Id).ElementAt(2).Id, RowNumber = 3L };
+
+        Assert.Equal(expected, Assert.Single(result));
+    }
 }
