@@ -348,4 +348,43 @@ public partial class SubQueryTests
 
         Assert.Equal(expected, result);
     }
+
+    [SkippableFact]
+    public void WindowFunctionAfterTakeSeesOnlyTakenRows()
+    {
+        // Fixme: SQLite gets FETCH FIRST instead of LIMIT until it uses its own SQL generator (#36).
+        Skip.If(DbContext.IsSqlite);
+
+        // SQL applies the limit after the window function, LINQ before it.
+        var query = DbContext.TestRows
+            .OrderBy(t => t.Id)
+            .Take(3)
+            .Select(t => new { t.Id, Max = EF.Functions.Max(t.Id, EF.Functions.Over()) });
+
+        var result = query.ToList();
+
+        var taken = TestRows.OrderBy(t => t.Id).Take(3).ToList();
+        var expectedSequence = taken.Select(t => new { t.Id, Max = (int?)taken.Max(x => x.Id) });
+
+        Assert.Equal(expectedSequence, result);
+    }
+
+    [SkippableFact]
+    public void WindowFunctionAfterSkipNumbersRemainingRows()
+    {
+        // Fixme: SQLite gets OFFSET ... ROWS instead of LIMIT -1 OFFSET until it uses its own SQL generator (#36).
+        Skip.If(DbContext.IsSqlite);
+
+        var query = DbContext.TestRows
+            .OrderBy(t => t.Id)
+            .Skip(2)
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) });
+
+        var result = query.ToList();
+
+        var expectedSequence = TestRows.OrderBy(t => t.Id).Skip(2)
+            .Select((t, i) => new { t.Id, RowNumber = i + 1L });
+
+        Assert.Equal(expectedSequence, result);
+    }
 }
