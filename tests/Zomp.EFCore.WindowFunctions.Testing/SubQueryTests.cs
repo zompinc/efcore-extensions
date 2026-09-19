@@ -381,4 +381,41 @@ public partial class SubQueryTests
 
         Assert.Equal(expectedSequence, result);
     }
+
+    [Fact]
+    public void JoinAfterWindowFunctionProjectionJoinsNumberedRows()
+    {
+        // The join drops the first row. The rows have to be numbered before that happens.
+        var query = DbContext.TestRows
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
+            .Join(DbContext.TestRows.Where(r => r.Id > 2), l => l.Id, r => r.Id, (l, r) => new { l.Id, l.RowNumber })
+            .OrderBy(j => j.Id);
+
+        var result = query.ToList();
+
+        var expectedSequence = TestRows
+            .OrderBy(t => t.Id)
+            .Select((t, i) => new { t.Id, RowNumber = i + 1L })
+            .Where(w => w.Id > 2);
+
+        Assert.Equal(expectedSequence, result);
+    }
+
+    [Fact]
+    public void SelectManyAfterWindowFunctionProjectionJoinsNumberedRows()
+    {
+        var query = DbContext.TestRows
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
+            .SelectMany(l => DbContext.TestRows.Where(r => r.Id == l.Id && r.Id > 2), (l, r) => new { l.Id, l.RowNumber })
+            .OrderBy(j => j.Id);
+
+        var result = query.ToList();
+
+        var expectedSequence = TestRows
+            .OrderBy(t => t.Id)
+            .Select((t, i) => new { t.Id, RowNumber = i + 1L })
+            .Where(w => w.Id > 2);
+
+        Assert.Equal(expectedSequence, result);
+    }
 }
