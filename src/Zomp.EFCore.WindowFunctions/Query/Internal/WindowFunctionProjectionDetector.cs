@@ -10,14 +10,23 @@
 internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
 {
     /// <summary>
-    /// Operators translated to an aggregate, GROUP BY or WHERE. The first two cannot contain a window function, and WHERE is applied before it is computed.
+    /// Operators translated to an aggregate, GROUP BY, WHERE or a join. The first two cannot contain a window function,
+    /// and the other two are applied before it is computed.
     /// </summary>
+    /// <remarks>
+    /// LeftJoin and RightJoin are spelled out because Queryable only has them from .NET 10.
+    /// </remarks>
     private static readonly FrozenSet<string> OperatorsAfterProjection =
     [
         nameof(Queryable.Average),
         nameof(Queryable.GroupBy),
+        nameof(Queryable.GroupJoin),
+        nameof(Queryable.Join),
+        "LeftJoin",
         nameof(Queryable.Max),
         nameof(Queryable.Min),
+        "RightJoin",
+        nameof(Queryable.SelectMany),
         nameof(Queryable.Sum),
         nameof(Queryable.Where),
     ];
