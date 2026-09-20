@@ -1,13 +1,10 @@
-﻿namespace Zomp.EFCore.WindowFunctions.Sqlite.Query.Internal;
+﻿namespace Zomp.EFCore.WindowFunctions.Npgsql.Query.Internal;
 
 /// <summary>
-/// A SQL translator for window functions in SQLite.
+/// A SQL translator for window functions in PostgreSQL.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="SqliteWindowFunctionsTranslator"/> class.
-/// </remarks>
 /// <param name="sqlExpressionFactory">Instance of sql expression factory.</param>
-public class SqliteWindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactory)
+public class NpgsqlWindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactory)
     : WindowFunctionsTranslator(sqlExpressionFactory)
 {
     /// <inheritdoc/>
@@ -15,9 +12,8 @@ public class SqliteWindowFunctionsTranslator(ISqlExpressionFactory sqlExpression
     {
         var retval = base.Parse(arguments, functionName, resultType);
 
-        // SQLite returns int64 even when int32 is expected
-        // This is a workaround until a better solution is found
-        if (retval.Type != typeof(long))
+        // count returns bigint in PostgreSQL, which Npgsql refuses to read as an int.
+        if (functionName == "COUNT" && retval.Type != typeof(long))
         {
             retval = new SqlUnaryExpression(ExpressionType.Convert, retval, retval.Type, null);
         }
