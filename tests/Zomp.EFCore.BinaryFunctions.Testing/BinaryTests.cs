@@ -1,18 +1,24 @@
 ﻿namespace Zomp.EFCore.BinaryFunctions.Testing;
 
-public class BinaryTests(TestDbContext dbContext) : IDisposable
+public partial class BinaryTests
 {
+    [SkippableFact]
     public void CastDateToByteArray()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsPostgreSQL, "Need to query cast(extract(epoch from t.\"Date\") as BigInt)");
+
+        var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Date));
 
         var result = query.ToList();
     }
 
+    [SkippableFact]
     public void CastIntToByteArray()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsSqlite, "Investigate why INTEGER returns as text");
+
+        var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Id));
 
         var result = query.ToList();
@@ -23,9 +29,12 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
         Assert.Equal(expectedSequence, result);
     }
 
+    [SkippableFact]
     public void CastNullableIntToByteArray()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsSqlite, "Investigate why INTEGER returns as text");
+
+        var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Col1));
 
         var result = query.ToList();
@@ -36,9 +45,13 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
         Assert.Equal(expectedSequence, result);
     }
 
+    [SkippableFact]
     public void CastBoolToByteArray()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsSqlite, "Gets stored as text");
+        Skip.If(DbContext.IsPostgreSQL, "TODO: convert to bit");
+
+        var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Id % 3 == 2 ? (bool?)null : r.Id % 3 == 0));
 
         var result = query.ToList();
@@ -49,9 +62,12 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
         Assert.Equal(expectedSequence, result);
     }
 
+    [SkippableFact]
     public void SimpleCastGuid()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsPostgreSQL, "Need to convert UUID to bytea");
+
+        var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.SomeGuid));
         var result = query.ToList();
 
@@ -60,9 +76,13 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
         Assert.Equal(expectedSequence, result);
     }
 
+    [SkippableFact]
     public void ConcatenateGuidAndInt()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsSqlite, "SQLite has no built-in mechanism to concatenate blobs. https://stackoverflow.com/a/45611692");
+        Skip.If(DbContext.IsPostgreSQL, "Need to convert UUID to bytea");
+
+        var query = DbContext.TestRows
             .Select(r => EF.Functions.Concat(EF.Functions.GetBytes(r.SomeGuid), EF.Functions.GetBytes(r.Id)));
 
         var expectedSequence = TestFixture.TestRows
@@ -73,9 +93,12 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
         Assert.Equal(expectedSequence, result);
     }
 
+    [SkippableFact]
     public void ConcatenateTwoInts()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsSqlite, "SQLite has no built-in mechanism to concatenate blobs. https://stackoverflow.com/a/45611692");
+
+        var query = DbContext.TestRows
             .Where(r => r.Col1.HasValue)
             .Select(r => EF.Functions.Concat(EF.Functions.GetBytes(r.Id), EF.Functions.GetBytes(r.Col1!.Value)));
         var result = query.ToList();
@@ -87,9 +110,12 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
         Assert.Equal(expectedSequence, result);
     }
 
+    [SkippableFact]
     public void DoubleConversion()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsPostgreSQL, "Must be able to convert double precision into bit(64) or bytea");
+
+        var query = DbContext.TestRows
             .Where(r => r.Col1.HasValue)
             .Select(r => EF.Functions.ToValue<double>(EF.Functions.GetBytes(r.Col1!.Value / 2d)));
         var result = query.ToList();
@@ -101,10 +127,11 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
         Assert.Equal(expectedSequence, result);
     }
 
+    [Fact]
     public void BinaryCastFromIntToShort()
     {
         var shortOverflow = 1 << 16;
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
             .Select(r => EF.Functions.BinaryCast<int, short>(r.Id + shortOverflow));
 
         var result = query.ToList();
@@ -119,10 +146,14 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
         Assert.Equal(expectedSequence, result);
     }
 
+    [SkippableFact]
     public void BinaryCastFromDoubleToLong()
     {
+        Skip.If(DbContext.IsSqlite, "TODO: implement / drop");
+        Skip.If(DbContext.IsPostgreSQL, "Find a way to avoid the error: cannot cast type double precision to bit");
+
         var shortOverflow = 1 << 16;
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
             .Select(r => EF.Functions.BinaryCast<double, long>((r.Id / 2d) + shortOverflow));
 
         var result = query.ToList();
@@ -135,16 +166,6 @@ public class BinaryTests(TestDbContext dbContext) : IDisposable
             });
 
         Assert.Equal(expectedSequence, result);
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
     }
 
     private static byte[] ReverseEndianAndCombine(Guid x, int y)

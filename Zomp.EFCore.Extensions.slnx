@@ -44,15 +44,12 @@
     <Project Path="tests/Zomp.EFCore.BinaryFunctions.Npgsql.Tests/Zomp.EFCore.BinaryFunctions.Npgsql.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.BinaryFunctions.Sqlite.Tests/Zomp.EFCore.BinaryFunctions.Sqlite.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.BinaryFunctions.SqlServer.Tests/Zomp.EFCore.BinaryFunctions.SqlServer.Tests.csproj" />
-    <Project Path="tests/Zomp.EFCore.BinaryFunctions.Testing/Zomp.EFCore.BinaryFunctions.Testing.csproj" />
     <Project Path="tests/Zomp.EFCore.Combined.Npgsql.Tests/Zomp.EFCore.Combined.Npgsql.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.Combined.Sqlite.Tests/Zomp.EFCore.Combined.Sqlite.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.Combined.SqlServer.Tests/Zomp.EFCore.Combined.SqlServer.Tests.csproj" />
-    <Project Path="tests/Zomp.EFCore.Combined.Testing/Zomp.EFCore.Combined.Testing.csproj" />
     <Project Path="tests/Zomp.EFCore.Testing/Zomp.EFCore.Testing.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.Npgsql.Tests/Zomp.EFCore.WindowFunctions.Npgsql.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.Sqlite.Tests/Zomp.EFCore.WindowFunctions.Sqlite.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.SqlServer.Tests/Zomp.EFCore.WindowFunctions.SqlServer.Tests.csproj" />
-    <Project Path="tests/Zomp.EFCore.WindowFunctions.Testing/Zomp.EFCore.WindowFunctions.Testing.shproj" />
   </Folder>
 </Solution>

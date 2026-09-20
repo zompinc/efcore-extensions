@@ -1,9 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\..\src\Zomp.EFCore.BinaryFunctions.SqlServer\Zomp.EFCore.BinaryFunctions.SqlServer.csproj" />
-    <ProjectReference Include="..\Zomp.EFCore.BinaryFunctions.Testing\Zomp.EFCore.BinaryFunctions.Testing.csproj" />
+    <ProjectReference Include="..\Zomp.EFCore.Testing\Zomp.EFCore.Testing.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Zomp.EFCore.BinaryFunctions.SqlServer" />
+    <Using Include="System.Buffers.Binary" />
+    <Using Include="System.Runtime.CompilerServices" />
+    <Using Include="System.Runtime.InteropServices" />
+    <Using Include="Zomp.EFCore.BinaryFunctions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Zomp.EFCore.BinaryFunctions.Testing\**\*.cs" LinkBase="Shared" />
   </ItemGroup>
 </Project>
