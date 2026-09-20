@@ -54,6 +54,14 @@ public class WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactor
     }
 
     /// <summary>
+    /// Removes RESPECT NULLS for databases which have no syntax for null handling. It is how they behave anyway.
+    /// </summary>
+    /// <param name="arguments">SQL representations of <see cref="MethodCallExpression.Arguments" />.</param>
+    /// <returns>The arguments without <see cref="NullHandling.RespectNulls"/>.</returns>
+    protected static IReadOnlyList<SqlExpression> WithoutRespectNulls(IReadOnlyList<SqlExpression> arguments)
+        => [.. arguments.Where(a => a is not SqlConstantExpression { Value: NullHandling.RespectNulls })];
+
+    /// <summary>
     /// Returns max or min sql expression.
     /// </summary>
     /// <param name="arguments">SQL representations of <see cref="MethodCallExpression.Arguments" />.</param>

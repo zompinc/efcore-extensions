@@ -13,7 +13,7 @@ public class SqliteWindowFunctionsTranslator(ISqlExpressionFactory sqlExpression
     /// <inheritdoc/>
     protected override SqlExpression Parse(IReadOnlyList<SqlExpression> arguments, string functionName, Type? resultType)
     {
-        var retval = base.Parse(arguments, functionName, resultType);
+        var retval = base.Parse(WithoutRespectNulls(arguments), functionName, resultType);
 
         // SQLite returns int64 even when int32 is expected
         // This is a workaround until a better solution is found
