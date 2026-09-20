@@ -1,6 +1,4 @@
-﻿using System.Collections.Frozen;
-
-namespace Zomp.EFCore.WindowFunctions.Query.Internal;
+﻿namespace Zomp.EFCore.WindowFunctions.Query.Internal;
 
 /// <summary>
 /// Evaluatable expression filter of ranking functions.

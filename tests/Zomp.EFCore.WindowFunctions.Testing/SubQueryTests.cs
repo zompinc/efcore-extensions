@@ -259,4 +259,46 @@ public partial class SubQueryTests
         Assert.Equal(expectedSequence.Select(e => e.Id), result.Select(r => r.Id));
         Assert.Equal(expectedSequence.Select(e => e.FirstOfTen), result.Select(r => r.FirstOfTen));
     }
+
+    [Fact]
+    public void AverageOverWindowFunction()
+    {
+        // https://github.com/zompinc/efcore-extensions/issues/25
+        var result = DbContext.TestRows
+            .Select(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)))
+            .Average();
+
+        var expected = Enumerable.Range(1, TestRows.Length).Average();
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void MaxOverWindowFunctionMember()
+    {
+        var result = DbContext.TestRows
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
+            .Max(w => w.RowNumber);
+
+        Assert.Equal(TestRows.Length, result);
+    }
+
+    [Fact]
+    public void GroupByWindowFunction()
+    {
+        var query = DbContext.TestRows
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
+            .GroupBy(w => w.RowNumber % 2)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .OrderBy(g => g.Key);
+
+        var result = query.ToList();
+
+        var expectedSequence = Enumerable.Range(1, TestRows.Length)
+            .GroupBy(i => (long)i % 2)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .OrderBy(g => g.Key);
+
+        Assert.Equal(expectedSequence, result);
+    }
 }

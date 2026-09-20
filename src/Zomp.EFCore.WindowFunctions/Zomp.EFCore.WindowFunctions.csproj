@@ -11,6 +11,7 @@
     <Using Include="Microsoft.EntityFrameworkCore.Query.SqlExpressions" />
     <Using Include="Microsoft.EntityFrameworkCore.Storage" />
     <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="System.Collections.Frozen" />
     <Using Include="System.Linq.Expressions" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="System.Globalization" />

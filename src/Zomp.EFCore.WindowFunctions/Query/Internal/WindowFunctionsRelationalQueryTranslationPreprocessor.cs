@@ -17,6 +17,7 @@ public class WindowFunctionsRelationalQueryTranslationPreprocessor(QueryTranslat
         query = new NullCheckRemovingExpressionVisitor().Visit(query);
         query = new SubqueryMemberPushdownExpressionVisitor(QueryCompilationContext.Model).Visit(query);
         query = new JoinDetector().Visit(query);
+        query = new WindowFunctionProjectionDetector().Visit(query);
         query = new NavigationExpandingExpressionVisitor(
                 this,
                 QueryCompilationContext,
