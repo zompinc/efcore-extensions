@@ -24,7 +24,7 @@ public class BinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelat
             : method.Name switch
             {
                 nameof(DbFunctionsExtensions.GetBytes) => GetBytes(arguments[1]),
-                nameof(DbFunctionsExtensions.Concat) => Concat(arguments),
+                nameof(DbFunctionsExtensions.Concat) => Concat(arguments[1], arguments[2]),
                 nameof(DbFunctionsExtensions.Substring) => Substring(arguments[1], arguments[2], arguments[3]),
                 nameof(DbFunctionsExtensions.ToValue) when arguments.Count > 2 => ToValue(arguments[1], arguments[2], method.GetGenericArguments()[0]),
                 nameof(DbFunctionsExtensions.ToValue) => ToValue(arguments[1], method.GetGenericArguments()[0]),
@@ -67,6 +67,18 @@ public class BinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelat
     }
 
     /// <summary>
+    /// Sql expression for DbFunctionsExtensions.Concat method.
+    /// </summary>
+    /// <param name="left">First binary expression.</param>
+    /// <param name="right">Binary expression to append.</param>
+    /// <returns>SQL expression representing the two joined together.</returns>
+    protected virtual SqlExpression Concat(SqlExpression left, SqlExpression right)
+    {
+        ArgumentNullException.ThrowIfNull(left);
+        return new SqlBinaryExpression(ExpressionType.Add, left, right, left.Type, null);
+    }
+
+    /// <summary>
     /// Sql expression for DbFunctionsExtensions.ToValue method.
     /// </summary>
     /// <param name="sqlExpression">Expression to convert to a CLR type.</param>
@@ -74,14 +86,6 @@ public class BinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelat
     /// <returns>SQL expression representing the conversion.</returns>
     protected virtual SqlExpression ToValue(SqlExpression sqlExpression, Type type)
         => new SqlUnaryExpression(ExpressionType.Convert, sqlExpression, type, null);
-
-    private static SqlBinaryExpression Concat(IReadOnlyList<SqlExpression> arguments)
-    {
-        var left = arguments[1];
-        var right = arguments[2];
-        var expressionType = ExpressionType.Add;
-        return new SqlBinaryExpression(expressionType, left, right, left.Type, null);
-    }
 
     private SqlExpression ToValue(SqlExpression sqlExpression, SqlExpression offset, Type type)
         => ToValue(

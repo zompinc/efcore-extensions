@@ -24,7 +24,7 @@ public partial class CombinedTests
     [SkippableFact]
     public void LastNonNull()
     {
-        Skip.If(DbContext.IsSqlite, "Depends on byte concatenation, which SQLite doesn't support out of the box");
+        Skip.If(DbContext.IsSqlite, "SQLite has nothing that reads an integer back out of a blob: CAST treats the bytes as text");
 
         var query = DbContext.TestRows
         .Select(r => new
@@ -49,7 +49,7 @@ public partial class CombinedTests
     [SkippableFact]
     public void LastNonNullShorthand()
     {
-        Skip.If(DbContext.IsSqlite, "Depends on byte concatenation, which SQLite doesn't support out of the box");
+        Skip.If(DbContext.IsSqlite, "SQLite has nothing that reads an integer back out of a blob: CAST treats the bytes as text");
 
         var query = DbContext.TestRows
         .Select(r => new
