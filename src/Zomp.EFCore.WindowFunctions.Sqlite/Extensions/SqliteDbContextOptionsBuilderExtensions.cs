@@ -28,7 +28,7 @@ public static class SqliteDbContextOptionsBuilderExtensions
             IRelationalParameterBasedSqlProcessorFactory,
             WindowFunctionsSqliteParameterBasedSqlProcessorFactory
         >()
-        .ReplaceService<IQuerySqlGeneratorFactory, WindowQuerySqlGeneratorFactory>()
+        .ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsSqliteQuerySqlGeneratorFactory>()
         .ReplaceService<IWindowFunctionsTranslatorPluginFactory, SqliteWindowFunctionsTranslatorPluginFactory>()
         .ReplaceService<IEvaluatableExpressionFilter, SqliteWindowFunctionsEvaluatableExpressionFilter>()
         .ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsSqliteQueryableMethodTranslatingExpressionVisitorFactory>()
