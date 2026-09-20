@@ -90,15 +90,20 @@ public partial class SubQueryTests
         var result = query.ToList();
     }
 
-    [Fact(Skip = "Need to implement")]
+    [Fact]
     public void NestedWindowFunctionsInThenBy()
     {
+        // The inner max is each row's own id, so the row number ranks by id and only the ThenBy can order a group of ten.
         var query = DbContext.TestRows
-            .OrderByDescending(t => t.Id)
-            .ThenBy(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(
-                EF.Functions.Max(t.Id, EF.Functions.Over()))));
+            .OrderBy(t => t.Id / 10)
+            .ThenByDescending(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(
+                EF.Functions.Max(t.Id, EF.Functions.Over().PartitionBy(t.Id)))));
 
         var result = query.ToList();
+
+        var expectedSequence = TestRows.OrderBy(t => t.Id / 10).ThenByDescending(t => t.Id);
+
+        Assert.Equal(expectedSequence, result, TestRowEqualityComparer.Default);
     }
 
     [Fact]
