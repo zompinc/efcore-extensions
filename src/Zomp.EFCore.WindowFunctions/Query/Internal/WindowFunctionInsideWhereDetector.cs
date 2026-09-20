@@ -139,9 +139,32 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
         }
 
         var expression = node.Arguments[0];
+
+        // ThenBy needs an ordered source, which the subquery is not. The orderings before it are
+        // taken off here and put back on top of the subquery.
+        var precedingOrderings = new Stack<MethodCallExpression>();
+        if (methodInfo.Name is nameof(Queryable.ThenBy) or nameof(Queryable.ThenByDescending))
+        {
+            while (expression is MethodCallExpression { Method.Name: nameof(Queryable.OrderBy) or nameof(Queryable.OrderByDescending) or nameof(Queryable.ThenBy) or nameof(Queryable.ThenByDescending) } ordering
+                && ordering.Method.DeclaringType == typeof(Queryable))
+            {
+                precedingOrderings.Push(ordering);
+                expression = ordering.Arguments[0];
+            }
+        }
+
         var rewrittenLambda = BuildSubqueries(queryableMethod.WindowFunctions, originalLambda, ref expression, isWhere);
 
         var anonType = expression.Type.GenericTypeArguments[0];
+
+        foreach (var ordering in precedingOrderings)
+        {
+            var orderingLambda = (LambdaExpression)StripQuotes(ordering.Arguments[1]);
+            var w = Expression.Parameter(anonType, "w");
+            var body = new WindowFunctionRewriter(new Dictionary<MethodCallExpression, Name_Type_And_Replacement>(), orderingLambda.Parameters[0], w).Visit(orderingLambda.Body);
+            var orderingMethod = ordering.Method.GetGenericMethodDefinition().MakeGenericMethod([anonType, .. ordering.Method.GetGenericArguments()[1..]]);
+            expression = Expression.Call(null, orderingMethod, [expression, Expression.Lambda(body, w), .. ordering.Arguments.Skip(2)]);
+        }
 
         var newMethod = methodInfo.GetGenericMethodDefinition().MakeGenericMethod([anonType, .. methodInfo.GetGenericArguments()[1..]]);
 
@@ -158,6 +181,16 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
         // Add .Select<MyAnon>(b => b.Original)
         node = Expression.Call(null, toOriginalMethod, newCall, trailingSelect);
         return node;
+    }
+
+    private static Expression StripQuotes(Expression expression)
+    {
+        while (expression is UnaryExpression { NodeType: ExpressionType.Quote } quote)
+        {
+            expression = quote.Operand;
+        }
+
+        return expression;
     }
 
     private static LambdaExpression BuildSubqueries(
