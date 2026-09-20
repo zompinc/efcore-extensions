@@ -17,62 +17,67 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
     /// LeftJoin and RightJoin are spelled out because Queryable only has them from .NET 10.
     /// </remarks>
     private static readonly FrozenSet<string> OperatorsAfterProjection =
-    [
-        nameof(Queryable.Average),
-        nameof(Queryable.GroupBy),
-        nameof(Queryable.GroupJoin),
-        nameof(Queryable.Join),
-        "LeftJoin",
-        nameof(Queryable.Max),
-        nameof(Queryable.Min),
-        "RightJoin",
-        nameof(Queryable.SelectMany),
-        nameof(Queryable.Sum),
-        nameof(Queryable.Where),
-    ];
+        new[]
+        {
+            nameof(Queryable.Average),
+            nameof(Queryable.GroupBy),
+            nameof(Queryable.GroupJoin),
+            nameof(Queryable.Join),
+            "LeftJoin",
+            nameof(Queryable.Max),
+            nameof(Queryable.Min),
+            "RightJoin",
+            nameof(Queryable.SelectMany),
+            nameof(Queryable.Sum),
+            nameof(Queryable.Where),
+        }.ToFrozenSet();
 
     /// <summary>
     /// Operators that only filter in their overload with a predicate. Any, All and Count are left out:
     /// they don't return the window function, so their result is the same whether or not it is computed first.
     /// </summary>
     private static readonly FrozenSet<string> OperatorsWithOptionalPredicate =
-    [
-        nameof(Queryable.First),
-        nameof(Queryable.FirstOrDefault),
-        nameof(Queryable.Last),
-        nameof(Queryable.LastOrDefault),
-        nameof(Queryable.Single),
-        nameof(Queryable.SingleOrDefault),
-    ];
+        new[]
+        {
+            nameof(Queryable.First),
+            nameof(Queryable.FirstOrDefault),
+            nameof(Queryable.Last),
+            nameof(Queryable.LastOrDefault),
+            nameof(Queryable.Single),
+            nameof(Queryable.SingleOrDefault),
+        }.ToFrozenSet();
 
     /// <summary>
     /// Operators SQL applies after the window functions of the same SELECT.
     /// </summary>
     private static readonly FrozenSet<string> RowLimitingOperators =
-    [
-        nameof(Queryable.Skip),
-        nameof(Queryable.Take),
-    ];
+        new[]
+        {
+            nameof(Queryable.Skip),
+            nameof(Queryable.Take),
+        }.ToFrozenSet();
 
     /// <summary>
     /// Operators a row limit stays in the same SELECT with.
     /// </summary>
     private static readonly FrozenSet<string> OperatorsKeepingRowLimit =
-    [
-        nameof(Queryable.OrderBy),
-        nameof(Queryable.OrderByDescending),
-        nameof(Queryable.Select),
-        nameof(Queryable.ThenBy),
-        nameof(Queryable.ThenByDescending),
-    ];
+        new[]
+        {
+            nameof(Queryable.OrderBy),
+            nameof(Queryable.OrderByDescending),
+            nameof(Queryable.Select),
+            nameof(Queryable.ThenBy),
+            nameof(Queryable.ThenByDescending),
+        }.ToFrozenSet();
 
     private static readonly FrozenSet<string> ProjectingOperators =
-    [
-        nameof(Queryable.GroupJoin),
-        nameof(Queryable.Join),
-        nameof(Queryable.Select),
-        nameof(Queryable.SelectMany),
-    ];
+        new[]
+        {
+            nameof(Queryable.GroupJoin),
+            nameof(Queryable.Join),
+            nameof(Queryable.Select),
+            nameof(Queryable.SelectMany),
+        }.ToFrozenSet();
 
     /// <inheritdoc/>
     protected override Expression VisitMethodCall(MethodCallExpression node)
