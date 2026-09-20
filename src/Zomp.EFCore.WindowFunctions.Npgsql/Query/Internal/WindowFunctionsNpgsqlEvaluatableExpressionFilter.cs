@@ -26,6 +26,7 @@ public class WindowFunctionsNpgsqlEvaluatableExpressionFilter : NpgsqlEvaluatabl
     /// </summary>
     /// <param name="dependencies">Service dependencies.</param>
     /// <param name="relationalDependencies">Relational service dependencies.</param>
+    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Conditional compilation")]
     public WindowFunctionsNpgsqlEvaluatableExpressionFilter(EvaluatableExpressionFilterDependencies dependencies, RelationalEvaluatableExpressionFilterDependencies relationalDependencies)
         : base(dependencies, relationalDependencies)
     {
