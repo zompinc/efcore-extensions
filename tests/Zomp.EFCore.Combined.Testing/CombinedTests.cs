@@ -25,7 +25,6 @@ public partial class CombinedTests
     public void LastNonNull()
     {
         Skip.If(DbContext.IsSqlite, "Depends on byte concatenation, which SQLite doesn't support out of the box");
-        Skip.If(DbContext.IsPostgreSQL, "Can't max over bit(n) or bytea in postgres");
 
         var query = DbContext.TestRows
         .Select(r => new
@@ -51,7 +50,6 @@ public partial class CombinedTests
     public void LastNonNullShorthand()
     {
         Skip.If(DbContext.IsSqlite, "Depends on byte concatenation, which SQLite doesn't support out of the box");
-        Skip.If(DbContext.IsPostgreSQL, "Can't max over bit(n) or bytea in postgres");
 
         var query = DbContext.TestRows
         .Select(r => new

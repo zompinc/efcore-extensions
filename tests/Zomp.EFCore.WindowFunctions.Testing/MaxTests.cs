@@ -191,11 +191,9 @@ public partial class MaxTests
         Assert.Equal(expectedSequence, result);
     }
 
-    [SkippableFact]
+    [Fact]
     public void MaxBinary()
     {
-        Skip.If(DbContext.IsPostgreSQL, "Can't max over bit(n) or bytea in postgres");
-
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max(r.IdBytes, EF.Functions.Over()));
 
