@@ -10,7 +10,7 @@ public class NpgsqlWindowFunctionsTranslator(ISqlExpressionFactory sqlExpression
     /// <inheritdoc/>
     protected override SqlExpression Parse(IReadOnlyList<SqlExpression> arguments, string functionName, Type? resultType)
     {
-        var retval = base.Parse(arguments, functionName, resultType);
+        var retval = base.Parse(WithoutRespectNulls(arguments), functionName, resultType);
 
         // count returns bigint in PostgreSQL, which Npgsql refuses to read as an int.
         if (functionName == "COUNT" && retval.Type != typeof(long))
