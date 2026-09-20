@@ -29,11 +29,9 @@ public partial class AnalyticTests
         Assert.Equal(expectedSequence, result);
     }
 
-    [SkippableFact]
+    [Fact]
     public void LeadRespectNulls()
     {
-        Skip.If(DbContext.IsSqlite || DbContext.IsPostgreSQL);
-
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Lead(r.Id, Offset, Default, NullHandling.RespectNulls, EF.Functions.Over().OrderBy(r.Id)));
 
