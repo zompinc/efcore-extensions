@@ -9,7 +9,7 @@
 internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
 {
     /// <summary>
-    /// Operators translated to an aggregate or GROUP BY, neither of which can contain a window function.
+    /// Operators translated to an aggregate, GROUP BY or WHERE. The first two cannot contain a window function, and WHERE is applied before it is computed.
     /// </summary>
     private static readonly FrozenSet<string> OperatorsAfterProjection =
     [
@@ -18,6 +18,21 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
         nameof(Queryable.Max),
         nameof(Queryable.Min),
         nameof(Queryable.Sum),
+        nameof(Queryable.Where),
+    ];
+
+    /// <summary>
+    /// Operators that only filter in their overload with a predicate. Any, All and Count are left out:
+    /// they don't return the window function, so their result is the same whether or not it is computed first.
+    /// </summary>
+    private static readonly FrozenSet<string> OperatorsWithOptionalPredicate =
+    [
+        nameof(Queryable.First),
+        nameof(Queryable.FirstOrDefault),
+        nameof(Queryable.Last),
+        nameof(Queryable.LastOrDefault),
+        nameof(Queryable.Single),
+        nameof(Queryable.SingleOrDefault),
     ];
 
     private static readonly FrozenSet<string> ProjectingOperators =
@@ -34,7 +49,7 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
         var visited = (MethodCallExpression)base.VisitMethodCall(node);
 
         if (visited.Method.DeclaringType != typeof(Queryable)
-            || !OperatorsAfterProjection.Contains(visited.Method.Name)
+            || !IsEvaluatedBeforeWindowFunction(visited)
             || !ProjectsWindowFunction(visited.Arguments[0]))
         {
             return visited;
@@ -46,6 +61,11 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
 
         return visited.Update(null, [Expression.Call(null, asSubQueryMethod, source), .. visited.Arguments.Skip(1)]);
     }
+
+    private static bool IsEvaluatedBeforeWindowFunction(MethodCallExpression call)
+        => OperatorsAfterProjection.Contains(call.Method.Name)
+            || (OperatorsWithOptionalPredicate.Contains(call.Method.Name)
+                && call.Arguments.Skip(1).Any(a => a is UnaryExpression { NodeType: ExpressionType.Quote }));
 
     /// <summary>
     /// Follows the source of an operator down to the closest projection and checks it for a window function.
