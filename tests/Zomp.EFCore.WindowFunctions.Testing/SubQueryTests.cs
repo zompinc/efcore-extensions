@@ -336,11 +336,9 @@ public partial class SubQueryTests
         Assert.Equal(expected, Assert.Single(result));
     }
 
-    [SkippableFact]
+    [Fact]
     public void FirstWithPredicateAfterWindowFunctionProjection()
     {
-        // Fixme: SQLite gets FETCH FIRST instead of LIMIT until it uses its own SQL generator (#36).
-        Skip.If(DbContext.IsSqlite);
         var result = DbContext.TestRows
             .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
             .OrderBy(w => w.Id)
