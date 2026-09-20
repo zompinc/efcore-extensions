@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Window functions for the Pomelo MySQL and MariaDB database provider for Entity Framework Core</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Zomp.EFCore.WindowFunctions\Zomp.EFCore.WindowFunctions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Pomelo.EntityFrameworkCore.MySql.Infrastructure.Internal" />
+    <Using Include="Pomelo.EntityFrameworkCore.MySql.Query.ExpressionVisitors.Internal" />
+    <Using Include="Pomelo.EntityFrameworkCore.MySql.Query.Internal" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Extensions" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Infrastructure.Internal" />
+    <Using Include="Zomp.EFCore.WindowFunctions.MySql.Infrastructure.Internal" />
+    <Using Include="Zomp.EFCore.WindowFunctions.MySql.Query.Internal" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Query.Internal" />
+    <Using Include="Zomp.EFCore.WindowFunctions.Query.SqlExpressions" />
+  </ItemGroup>
+</Project>

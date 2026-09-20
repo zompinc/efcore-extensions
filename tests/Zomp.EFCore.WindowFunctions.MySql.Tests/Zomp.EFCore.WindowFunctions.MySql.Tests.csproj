@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Zomp.EFCore.WindowFunctions.MySql\Zomp.EFCore.WindowFunctions.MySql.csproj" />
+    <ProjectReference Include="..\Zomp.EFCore.Testing\Zomp.EFCore.Testing.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Zomp.EFCore.WindowFunctions.Testing\**\*.cs" LinkBase="Shared" />
+  </ItemGroup>
+</Project>

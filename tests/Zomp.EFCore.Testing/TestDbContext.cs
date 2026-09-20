@@ -8,12 +8,17 @@ public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
 
     public bool IsPostgreSQL => Database.ProviderName?.Contains("PostgreSQL", StringComparison.OrdinalIgnoreCase) ?? false;
 
+    public bool IsMySql => Database.ProviderName?.Contains("MySql", StringComparison.OrdinalIgnoreCase) ?? false;
+
     public bool IsSqlite => Database.ProviderName?.Contains("Sqlite", StringComparison.OrdinalIgnoreCase) ?? false;
 
     internal static TestSettings Settings { get; } = GetSettings();
 
     protected static string GetNpgsqlConnectionString(string databaseName)
         => GetConnectionString(Settings.NpgSqlConnectionString, "Host=localhost;Database={0};Username=npgsql_tests;Password=npgsql_tests", databaseName);
+
+    protected static string GetMySqlConnectionString(string databaseName)
+        => GetConnectionString(Settings.MySqlConnectionString, "Server=127.0.0.1;Port=33306;Database={0};User ID=root;Password=mysql_tests", databaseName);
 
     protected static string GetSqlServerConnectionString(string databaseName)
         => GetConnectionString(Settings.SqlServerConnectionString, "Server=(LocalDB)\\MsSqlLocalDB;Database={0};Trusted_Connection=True", databaseName);
