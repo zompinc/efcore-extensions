@@ -151,7 +151,7 @@ public partial class SubQueryTests
         Assert.Equal(expected, result.Single().t, TestRowEqualityComparer.Default);
     }
 
-    [Fact(Skip = "Should work, but doesn't")]
+    [Fact]
     public void SelectWithWindowFunctionInWhere()
     {
         var part1 = DbContext.TestRows
@@ -162,6 +162,10 @@ public partial class SubQueryTests
         var query = DbContext.TestRows.Where(f => part1.Select(z => z.Id).Contains(f.Id));
 
         var result = query.ToList();
+
+        var expected = TestRows.First();
+
+        Assert.Equal(expected, result.Single(), TestRowEqualityComparer.Default);
     }
 
     [Fact]
