@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MaxTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NullSensitiveComparer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NullTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PagingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RankTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SumTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SubQueryTests.cs" />
