@@ -1,15 +1,37 @@
 <Project>
-  <PropertyGroup Condition="$(DefineConstants.Contains(EF_CORE_8))">
-    <NetRuntime>8.0.11</NetRuntime>
-    <NpgsqlVersion>8.0.10</NpgsqlVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_8)) and $(DefineConstants.Contains(EF_CORE_9))">
-    <NetRuntime>9.0.0</NetRuntime>
-    <NpgsqlVersion>9.0.2</NpgsqlVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_8)) and !$(DefineConstants.Contains(EF_CORE_9))">
-    <NetRuntime>10.0.0</NetRuntime>
-    <NpgsqlVersion>10.0.0</NpgsqlVersion>
+  <Choose>
+    <When Condition="$(DefineConstants.Contains(EF_CORE_8))">
+      <PropertyGroup>
+        <NetRuntime>8.0.11</NetRuntime>
+        <!-- Microsoft.Extensions.* 8.x did not ship in lockstep with EF Core 8 -->
+        <ExtensionsVersion>8.0.0</ExtensionsVersion>
+        <NpgsqlVersion>8.0.10</NpgsqlVersion>
+      </PropertyGroup>
+    </When>
+    <When Condition="$(DefineConstants.Contains(EF_CORE_9))">
+      <PropertyGroup>
+        <NetRuntime>9.0.0</NetRuntime>
+        <NpgsqlVersion>9.0.2</NpgsqlVersion>
+      </PropertyGroup>
+    </When>
+    <When Condition="$(DefineConstants.Contains(EF_CORE_11))">
+      <PropertyGroup>
+        <NetRuntime>11.0.0-rc.1.26425.128</NetRuntime>
+        <NpgsqlVersion>11.0.0-preview.6</NpgsqlVersion>
+        <!-- Microsoft.EntityFrameworkCore.Sqlite 11 requires SQLitePCLRaw 3.0.5 or later -->
+        <SqliteBundleVersion>3.0.5</SqliteBundleVersion>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <NetRuntime>10.0.0</NetRuntime>
+        <NpgsqlVersion>10.0.0</NpgsqlVersion>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <PropertyGroup>
+    <ExtensionsVersion Condition="'$(ExtensionsVersion)' == ''">$(NetRuntime)</ExtensionsVersion>
+    <SqliteBundleVersion Condition="'$(SqliteBundleVersion)' == ''">3.0.2</SqliteBundleVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
@@ -24,15 +46,15 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="$(NetRuntime)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(NetRuntime)" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="$(NetRuntime)" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="$(NetRuntime)" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(NetRuntime)" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="$(NetRuntime)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="$(ExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(ExtensionsVersion)" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.9.50" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlVersion)" />
-    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.2" />
+    <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="$(SqliteBundleVersion)" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.skippablefact" Version="1.5.23" />

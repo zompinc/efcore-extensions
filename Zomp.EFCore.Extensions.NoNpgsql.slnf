@@ -1,0 +1,24 @@
+{
+  "solution": {
+    "path": "Zomp.EFCore.Extensions.slnx",
+    "projects": [
+      "src\\Zomp.EFCore.BinaryFunctions\\Zomp.EFCore.BinaryFunctions.csproj",
+      "src\\Zomp.EFCore.BinaryFunctions.Sqlite\\Zomp.EFCore.BinaryFunctions.Sqlite.csproj",
+      "src\\Zomp.EFCore.BinaryFunctions.SqlServer\\Zomp.EFCore.BinaryFunctions.SqlServer.csproj",
+      "src\\Zomp.EFCore.WindowFunctions\\Zomp.EFCore.WindowFunctions.csproj",
+      "src\\Zomp.EFCore.WindowFunctions.Generators\\Zomp.EFCore.WindowFunctions.Generators.csproj",
+      "src\\Zomp.EFCore.WindowFunctions.Sqlite\\Zomp.EFCore.WindowFunctions.Sqlite.csproj",
+      "src\\Zomp.EFCore.WindowFunctions.SqlServer\\Zomp.EFCore.WindowFunctions.SqlServer.csproj",
+      "tests\\Zomp.EFCore.BinaryFunctions.Sqlite.Tests\\Zomp.EFCore.BinaryFunctions.Sqlite.Tests.csproj",
+      "tests\\Zomp.EFCore.BinaryFunctions.SqlServer.Tests\\Zomp.EFCore.BinaryFunctions.SqlServer.Tests.csproj",
+      "tests\\Zomp.EFCore.BinaryFunctions.Testing\\Zomp.EFCore.BinaryFunctions.Testing.csproj",
+      "tests\\Zomp.EFCore.Combined.Sqlite.Tests\\Zomp.EFCore.Combined.Sqlite.Tests.csproj",
+      "tests\\Zomp.EFCore.Combined.SqlServer.Tests\\Zomp.EFCore.Combined.SqlServer.Tests.csproj",
+      "tests\\Zomp.EFCore.Combined.Testing\\Zomp.EFCore.Combined.Testing.csproj",
+      "tests\\Zomp.EFCore.Testing\\Zomp.EFCore.Testing.csproj",
+      "tests\\Zomp.EFCore.WindowFunctions.Sqlite.Tests\\Zomp.EFCore.WindowFunctions.Sqlite.Tests.csproj",
+      "tests\\Zomp.EFCore.WindowFunctions.SqlServer.Tests\\Zomp.EFCore.WindowFunctions.SqlServer.Tests.csproj",
+      "tests\\Zomp.EFCore.WindowFunctions.Testing\\Zomp.EFCore.WindowFunctions.Testing.shproj"
+    ]
+  }
+}
