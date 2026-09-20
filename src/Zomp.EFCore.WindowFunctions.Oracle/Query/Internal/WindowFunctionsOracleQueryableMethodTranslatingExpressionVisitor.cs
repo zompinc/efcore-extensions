@@ -11,7 +11,7 @@ public class WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitor : 
     /// <param name="dependencies">Type mapping source dependencies.</param>
     /// <param name="relationalDependencies">Relational type mapping source dependencies.</param>
     /// <param name="queryCompilationContext">The query compilation context object to use.</param>
-    public WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitor(QueryableMethodTranslatingExpressionVisitorDependencies dependencies, RelationalQueryableMethodTranslatingExpressionVisitorDependencies relationalDependencies, QueryCompilationContext queryCompilationContext)
+    public WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitor(QueryableMethodTranslatingExpressionVisitorDependencies dependencies, RelationalQueryableMethodTranslatingExpressionVisitorDependencies relationalDependencies, OracleQueryCompilationContext queryCompilationContext)
         : base(dependencies, relationalDependencies, queryCompilationContext)
     {
     }
@@ -31,4 +31,8 @@ public class WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitor : 
         return Extensions.SubQueryProcessor.ProcessSubQuery(this, methodCallExpression)
             ?? base.VisitMethodCall(methodCallExpression);
     }
+
+    /// <inheritdoc/>
+    protected override QueryableMethodTranslatingExpressionVisitor CreateSubqueryVisitor()
+        => new WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitor(this);
 }

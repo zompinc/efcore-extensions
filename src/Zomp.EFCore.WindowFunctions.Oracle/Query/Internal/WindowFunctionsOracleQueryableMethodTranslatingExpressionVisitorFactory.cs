@@ -15,6 +15,6 @@ public class WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitorFac
     public override QueryableMethodTranslatingExpressionVisitor Create(QueryCompilationContext queryCompilationContext)
     {
         return new WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitor(
-            dependencies, relationalDependencies, queryCompilationContext);
+            dependencies, relationalDependencies, (OracleQueryCompilationContext)queryCompilationContext);
     }
 }

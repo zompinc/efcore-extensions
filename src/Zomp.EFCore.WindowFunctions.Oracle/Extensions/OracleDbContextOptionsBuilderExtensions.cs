@@ -1,4 +1,6 @@
-﻿namespace Zomp.EFCore.WindowFunctions.Oracle;
+﻿#pragma warning disable IDE0130 // Namespace does not match folder structure
+namespace Zomp.EFCore.WindowFunctions.Oracle;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Window function extension methods for <see cref="OracleDbContextOptionsBuilder" />.
@@ -26,14 +28,11 @@ public static class OracleDbContextOptionsBuilderExtensions
         var extension = coreOptionsBuilder.Options.FindExtension<OracleDbContextOptionsExtension>() ?? new OracleDbContextOptionsExtension();
 
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
-#if false
-        coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsRelationalParameterBasedSqlProcessorFactory>();
-#endif
-        coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsRelationalParameterBasedSqlProcessorFactory>();
-        coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsOracleQuerySqlGeneratorFactory>();
-        coreOptionsBuilder.ReplaceService<IWindowFunctionsTranslatorPluginFactory, WindowFunctionsOracleTranslatorPluginFactory>();
-        coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitorFactory>();
-        coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsOracleParameterBasedSqlProcessorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsOracleQuerySqlGeneratorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IWindowFunctionsTranslatorPluginFactory, WindowFunctionsOracleTranslatorPluginFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
 
         return builder;
     }

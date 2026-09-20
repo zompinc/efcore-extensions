@@ -2,7 +2,7 @@
 
 public class OracleFixture : TestFixture
 {
-    public async override Task InitializeAsync()
+    public override async Task InitializeAsync()
     {
         TestDBContext = new OracleTestDbContext(Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
         await RemoveTestTableAsync(TestDBContext);
@@ -12,7 +12,7 @@ public class OracleFixture : TestFixture
         _ = await TestDBContext.SaveChangesAsync();
     }
 
-    public async override Task DisposeAsync()
+    public override async Task DisposeAsync()
     {
         await base.DisposeAsync();
         if (TestDBContext is not null)

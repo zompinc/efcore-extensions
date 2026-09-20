@@ -10,9 +10,9 @@
 public class WindowFunctionsOracleTranslator(ISqlExpressionFactory sqlExpressionFactory) : WindowFunctionsTranslator(sqlExpressionFactory)
 {
     /// <inheritdoc/>
-    protected override SqlExpression Parse(IReadOnlyList<SqlExpression> arguments, string functionName)
+    protected override SqlExpression Parse(IReadOnlyList<SqlExpression> arguments, string functionName, Type? resultType)
     {
-        var retval = base.Parse(arguments, functionName);
+        var retval = base.Parse(arguments, functionName, resultType);
 
         // Oracle returns decimal even when int32 is expected
         // This is a workaround until a better solution is found

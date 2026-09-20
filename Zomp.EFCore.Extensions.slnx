@@ -35,6 +35,7 @@
     <Project Path="src/Zomp.EFCore.BinaryFunctions/Zomp.EFCore.BinaryFunctions.csproj" />
     <Project Path="src/Zomp.EFCore.WindowFunctions.Generators/Zomp.EFCore.WindowFunctions.Generators.csproj" />
     <Project Path="src/Zomp.EFCore.WindowFunctions.Npgsql/Zomp.EFCore.WindowFunctions.Npgsql.csproj" />
+    <Project Path="src/Zomp.EFCore.WindowFunctions.Oracle/Zomp.EFCore.WindowFunctions.Oracle.csproj" />
     <Project Path="src/Zomp.EFCore.WindowFunctions.Sqlite/Zomp.EFCore.WindowFunctions.Sqlite.csproj" />
     <Project Path="src/Zomp.EFCore.WindowFunctions.SqlServer/Zomp.EFCore.WindowFunctions.SqlServer.csproj" />
     <Project Path="src/Zomp.EFCore.WindowFunctions/Zomp.EFCore.WindowFunctions.csproj" />
@@ -49,6 +50,7 @@
     <Project Path="tests/Zomp.EFCore.Combined.SqlServer.Tests/Zomp.EFCore.Combined.SqlServer.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.Testing/Zomp.EFCore.Testing.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.Npgsql.Tests/Zomp.EFCore.WindowFunctions.Npgsql.Tests.csproj" />
+    <Project Path="tests/Zomp.EFCore.WindowFunctions.Oracle.Tests/Zomp.EFCore.WindowFunctions.Oracle.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.Sqlite.Tests/Zomp.EFCore.WindowFunctions.Sqlite.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.SqlServer.Tests/Zomp.EFCore.WindowFunctions.SqlServer.Tests.csproj" />
   </Folder>
