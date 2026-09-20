@@ -123,8 +123,11 @@ jobs:
           name: packages
           path: packages/
 
-  publish:
+  sign:
     needs: build
+    # Skip for outside contributors: fork PRs have no access to signing/publish
+    # secrets, so the release pipeline can't do anything useful for them.
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -148,17 +151,13 @@ jobs:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_SIGNER_CLIENT_SECRET }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_SIGNER_CLIENT_ID }}
-        if: ${{ env.AZURE_CLIENT_SECRET != '' }}
+        if: ${{ env.AZURE_CLIENT_SECRET != '' && github.ref == 'refs/heads/master' }}
 
         # --trust-signing-root is required on Linux: Trusted Signing issues from a root
         # Linux trust stores do not carry, and NuGet refuses to sign against a chain it
         # cannot build. Without it this fails with only "Certificate chain validation failed".
         run: |
-          dotnet dnx SignUniversal.Cli@1.0.32 --yes sign packages/*.nupkg \
-            --trust-signing-root \
-            --trusted-signing-endpoint "${{ secrets.TRUSTED_SIGNING_ENDPOINT }}" \
-            --trusted-signing-account "${{ secrets.TRUSTED_SIGNING_ACCOUNT }}" \
-            --trusted-signing-certificate-profile "${{ secrets.TRUSTED_SIGNING_CERTIFICATE_PROFILE }}"
+          dotnet dnx SignUniversal.Cli@1.0.32 --yes sign packages/*.nupkg             --trust-signing-root             --trusted-signing-endpoint "${{ secrets.TRUSTED_SIGNING_ENDPOINT }}"             --trusted-signing-account "${{ secrets.TRUSTED_SIGNING_ACCOUNT }}"             --trusted-signing-certificate-profile "${{ secrets.TRUSTED_SIGNING_CERTIFICATE_PROFILE }}"
 
       # Catches a signing step that quietly produced nothing usable, before anything is
       # pushed. A real Trusted Signing certificate chains to a root in NuGet's own bundle,
@@ -166,8 +165,40 @@ jobs:
       - name: Verify signature
         env:
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_SIGNER_CLIENT_SECRET }}
-        if: ${{ env.AZURE_CLIENT_SECRET != '' }}
+        if: ${{ env.AZURE_CLIENT_SECRET != '' && github.ref == 'refs/heads/master' }}
         run: dotnet nuget verify packages/*.nupkg --all
+
+      - name: Upload artifacts (.nupkg)
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-signed
+          path: packages/
+          retention-days: 5
+
+  publish:
+    needs: sign
+    # Skip for outside contributors: fork PRs have no access to signing/publish
+    # secrets, so the release pipeline can't do anything useful for them.
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # required to create the tag and GitHub Release
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Download Package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: packages-signed
+          path: packages
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            10.0.x
 
       - name: Push to MyGet
         if: ${{ env.MYGET_PUSH_KEY != '' }}
@@ -178,3 +209,60 @@ jobs:
       - name: Push to NuGet
         if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
         run: dotnet nuget push packages/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
+
+      # Every package shares one version, so it is read off the base package. The digit in
+      # the pattern keeps Zomp.EFCore.WindowFunctions.SqlServer and its siblings out.
+      - name: Determine version
+        id: version
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
+        run: |
+          pkg=$(basename "$(ls packages/Zomp.EFCore.WindowFunctions.[0-9]*.nupkg | head -1)" .nupkg)
+          echo "version=${pkg#Zomp.EFCore.WindowFunctions.}" >> "$GITHUB_OUTPUT"
+
+      # Prepared but not announced. NuGet has accepted the upload at this point and nothing
+      # more; it still validates the signature and scans the package, and a package whose
+      # certificate is not registered with the account is rejected at that stage. Announcing a
+      # version which turns out to be uninstallable is worse than announcing it a few minutes
+      # later, and building the release now means a slow validation costs a single command
+      # rather than reconstructing the notes and assets by hand.
+      - name: Draft GitHub Release
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }} # gh infers the repo from this when no checkout is present
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}"             --draft             --target "$GITHUB_SHA"             --title "v${{ steps.version.outputs.version }}"             --generate-notes             packages/*.nupkg
+
+      - name: Wait for NuGet to finish validating
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
+        run: |
+          version="${{ steps.version.outputs.version }}"
+
+          for _ in $(seq 1 40); do
+            pending=""
+            for file in packages/*.nupkg; do
+              id=$(basename "$file" ".$version.nupkg")
+              index="https://api.nuget.org/v3-flatcontainer/$(echo "$id" | tr '[:upper:]' '[:lower:]')/index.json"
+              curl -s "$index" | grep -q "\"$version\"" || pending="$pending $id"
+            done
+
+            if [ -z "$pending" ]; then
+              echo "$version of every package is available on NuGet"
+              exit 0
+            fi
+
+            echo "Waiting for:$pending"
+            sleep 30
+          done
+
+          echo "::error::$version was accepted by NuGet but these packages have not become available within 20 minutes:$pending. The release is drafted and can be published once they appear."
+          exit 1
+
+      # The packages are installable, so the release can be announced. This is also what
+      # creates the tag, which a draft release holds but does not push.
+      - name: Publish GitHub Release
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: gh release edit "v${{ steps.version.outputs.version }}" --draft=false
