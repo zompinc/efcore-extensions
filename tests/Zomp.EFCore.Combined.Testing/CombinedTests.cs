@@ -1,12 +1,11 @@
 ﻿namespace Zomp.EFCore.Combined.Testing;
 
-public class CombinedTests(TestDbContext dbContext)
+public partial class CombinedTests
 {
-    private readonly TestDbContext dbContext = dbContext;
-
+    [Fact]
     public void LastNonNullArithmetic()
     {
-        var query = dbContext.TestRows
+        var query = DbContext.TestRows
         .Select(r => new
         {
             LastNonNull =
@@ -22,9 +21,13 @@ public class CombinedTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.LastNonNull));
     }
 
+    [SkippableFact]
     public void LastNonNull()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsSqlite, "Depends on byte concatenation, which SQLite doesn't support out of the box");
+        Skip.If(DbContext.IsPostgreSQL, "Can't max over bit(n) or bytea in postgres");
+
+        var query = DbContext.TestRows
         .Select(r => new
         {
             LastNonNull =
@@ -44,9 +47,13 @@ public class CombinedTests(TestDbContext dbContext)
         Assert.Equal(expectedSequence, result.Select(r => r.LastNonNull));
     }
 
+    [SkippableFact]
     public void LastNonNullShorthand()
     {
-        var query = dbContext.TestRows
+        Skip.If(DbContext.IsSqlite, "Depends on byte concatenation, which SQLite doesn't support out of the box");
+        Skip.If(DbContext.IsPostgreSQL, "Can't max over bit(n) or bytea in postgres");
+
+        var query = DbContext.TestRows
         .Select(r => new
         {
             LastNonNull =
