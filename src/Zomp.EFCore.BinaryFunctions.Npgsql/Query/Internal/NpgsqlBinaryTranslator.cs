@@ -14,12 +14,34 @@ public class NpgsqlBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, 
     private static readonly bool[] DecodeArgumentsPropagateNullabilityArray = [true, false];
     private static readonly bool[] ToHexArgumentsPropagateNullabilityArray = [true];
 
+    /// <summary>
+    /// Functions returning the binary representation PostgreSQL sends over the wire, which is big-endian.
+    /// to_hex only takes integers, so every other type goes through one of these.
+    /// </summary>
+    private static readonly Dictionary<Type, string> SendFunctions = new()
+    {
+        [typeof(bool)] = "boolsend",
+        [typeof(double)] = "float8send",
+        [typeof(float)] = "float4send",
+        [typeof(Guid)] = "uuid_send",
+        [typeof(DateTime)] = "timestamp_send",
+    };
+
     private readonly ISqlExpressionFactory sqlExpressionFactory = sqlExpressionFactory;
     private readonly RelationalTypeMapping? byteArrayTypeMapping = relationalTypeMappingSource.FindMapping(typeof(byte[]));
 
     /// <inheritdoc/>
     protected override SqlExpression BinaryCast(SqlExpression sqlExpression, Type toType)
     {
+        ArgumentNullException.ThrowIfNull(sqlExpression);
+
+        // A floating point number cannot be cast to bit(n). Its bytes can, as long as the target has as many.
+        var fromType = Nullable.GetUnderlyingType(sqlExpression.Type) ?? sqlExpression.Type;
+        if ((fromType == typeof(double) || fromType == typeof(float)) && Marshal.SizeOf(fromType) == Marshal.SizeOf(toType))
+        {
+            return ToValue(GetBytes(sqlExpression), toType);
+        }
+
         var getBits = GetFixedBytes(sqlExpression, toType);
         if (toType == typeof(short))
         {
@@ -34,20 +56,22 @@ public class NpgsqlBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, 
     /// <inheritdoc/>
     protected override SqlExpression GetBytes(SqlExpression sqlExpression)
     {
+        ArgumentNullException.ThrowIfNull(sqlExpression);
+
+        if (SendFunctions.TryGetValue(Nullable.GetUnderlyingType(sqlExpression.Type) ?? sqlExpression.Type, out var sendFunction))
+        {
+            if (sqlExpression.TypeMapping?.StoreType == "timestamp with time zone")
+            {
+                sendFunction = "timestamptz_send";
+            }
+
+            var argument = sqlExpressionFactory.ApplyDefaultTypeMapping(sqlExpression);
+            return sqlExpressionFactory.Function(sendFunction, [argument], true, ToHexArgumentsPropagateNullabilityArray, typeof(byte[]), byteArrayTypeMapping);
+        }
+
         // Generate an expression like this: decode(LPAD(to_hex(r."SomeInt"), 8, '0'), 'hex')::bytea
         var toHex = sqlExpressionFactory.Function("to_hex", [sqlExpression], true, ToHexArgumentsPropagateNullabilityArray, typeof(string));
-        var type = sqlExpression.Type;
-        int sizeOfType;
-        if (type == typeof(DateTime))
-        {
-            // fixme: refer to date/time types
-            // https://www.postgresql.org/docs/current/datatype-datetime.html
-            sizeOfType = 8;
-        }
-        else
-        {
-            sizeOfType = Marshal.SizeOf(sqlExpression.Type);
-        }
+        var sizeOfType = Marshal.SizeOf(sqlExpression.Type);
 
         // Every byte is two characters in hex, thus multiply by 2
 #if !EF_CORE_8
