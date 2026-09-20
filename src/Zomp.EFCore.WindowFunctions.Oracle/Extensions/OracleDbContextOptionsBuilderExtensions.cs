@@ -31,6 +31,7 @@ public static class OracleDbContextOptionsBuilderExtensions
         _ = coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsOracleParameterBasedSqlProcessorFactory>();
         _ = coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsOracleQuerySqlGeneratorFactory>();
         _ = coreOptionsBuilder.ReplaceService<IWindowFunctionsTranslatorPluginFactory, WindowFunctionsOracleTranslatorPluginFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IEvaluatableExpressionFilter, WindowFunctionsOracleEvaluatableExpressionFilter>();
         _ = coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsOracleQueryableMethodTranslatingExpressionVisitorFactory>();
         _ = coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();
 

@@ -23,7 +23,9 @@ public class OracleFixture : TestFixture
 
     private static async Task RemoveTestTableAsync(TestDbContext dbContext)
     {
-        _ = await dbContext.Database.ExecuteSqlAsync($"""
+        // Raw on purpose: an interpolated ExecuteSqlAsync turns the table name into a bind parameter,
+        // which Oracle does not substitute inside the quoted DROP statement.
+        const string Sql = $"""
         DECLARE cnt NUMBER;
         BEGIN
           SELECT COUNT(*) INTO cnt FROM user_tables WHERE table_name = '{nameof(TestRows)}';
@@ -31,6 +33,8 @@ public class OracleFixture : TestFixture
             EXECUTE IMMEDIATE 'DROP TABLE "{nameof(TestRows)}"';
           END IF;
         END;
-        """);
+        """;
+
+        _ = await dbContext.Database.ExecuteSqlRawAsync(Sql);
     }
 }
