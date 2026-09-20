@@ -75,7 +75,7 @@ public partial class AnalyticTests
         Assert.Equal(expectedSequence, result);
     }
 
-    [Fact(Skip = "EF Core 9 changed things, look into this")]
+    [Fact]
     public void LagWithStrings()
     {
         var query = DbContext.TestRows
@@ -83,7 +83,8 @@ public partial class AnalyticTests
 
         var result = query.ToList();
 
-        var expectedSequence = ((string?[])[null, .. TestRows.Select(z => z.Col1?.ToString())])[..^1];
+        // Nullable<T>.ToString() returns an empty string for null, and EF Core translates it that way since 9.0.
+        var expectedSequence = ((string?[])[null, .. TestRows.Select(z => z.Col1.ToString())])[..^1];
         Assert.Equal(expectedSequence, result);
     }
 

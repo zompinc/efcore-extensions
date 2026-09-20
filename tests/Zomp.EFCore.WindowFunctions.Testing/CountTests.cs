@@ -4,6 +4,19 @@ public abstract partial class CountTests<TResult>
     where TResult : IConvertible
 {
     [Fact]
+    public void CountStarAsInt()
+    {
+        // https://github.com/zompinc/efcore-extensions/issues/26
+        var query = DbContext.TestRows
+        .Select(r => EF.Functions.Count(EF.Functions.Over()));
+
+        var result = query.ToList();
+
+        var expectedSequence = Enumerable.Repeat(TestRows.Length, TestRows.Length);
+        Assert.Equal(expectedSequence, result);
+    }
+
+    [Fact]
     public void CountStar()
     {
         var query = DbContext.TestRows
@@ -155,11 +168,9 @@ public abstract partial class CountTests<TResult>
         Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
     }
 
-    [SkippableFact]
+    [Fact]
     public void SimpleCountWithCast()
     {
-        Skip.If(DbContext.IsSqlite, "Look more into this");
-
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<long, TResult>(r.Id, EF.Functions.Over()));
 
@@ -170,13 +181,12 @@ public abstract partial class CountTests<TResult>
         Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
-    [Fact(Skip = "EF Core 9 changed things, look into this")]
+    [Fact]
     public void CountWithCastToString()
     {
-        ////Skip.If(DbContext.IsSqlite, "Look more into this");
-
+        // Nullable<T>.ToString() is never null, so the null has to be kept explicitly for COUNT to skip it.
         var query = DbContext.TestRows
-        .Select(r => EF.Functions.Count<string, TResult>(r.Col1.ToString(), EF.Functions.Over()));
+        .Select(r => EF.Functions.Count<string?, TResult>(r.Col1 == null ? null : r.Col1.ToString(), EF.Functions.Over()));
 
         var result = query.ToList();
 
@@ -185,11 +195,9 @@ public abstract partial class CountTests<TResult>
         Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
     }
 
-    [SkippableFact]
+    [Fact]
     public void CountBinary()
     {
-        Skip.If(DbContext.IsSqlite, "Look more into this");
-
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<byte[]?, TResult>(r.IdBytes, EF.Functions.Over()));
 

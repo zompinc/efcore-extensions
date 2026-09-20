@@ -24,7 +24,7 @@ public class WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactor
                 nameof(DbFunctionsExtensions.Lag) => Parse(arguments, "LAG"),
                 nameof(DbFunctionsExtensions.Sum) => Parse(arguments, "SUM"),
                 nameof(DbFunctionsExtensions.Avg) => Parse(arguments, "AVG"),
-                nameof(DbFunctionsExtensions.Count) => Parse(arguments, "COUNT"),
+                nameof(DbFunctionsExtensions.Count) => Parse(arguments, "COUNT", method.ReturnType),
                 nameof(DbFunctionsExtensions.RowNumber) => Parse(arguments, "ROW_NUMBER"),
                 nameof(DbFunctionsExtensions.Rank) => Parse(arguments, "RANK"),
                 nameof(DbFunctionsExtensions.DenseRank) => Parse(arguments, "DENSE_RANK"),
@@ -60,6 +60,16 @@ public class WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactor
     /// <param name="functionName">Function name.</param>
     /// <returns>A SQL translation of the <see cref="MethodCallExpression" />.</returns>
     protected virtual SqlExpression Parse(IReadOnlyList<SqlExpression> arguments, string functionName)
+        => Parse(arguments, functionName, null);
+
+    /// <summary>
+    /// Returns the sql expression of a window function.
+    /// </summary>
+    /// <param name="arguments">SQL representations of <see cref="MethodCallExpression.Arguments" />.</param>
+    /// <param name="functionName">Function name.</param>
+    /// <param name="resultType">Type of the result when it is not the type of the first argument, as with COUNT.</param>
+    /// <returns>A SQL translation of the <see cref="MethodCallExpression" />.</returns>
+    protected virtual SqlExpression Parse(IReadOnlyList<SqlExpression> arguments, string functionName, Type? resultType)
     {
         //// For count there needs to be an option to call for
         //// new SqlConstantExpression(Expression.Constant("*"), null)
@@ -88,7 +98,9 @@ public class WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactor
             directArgs.Add(sqlExpressionFactory.ApplyDefaultTypeMapping(argument));
         }
 
-        return new WindowFunctionExpression(functionName, directArgs, nullHandling, over?.PartitionByExpression?.List, over?.OrderingExpression?.List, over?.OrderingExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping);
+        return resultType is null
+            ? new WindowFunctionExpression(functionName, directArgs, nullHandling, over?.PartitionByExpression?.List, over?.OrderingExpression?.List, over?.OrderingExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping)
+            : new WindowFunctionExpression(functionName, directArgs, nullHandling, over?.PartitionByExpression?.List, over?.OrderingExpression?.List, over?.OrderingExpression?.RowOrRangeClause, RelationalTypeMapping.NullMapping, resultType);
     }
 
     private static OverExpression GetOrderingSqlExpression(IReadOnlyList<SqlExpression> arguments) => arguments is not { Count: > 0 } || arguments[0] is not OverExpression orderingSqlExpression

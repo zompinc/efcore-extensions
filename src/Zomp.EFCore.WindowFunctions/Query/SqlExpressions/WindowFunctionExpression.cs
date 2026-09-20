@@ -3,13 +3,6 @@
 /// <summary>
 /// An expression that represents a Window Function in a SQL tree.
 /// </summary>
-/// <param name="function">Function (MIN, MAX).</param>
-/// <param name="arguments">A list of argument expressions of the Window function.</param>
-/// <param name="nullHandling">Respect or ignore nulls.</param>
-/// <param name="partitions">A list of expressions to partition by.</param>
-/// <param name="orderings">A list of ordering expressions to order by.</param>
-/// <param name="rowOrRange">Row or range clause.</param>
-/// <param name="typeMapping">The <see cref="RelationalTypeMapping" /> associated with the expression.</param>
 /// <remarks>
 /// Influenced by:
 /// RowNumberExpression -
@@ -17,37 +10,80 @@
 /// SqlServerAggregateFunctionExpression -
 /// https://github.com/dotnet/efcore/blob/209865eb5d575b15da7aaff6e87078c00e727336/src/EFCore.SqlServer/Query/Internal/SqlServerAggregateFunctionExpression.cs.
 /// </remarks>
-/// <remarks>
-/// Initializes a new instance of the <see cref="WindowFunctionExpression"/> class.
-/// </remarks>
-public class WindowFunctionExpression(
-    string function,
-    IReadOnlyList<SqlExpression> arguments,
-    NullHandling? nullHandling,
-    IReadOnlyList<SqlExpression>? partitions,
-    IReadOnlyList<OrderingExpression>? orderings,
-    RowOrRangeExpression? rowOrRange,
-    RelationalTypeMapping? typeMapping) : SqlExpression(arguments is [var e, ..] ? e.Type : function.Equals(nameof(DbFunctionsExtensions.Count), StringComparison.OrdinalIgnoreCase) ? typeof(int) : typeof(long), typeMapping)
+public class WindowFunctionExpression : SqlExpression
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WindowFunctionExpression"/> class whose type is the type of its first argument.
+    /// </summary>
+    /// <param name="function">Function (MIN, MAX).</param>
+    /// <param name="arguments">A list of argument expressions of the Window function.</param>
+    /// <param name="nullHandling">Respect or ignore nulls.</param>
+    /// <param name="partitions">A list of expressions to partition by.</param>
+    /// <param name="orderings">A list of ordering expressions to order by.</param>
+    /// <param name="rowOrRange">Row or range clause.</param>
+    /// <param name="typeMapping">The <see cref="RelationalTypeMapping" /> associated with the expression.</param>
+    public WindowFunctionExpression(
+        string function,
+        IReadOnlyList<SqlExpression> arguments,
+        NullHandling? nullHandling,
+        IReadOnlyList<SqlExpression>? partitions,
+        IReadOnlyList<OrderingExpression>? orderings,
+        RowOrRangeExpression? rowOrRange,
+        RelationalTypeMapping? typeMapping)
+        : this(function, arguments, nullHandling, partitions, orderings, rowOrRange, typeMapping, InferType(function ?? throw new ArgumentNullException(nameof(function)), arguments))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WindowFunctionExpression"/> class.
+    /// </summary>
+    /// <param name="function">Function (MIN, MAX).</param>
+    /// <param name="arguments">A list of argument expressions of the Window function.</param>
+    /// <param name="nullHandling">Respect or ignore nulls.</param>
+    /// <param name="partitions">A list of expressions to partition by.</param>
+    /// <param name="orderings">A list of ordering expressions to order by.</param>
+    /// <param name="rowOrRange">Row or range clause.</param>
+    /// <param name="typeMapping">The <see cref="RelationalTypeMapping" /> associated with the expression.</param>
+    /// <param name="type">The type of the result, for functions such as COUNT where it is not the type of the argument.</param>
+    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "The other constructor has to compute the type first")]
+    public WindowFunctionExpression(
+        string function,
+        IReadOnlyList<SqlExpression> arguments,
+        NullHandling? nullHandling,
+        IReadOnlyList<SqlExpression>? partitions,
+        IReadOnlyList<OrderingExpression>? orderings,
+        RowOrRangeExpression? rowOrRange,
+        RelationalTypeMapping? typeMapping,
+        Type type)
+        : base(type, typeMapping)
+    {
+        Function = function;
+        Arguments = arguments;
+        NullHandling = nullHandling;
+        Partitions = partitions ?? [];
+        Orderings = orderings ?? [];
+        RowOrRange = rowOrRange;
+    }
+
     /// <summary>
     /// Gets the arguments of the window function.
     /// </summary>
-    public virtual IReadOnlyList<SqlExpression> Arguments { get; } = arguments;
+    public virtual IReadOnlyList<SqlExpression> Arguments { get; }
 
     /// <summary>
     /// Gets the respect nulls or ignore nulls parameter.
     /// </summary>
-    public NullHandling? NullHandling { get; } = nullHandling;
+    public NullHandling? NullHandling { get; }
 
     /// <summary>
     /// Gets the list of expressions used in partitioning.
     /// </summary>
-    public virtual IReadOnlyList<SqlExpression> Partitions { get; } = partitions ?? [];
+    public virtual IReadOnlyList<SqlExpression> Partitions { get; }
 
     /// <summary>
     /// Gets list of ordering expressions used to order inside the given partition.
     /// </summary>
-    public virtual IReadOnlyList<OrderingExpression> Orderings { get; } = orderings ?? [];
+    public virtual IReadOnlyList<OrderingExpression> Orderings { get; }
 
     /// <summary>
     /// Gets the function name.
@@ -55,12 +91,12 @@ public class WindowFunctionExpression(
     /// <remarks>
     /// Possible values: Max / Min...
     /// </remarks>
-    public string Function { get; } = function;
+    public string Function { get; }
 
     /// <summary>
     /// Gets the Row or Range clause.
     /// </summary>
-    public RowOrRangeExpression? RowOrRange { get; } = rowOrRange;
+    public RowOrRangeExpression? RowOrRange { get; }
 
     /// <summary>
     /// Updates.
@@ -74,7 +110,7 @@ public class WindowFunctionExpression(
             && (ReferenceEquals(partitions, Partitions) || partitions.SequenceEqual(Partitions))
             && (ReferenceEquals(orderings, Orderings) || orderings.SequenceEqual(Orderings))
                 ? this
-                : new(Function, arguments, NullHandling, partitions, orderings, RowOrRange, TypeMapping);
+                : new(Function, arguments, NullHandling, partitions, orderings, RowOrRange, TypeMapping, Type);
 
     /// <inheritdoc />
     public override bool Equals(object? obj)
@@ -140,7 +176,7 @@ public class WindowFunctionExpression(
         }
 
         return changed
-            ? new WindowFunctionExpression(Function, arguments, NullHandling, partitions, orderings, RowOrRange, TypeMapping)
+            ? new WindowFunctionExpression(Function, arguments, NullHandling, partitions, orderings, RowOrRange, TypeMapping, Type)
             : this;
     }
 
@@ -186,6 +222,11 @@ public class WindowFunctionExpression(
 
         _ = expressionPrinter.Append(")");
     }
+
+    private static Type InferType(string function, IReadOnlyList<SqlExpression> arguments)
+        => arguments is [var e, ..] ? e.Type
+            : function.Equals(nameof(DbFunctionsExtensions.Count), StringComparison.OrdinalIgnoreCase) ? typeof(int)
+            : typeof(long);
 
     private bool Equals(WindowFunctionExpression windowFunctionsExpression)
         => base.Equals(windowFunctionsExpression)
