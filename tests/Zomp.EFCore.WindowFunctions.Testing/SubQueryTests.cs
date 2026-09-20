@@ -349,12 +349,9 @@ public partial class SubQueryTests
         Assert.Equal(expected, result);
     }
 
-    [SkippableFact]
+    [Fact]
     public void WindowFunctionAfterTakeSeesOnlyTakenRows()
     {
-        // Fixme: SQLite gets FETCH FIRST instead of LIMIT until it uses its own SQL generator (#36).
-        Skip.If(DbContext.IsSqlite);
-
         // SQL applies the limit after the window function, LINQ before it.
         var query = DbContext.TestRows
             .OrderBy(t => t.Id)
@@ -369,12 +366,9 @@ public partial class SubQueryTests
         Assert.Equal(expectedSequence, result);
     }
 
-    [SkippableFact]
+    [Fact]
     public void WindowFunctionAfterSkipNumbersRemainingRows()
     {
-        // Fixme: SQLite gets OFFSET ... ROWS instead of LIMIT -1 OFFSET until it uses its own SQL generator (#36).
-        Skip.If(DbContext.IsSqlite);
-
         var query = DbContext.TestRows
             .OrderBy(t => t.Id)
             .Skip(2)
