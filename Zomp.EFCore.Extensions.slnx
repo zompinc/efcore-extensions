@@ -53,6 +53,5 @@
     <Project Path="tests/Zomp.EFCore.WindowFunctions.Npgsql.Tests/Zomp.EFCore.WindowFunctions.Npgsql.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.Sqlite.Tests/Zomp.EFCore.WindowFunctions.Sqlite.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.SqlServer.Tests/Zomp.EFCore.WindowFunctions.SqlServer.Tests.csproj" />
-    <Project Path="tests/Zomp.EFCore.WindowFunctions.Testing/Zomp.EFCore.WindowFunctions.Testing.shproj" />
   </Folder>
 </Solution>

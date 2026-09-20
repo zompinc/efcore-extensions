@@ -6,5 +6,7 @@
   <ItemGroup>
     <Using Include="Zomp.EFCore.WindowFunctions.SqlServer" />
   </ItemGroup>
-  <Import Project="..\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.projitems" Label="Shared" />
+  <ItemGroup>
+    <Compile Include="..\Zomp.EFCore.WindowFunctions.Testing\**\*.cs" LinkBase="Shared" />
+  </ItemGroup>
 </Project>

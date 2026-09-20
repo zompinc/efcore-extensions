@@ -3,5 +3,7 @@
     <ProjectReference Include="..\..\src\Zomp.EFCore.WindowFunctions.Npgsql\Zomp.EFCore.WindowFunctions.Npgsql.csproj" />
     <ProjectReference Include="..\Zomp.EFCore.Testing\Zomp.EFCore.Testing.csproj" />
   </ItemGroup>
-  <Import Project="..\Zomp.EFCore.WindowFunctions.Testing\Zomp.EFCore.WindowFunctions.Testing.projitems" Label="Shared" />
+  <ItemGroup>
+    <Compile Include="..\Zomp.EFCore.WindowFunctions.Testing\**\*.cs" LinkBase="Shared" />
+  </ItemGroup>
 </Project>
