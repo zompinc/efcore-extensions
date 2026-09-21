@@ -107,12 +107,19 @@ jobs:
       - name: Test
         env:
           Zomp_EF_Data__SqlServerConnectionString: Server=localhost,31433;Database={0};User ID=sa;Password=P@ssw0rd;MultipleActiveResultSets=true;Connect Timeout=30;TrustServerCertificate=True;
-        # dotnet test runs TUnit on Microsoft.Testing.Platform (see global.json). Coverage comes from
-        # the code coverage extension TUnit brings, written as Cobertura for the report below.
-        run: >-
-          dotnet test -c Release --no-build
-          --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml
-          --coverage-settings tests/CodeCoverage.config
+        # dotnet test runs TUnit on Microsoft.Testing.Platform (see global.json), and coverage comes from
+        # the extension TUnit brings. One run per project: the .NET 10 SDK gives every project of a
+        # solution run the same results folder, where each coverage file overwrites the one before.
+        # Every suite runs even when one fails, and the step fails at the end.
+        run: |
+          status=0
+          for project in tests/*.Tests; do
+            dotnet test --project "$project" -c Release --no-build \
+              --results-directory "TestResults/$(basename "$project")" \
+              --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml \
+              --coverage-settings tests/CodeCoverage.config || status=1
+          done
+          exit $status
       - name: Generate code coverage report
         run: dotnet dnx --yes dotnet-reportgenerator-globaltool -reports:**/coverage.cobertura.xml -targetdir:./reports/coverage
       - name: Upload artifacts (code coverage)
