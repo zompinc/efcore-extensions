@@ -33,6 +33,15 @@ Window functions supported:
 - PERCENT_RANK
 - LEAD
 - LAG
+- Standard deviation and variance, sample and population (`StandardDeviationSample`, `StandardDeviationPopulation`, `VarianceSample`, `VariancePopulation`)
+
+SQLite has no standard deviation or variance, so these throw there unless you opt in to an approximation computed from AVG, SUM and COUNT over the same window. It loses precision when the values are large and close together, such as timestamps:
+
+```cs
+optionsBuilder.UseSqlite(
+    myConn,
+    sqlOptions => sqlOptions.UseWindowFunctions(approximateStandardDeviationAndVariance: true));
+```
 
 ### Installation
 
