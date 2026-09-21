@@ -6,13 +6,15 @@ public class SqliteTestDbContext : TestDbContext
     private static readonly SqliteConnection Connection
         = new($"DataSource=Zomp_EfCore_WindowFunctions_Tests.db");
 
+    public bool ApproximateStandardDeviationAndVariance { get; init; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
 
         _ = optionsBuilder.UseSqlite(
             Connection,
-            sqlOptions => sqlOptions.UseWindowFunctions());
+            sqlOptions => sqlOptions.UseWindowFunctions(ApproximateStandardDeviationAndVariance));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,3 +1,5 @@
+using Zomp.EFCore.WindowFunctions.Testing;
+
 namespace Zomp.EFCore.WindowFunctions.Sqlite.Tests;
 
 public class SqliteSpecificTests : TestBase
@@ -31,5 +33,85 @@ public class SqliteSpecificTests : TestBase
             .Select(r => EF.Functions.StandardDeviationSample(r.Col1, EF.Functions.Over()));
 
         await Assert.That(() => query.ToList()).Throws<InvalidOperationException>().WithMessageContaining("approximateStandardDeviationAndVariance", StringComparison.Ordinal);
+    }
+
+    [Test]
+    public async Task StandardDeviationSampleApproximated()
+    {
+        using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
+        var result = context.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.StandardDeviationSample(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
+            .ToList();
+
+        await StatisticsTests.AssertMatches(result, values => StatisticsTests.Sqrt(StatisticsTests.SampleVariance(values)));
+    }
+
+    [Test]
+    public async Task StandardDeviationPopulationApproximated()
+    {
+        using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
+        var result = context.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.StandardDeviationPopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
+            .ToList();
+
+        await StatisticsTests.AssertMatches(result, values => StatisticsTests.Sqrt(StatisticsTests.PopulationVariance(values)));
+    }
+
+    [Test]
+    public async Task VarianceSampleApproximated()
+    {
+        using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
+        var result = context.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.VarianceSample(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
+            .ToList();
+
+        await StatisticsTests.AssertMatches(result, StatisticsTests.SampleVariance);
+    }
+
+    [Test]
+    public async Task VariancePopulationApproximated()
+    {
+        using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
+        var result = context.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.VariancePopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
+            .ToList();
+
+        await StatisticsTests.AssertMatches(result, StatisticsTests.PopulationVariance);
+    }
+
+    [Test]
+    public async Task StandardDeviationApproximatedOverRowsFrame()
+    {
+        using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
+        var result = context.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.StandardDeviationPopulation(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromPreceding(1).ToCurrentRow()))
+            .ToList();
+
+        var ordered = TestRows.OrderBy(r => r.Id).Select(r => (int?)r.Id).ToArray();
+        var expected = ordered.Select((_, i) => StatisticsTests.Sqrt(StatisticsTests.PopulationVariance(ordered[Math.Max(0, i - 1)..(i + 1)])));
+
+        await Assert.That(result.Select(StatisticsTests.Round)).IsEquivalentTo(expected.Select(StatisticsTests.Round), CollectionOrdering.Matching);
+    }
+
+    /// <summary>
+    /// A compiled query is cached per internal service provider, so the option must be part of what decides whether
+    /// two contexts share one. Otherwise the approximated query would be reused where the option is off.
+    /// </summary>
+    /// <returns>A task that completes when the exception has been checked.</returns>
+    [Test]
+    public async Task ApproximationDoesNotLeakIntoContextsWithoutIt()
+    {
+        using (var approximating = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true })
+        {
+            _ = approximating.TestRows.Select(r => EF.Functions.VarianceSample(r.Col1, EF.Functions.Over())).ToList();
+        }
+
+        await Assert.That(() => DbContext.TestRows.Select(r => EF.Functions.VarianceSample(r.Col1, EF.Functions.Over())).ToList())
+            .Throws<InvalidOperationException>();
     }
 }
