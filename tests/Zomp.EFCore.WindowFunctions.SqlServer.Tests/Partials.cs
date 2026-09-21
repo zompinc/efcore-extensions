@@ -31,4 +31,6 @@ public partial class SubQueryTests : TestBase { }
 public partial class StatisticsTests : TestBase { }
 
 public partial class PagingTests : TestBase { }
+
+public partial class SelectWithIndexTests : TestBase { }
 #pragma warning restore SA1402 // File may only contain a single type

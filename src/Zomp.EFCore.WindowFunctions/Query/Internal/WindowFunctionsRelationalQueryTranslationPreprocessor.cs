@@ -13,6 +13,7 @@ public class WindowFunctionsRelationalQueryTranslationPreprocessor(QueryTranslat
     {
         query = new InvocationExpressionRemovingExpressionVisitor().Visit(query);
         query = NormalizeQueryableMethod(query);
+        query = new SelectWithIndexExpressionVisitor().Visit(query);
         query = new CallForwardingExpressionVisitor().Visit(query);
         query = new NullCheckRemovingExpressionVisitor().Visit(query);
         query = new SubqueryMemberPushdownExpressionVisitor(QueryCompilationContext.Model).Visit(query);
