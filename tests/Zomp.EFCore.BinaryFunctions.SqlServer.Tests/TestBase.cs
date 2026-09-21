@@ -1,8 +1,8 @@
 ﻿namespace Zomp.EFCore.BinaryFunctions.SqlServer.Tests;
 
-public class TestBase(ITestOutputHelper output) : IDisposable
+public class TestBase : IDisposable
 {
-    protected SqlServerTestDbContext DbContext { get; } = new(output.ToLoggerFactory());
+    protected SqlServerTestDbContext DbContext { get; } = new();
 
     public void Dispose()
     {

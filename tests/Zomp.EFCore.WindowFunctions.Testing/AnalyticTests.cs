@@ -5,8 +5,8 @@ public partial class AnalyticTests
     private const int Offset = 2;
     private const int Default = 56;
 
-    [Fact]
-    public void LeadBasic()
+    [Test]
+    public async Task LeadBasic()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Lead(r.Id, Offset, Default, EF.Functions.Over().OrderBy(r.Id)));
@@ -14,11 +14,11 @@ public partial class AnalyticTests
         var result = query.ToList();
 
         var expectedSequence = TestRows.Select((_, i) => i + Offset >= TestRows.Length ? Default : (int?)TestRows[i + Offset].Id);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [SkippableFact]
-    public void LeadNullForNullHandling()
+    [Test]
+    public async Task LeadNullForNullHandling()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Lead(r.Id, Offset, Default, null, EF.Functions.Over().OrderBy(r.Id)));
@@ -26,11 +26,11 @@ public partial class AnalyticTests
         var result = query.ToList();
 
         var expectedSequence = TestRows.Select((_, i) => i + Offset >= TestRows.Length ? Default : (int?)TestRows[i + Offset].Id);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void LeadRespectNulls()
+    [Test]
+    public async Task LeadRespectNulls()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Lead(r.Id, Offset, Default, NullHandling.RespectNulls, EF.Functions.Over().OrderBy(r.Id)));
@@ -38,13 +38,13 @@ public partial class AnalyticTests
         var result = query.ToList();
 
         var expectedSequence = TestRows.Select((_, i) => i + Offset >= TestRows.Length ? Default : (int?)TestRows[i + Offset].Id);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [SkippableFact]
-    public void LeadIgnoreNulls()
+    [Test]
+    public async Task LeadIgnoreNulls()
     {
-        Skip.If(DbContext.IsSqlite || DbContext.IsPostgreSQL);
+        Skip.When(DbContext.IsSqlite || DbContext.IsPostgreSQL, "SQLite and PostgreSQL have no IGNORE NULLS");
 
         var query = DbContext.TestRows
         .Select(r => new
@@ -58,11 +58,11 @@ public partial class AnalyticTests
         var result = query.ToList();
 
         var expectedSequence = TestRows.Select((_, i) => i + Offset >= TestRows.Length ? Default : (int?)TestRows[i + Offset].Id);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void LagBasic()
+    [Test]
+    public async Task LagBasic()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Lag(r.Col1, EF.Functions.Over().OrderBy(r.Id)));
@@ -70,11 +70,11 @@ public partial class AnalyticTests
         var result = query.ToList();
 
         var expectedSequence = ((int?[])[null, .. TestRows.Select(z => z.Col1)])[..^1];
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void LagWithStrings()
+    [Test]
+    public async Task LagWithStrings()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Lag(r.Col1.ToString(), EF.Functions.Over().OrderBy(r.Id)));
@@ -83,15 +83,15 @@ public partial class AnalyticTests
 
         // Nullable<T>.ToString() returns an empty string for null, and EF Core translates it that way since 9.0.
         var expectedSequence = ((string?[])[null, .. TestRows.Select(z => z.Col1.ToString())])[..^1];
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [SkippableTheory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void LagLastNonNull(bool withDefault)
+    [Test]
+    [Arguments(true)]
+    [Arguments(false)]
+    public async Task LagLastNonNull(bool withDefault)
     {
-        Skip.If(DbContext.IsSqlite || DbContext.IsPostgreSQL);
+        Skip.When(DbContext.IsSqlite || DbContext.IsPostgreSQL, "SQLite and PostgreSQL have no IGNORE NULLS");
 
         Expression<Func<TestRow, int?>> lastNonNullExpr = withDefault
             ? r => EF.Functions.Lag(r.Col1, 0, null, NullHandling.IgnoreNulls, EF.Functions.Over().OrderBy(r.Id))
@@ -102,6 +102,6 @@ public partial class AnalyticTests
         var result = query.ToList();
 
         var expectedSequence = TestRows.LastNonNull(r => r.Col1);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 }

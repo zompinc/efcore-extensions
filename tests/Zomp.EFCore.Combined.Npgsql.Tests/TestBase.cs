@@ -1,8 +1,8 @@
 ﻿namespace Zomp.EFCore.Combined.Npgsql.Tests;
 
-public class TestBase(ITestOutputHelper output) : IDisposable
+public class TestBase : IDisposable
 {
-    protected NpgsqlTestDbContext DbContext { get; } = new NpgsqlTestDbContext(output.ToLoggerFactory());
+    protected NpgsqlTestDbContext DbContext { get; } = new NpgsqlTestDbContext();
 
     public void Dispose()
     {

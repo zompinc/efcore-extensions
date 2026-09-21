@@ -2,7 +2,7 @@
 
 namespace Zomp.EFCore.Combined.Npgsql.Tests;
 
-public class NpgsqlTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbContext(loggerFactory)
+public class NpgsqlTestDbContext : TestDbContext
 {
     private static string ConnectionString { get; } = GetNpgsqlConnectionString("Zomp_EfCore_Combined_Tests");
 

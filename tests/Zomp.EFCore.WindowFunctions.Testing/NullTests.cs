@@ -2,8 +2,8 @@
 
 public partial class NullTests
 {
-    [Fact]
-    public void RowNumberWithOrderingNullCheck()
+    [Test]
+    public async Task RowNumberWithOrderingNullCheck()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(r.Col1 == null ? 1 : 2)));
@@ -11,11 +11,11 @@ public partial class NullTests
         var result = query.ToList();
 
         var expectedSequence = TestRows.Select((_, i) => i + 1);
-        Assert.Equal(expectedSequence, result.Select(r => (int)r));
+        await Assert.That(result.Select(r => (int)r)).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxWithExpressionNullCheck()
+    [Test]
+    public async Task MaxWithExpressionNullCheck()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max(r.Col1 == null ? r.Id : r.Id - 100, EF.Functions.Over()));
@@ -24,11 +24,11 @@ public partial class NullTests
 
         var max = TestRows.Max(r => r.Col1 == null ? r.Id : r.Id - 100);
         var expectedSequence = TestRows.Select(_ => (int?)max);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxWithPartitionNullCheck()
+    [Test]
+    public async Task MaxWithPartitionNullCheck()
     {
         var query = DbContext.TestRows
         .Select(r => new
@@ -43,6 +43,6 @@ public partial class NullTests
             .ToDictionary(g => g.Key, g => g.Max(s => s.Id));
 
         var expectedSequence = TestRows.Select(r => (int?)groups[r.Col1 == null ? 1 : 2]);
-        Assert.Equal(expectedSequence, result.Select(r => r.Max));
+        await Assert.That(result.Select(r => r.Max)).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 }

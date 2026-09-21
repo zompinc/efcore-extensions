@@ -2,8 +2,8 @@ namespace Zomp.EFCore.WindowFunctions.Testing;
 
 public partial class SubQueryTests
 {
-    [Fact]
-    public void RowNumberWithWhere()
+    [Test]
+    public async Task RowNumberWithWhere()
     {
         var query = DbContext.TestRows
             .Where(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) == 1);
@@ -12,22 +12,22 @@ public partial class SubQueryTests
 
         var expected = TestRows.First();
 
-        Assert.Equal(expected, result.Single(), TestRowEqualityComparer.Default);
+        await Assert.That(result.Single()).IsEqualTo(expected, TestRowEqualityComparer.Default);
     }
 
-    [Fact]
-    public void RowNumberWithSingle()
+    [Test]
+    public async Task RowNumberWithSingle()
     {
         var result = DbContext.TestRows
             .Single(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) == 1);
 
         var expected = TestRows.First();
 
-        Assert.Equal(expected, result, TestRowEqualityComparer.Default);
+        await Assert.That(result).IsEqualTo(expected, TestRowEqualityComparer.Default);
     }
 
-    [Fact]
-    public void TwoRowNumberWithWhere()
+    [Test]
+    public async Task TwoRowNumberWithWhere()
     {
         var query = DbContext.TestRows
             .Where(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) == 1
@@ -37,10 +37,10 @@ public partial class SubQueryTests
 
         var expected = TestRows.First();
 
-        Assert.Equal(expected, result.Single(), TestRowEqualityComparer.Default);
+        await Assert.That(result.Single()).IsEqualTo(expected, TestRowEqualityComparer.Default);
     }
 
-    [Fact]
+    [Test]
     public void NestedWindowFunctions()
     {
         var query = DbContext.TestRows
@@ -50,7 +50,7 @@ public partial class SubQueryTests
         var result = query.ToList();
     }
 
-    [Fact]
+    [Test]
     public void DoubleNestedWindowFunctions()
     {
         var query = DbContext.TestRows
@@ -61,7 +61,7 @@ public partial class SubQueryTests
         var result = query.ToList();
     }
 
-    [Fact]
+    [Test]
     public void WindowFunctionsInOrderBy()
     {
         var query = DbContext.TestRows
@@ -70,7 +70,7 @@ public partial class SubQueryTests
         var result = query.ToList();
     }
 
-    [Fact]
+    [Test]
     public void NestedWindowFunctionsInOrderBy()
     {
         var query = DbContext.TestRows
@@ -80,7 +80,7 @@ public partial class SubQueryTests
         var result = query.ToList();
     }
 
-    [Fact]
+    [Test]
     public void WindowFunctionsInThenBy()
     {
         var query = DbContext.TestRows
@@ -90,8 +90,8 @@ public partial class SubQueryTests
         var result = query.ToList();
     }
 
-    [Fact]
-    public void NestedWindowFunctionsInThenBy()
+    [Test]
+    public async Task NestedWindowFunctionsInThenBy()
     {
         // The inner max is each row's own id, so the row number ranks by id and only the ThenBy can order a group of ten.
         var query = DbContext.TestRows
@@ -103,10 +103,10 @@ public partial class SubQueryTests
 
         var expectedSequence = TestRows.OrderBy(t => t.Id / 10).ThenByDescending(t => t.Id);
 
-        Assert.Equal(expectedSequence, result, TestRowEqualityComparer.Default);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, TestRowEqualityComparer.Default, CollectionOrdering.Matching);
     }
 
-    [Fact]
+    [Test]
     public void NestedWindowFunctionsInWhere()
     {
         var query = DbContext.TestRows
@@ -116,8 +116,8 @@ public partial class SubQueryTests
         var result = query.ToList();
     }
 
-    [Fact]
-    public void DenseRankWithWhere()
+    [Test]
+    public async Task DenseRankWithWhere()
     {
         var query = DbContext.TestRows
             .Where(t => EF.Functions.DenseRank(EF.Functions.Over().OrderBy(t.Id / 10)) == 2);
@@ -126,11 +126,11 @@ public partial class SubQueryTests
 
         var expectedSequence = TestRows.Where(t => t.Id / 10 == 1);
 
-        Assert.Equal(expectedSequence, result, TestRowEqualityComparer.Default);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, TestRowEqualityComparer.Default, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxWithWhere()
+    [Test]
+    public async Task MaxWithWhere()
     {
         var query = DbContext.TestRows
             .Where(t => EF.Functions.Max(t.Id, EF.Functions.Over().PartitionBy(t.Id / 10)) == 23);
@@ -139,11 +139,11 @@ public partial class SubQueryTests
 
         var expected = TestRows.Last();
 
-        Assert.Equal(expected, result.Single(), TestRowEqualityComparer.Default);
+        await Assert.That(result.Single()).IsEqualTo(expected, TestRowEqualityComparer.Default);
     }
 
-    [Fact]
-    public void SelectAndWhere()
+    [Test]
+    public async Task SelectAndWhere()
     {
         var query = DbContext.TestRows.Select(t => new { t, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
             .Where(w => w.t.Id < 10)
@@ -153,11 +153,11 @@ public partial class SubQueryTests
 
         var expected = TestRows.First();
 
-        Assert.Equal(expected, result.Single().t, TestRowEqualityComparer.Default);
+        await Assert.That(result.Single().t).IsEqualTo(expected, TestRowEqualityComparer.Default);
     }
 
-    [Fact]
-    public void SelectWithWindowFunctionInWhere()
+    [Test]
+    public async Task SelectWithWindowFunctionInWhere()
     {
         var part1 = DbContext.TestRows
             .Select(t => new { t, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
@@ -170,10 +170,10 @@ public partial class SubQueryTests
 
         var expected = TestRows.First();
 
-        Assert.Equal(expected, result.Single(), TestRowEqualityComparer.Default);
+        await Assert.That(result.Single()).IsEqualTo(expected, TestRowEqualityComparer.Default);
     }
 
-    [Fact]
+    [Test]
     public void Join()
     {
         var query = DbContext.TestRows.Join(
@@ -189,7 +189,7 @@ public partial class SubQueryTests
         var queryStr = query.ToQueryString();
     }
 
-    [Fact]
+    [Test]
     public void WhereDoesNotAffectPrecedingJoin()
     {
         var query = DbContext.TestRows.Join(
@@ -206,8 +206,8 @@ public partial class SubQueryTests
         var queryStr = query.ToQueryString();
     }
 
-    [Fact]
-    public void RowNumberWithWhereAfterJoin()
+    [Test]
+    public async Task RowNumberWithWhereAfterJoin()
     {
         // After navigation expansion the Where lambda takes EF Core's private TransparentIdentifier struct.
         var query = DbContext.TestRows
@@ -219,11 +219,11 @@ public partial class SubQueryTests
 
         var expected = TestRows.First();
 
-        Assert.Equal(expected, result.Single(), TestRowEqualityComparer.Default);
+        await Assert.That(result.Single()).IsEqualTo(expected, TestRowEqualityComparer.Default);
     }
 
-    [Fact]
-    public void AsSubQueryNumbersRowsBeforeFiltering()
+    [Test]
+    public async Task AsSubQueryNumbersRowsBeforeFiltering()
     {
         // The filter has no window function in it, so nothing is pushed down without the hint.
         var query = DbContext.TestRows
@@ -239,11 +239,11 @@ public partial class SubQueryTests
             .Select((t, i) => new { t.Id, RowNumber = i + 1L })
             .Where(w => w.Id > 2);
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void RowNumberWithWhereInsideCorrelatedCollection()
+    [Test]
+    public async Task RowNumberWithWhereInsideCorrelatedCollection()
     {
         // EF Core translates the inner query with a visitor it gets from CreateSubqueryVisitor.
         // The correlation comes after the window function so that SQLite doesn't need APPLY.
@@ -265,12 +265,12 @@ public partial class SubQueryTests
         var expectedSequence = TestRows.OrderBy(t => t.Id)
             .Select(t => new { t.Id, FirstOfTen = firstOfTens.Contains(t.Id) ? new List<int> { t.Id } : [] });
 
-        Assert.Equal(expectedSequence.Select(e => e.Id), result.Select(r => r.Id));
-        Assert.Equal(expectedSequence.Select(e => e.FirstOfTen), result.Select(r => r.FirstOfTen));
+        await Assert.That(result.Select(r => r.Id)).IsEquivalentTo(expectedSequence.Select(e => e.Id), CollectionOrdering.Matching);
+        await Assert.That(result.Select(r => r.FirstOfTen)).IsEquivalentTo(expectedSequence.Select(e => e.FirstOfTen), CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void AverageOverWindowFunction()
+    [Test]
+    public async Task AverageOverWindowFunction()
     {
         // https://github.com/zompinc/efcore-extensions/issues/25
         var result = DbContext.TestRows
@@ -279,21 +279,21 @@ public partial class SubQueryTests
 
         var expected = Enumerable.Range(1, TestRows.Length).Average();
 
-        Assert.Equal(expected, result);
+        await Assert.That(result).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void MaxOverWindowFunctionMember()
+    [Test]
+    public async Task MaxOverWindowFunctionMember()
     {
         var result = DbContext.TestRows
             .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
             .Max(w => w.RowNumber);
 
-        Assert.Equal(TestRows.Length, result);
+        await Assert.That(result).IsEqualTo(TestRows.Length);
     }
 
-    [Fact]
-    public void GroupByWindowFunction()
+    [Test]
+    public async Task GroupByWindowFunction()
     {
         var query = DbContext.TestRows
             .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
@@ -308,11 +308,11 @@ public partial class SubQueryTests
             .Select(g => new { g.Key, Count = g.Count() })
             .OrderBy(g => g.Key);
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void WhereAfterWindowFunctionProjectionFiltersNumberedRows()
+    [Test]
+    public async Task WhereAfterWindowFunctionProjectionFiltersNumberedRows()
     {
         // LINQ numbers the rows and then filters them. Filtering first restarts the numbering at 1.
         var query = DbContext.TestRows
@@ -327,11 +327,11 @@ public partial class SubQueryTests
             .Select((t, i) => new { t.Id, RowNumber = i + 1L })
             .Where(w => w.Id > 2);
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void WhereOnWindowFunctionKeepsItsValue()
+    [Test]
+    public async Task WhereOnWindowFunctionKeepsItsValue()
     {
         // The projected row number has to be the one that was filtered on, not one recomputed afterwards.
         var query = DbContext.TestRows
@@ -342,11 +342,11 @@ public partial class SubQueryTests
 
         var expected = new { TestRows.OrderBy(t => t.Id).ElementAt(2).Id, RowNumber = 3L };
 
-        Assert.Equal(expected, Assert.Single(result));
+        await Assert.That(result.Single()).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void FirstWithPredicateAfterWindowFunctionProjection()
+    [Test]
+    public async Task FirstWithPredicateAfterWindowFunctionProjection()
     {
         var result = DbContext.TestRows
             .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
@@ -355,11 +355,11 @@ public partial class SubQueryTests
 
         var expected = new { TestRows.OrderBy(t => t.Id).ElementAt(1).Id, RowNumber = 2L };
 
-        Assert.Equal(expected, result);
+        await Assert.That(result).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void WindowFunctionAfterTakeSeesOnlyTakenRows()
+    [Test]
+    public async Task WindowFunctionAfterTakeSeesOnlyTakenRows()
     {
         // SQL applies the limit after the window function, LINQ before it.
         var query = DbContext.TestRows
@@ -372,11 +372,11 @@ public partial class SubQueryTests
         var taken = TestRows.OrderBy(t => t.Id).Take(3).ToList();
         var expectedSequence = taken.Select(t => new { t.Id, Max = (int?)taken.Max(x => x.Id) });
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void WindowFunctionAfterSkipNumbersRemainingRows()
+    [Test]
+    public async Task WindowFunctionAfterSkipNumbersRemainingRows()
     {
         var query = DbContext.TestRows
             .OrderBy(t => t.Id)
@@ -388,11 +388,11 @@ public partial class SubQueryTests
         var expectedSequence = TestRows.OrderBy(t => t.Id).Skip(2)
             .Select((t, i) => new { t.Id, RowNumber = i + 1L });
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void JoinAfterWindowFunctionProjectionJoinsNumberedRows()
+    [Test]
+    public async Task JoinAfterWindowFunctionProjectionJoinsNumberedRows()
     {
         // The join drops the first row. The rows have to be numbered before that happens.
         var query = DbContext.TestRows
@@ -407,11 +407,11 @@ public partial class SubQueryTests
             .Select((t, i) => new { t.Id, RowNumber = i + 1L })
             .Where(w => w.Id > 2);
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void SelectManyAfterWindowFunctionProjectionJoinsNumberedRows()
+    [Test]
+    public async Task SelectManyAfterWindowFunctionProjectionJoinsNumberedRows()
     {
         var query = DbContext.TestRows
             .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
@@ -425,12 +425,12 @@ public partial class SubQueryTests
             .Select((t, i) => new { t.Id, RowNumber = i + 1L })
             .Where(w => w.Id > 2);
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
 #if NET10_0_OR_GREATER
-    [Fact]
-    public void LeftJoinAfterWindowFunctionProjectionJoinsNumberedRows()
+    [Test]
+    public async Task LeftJoinAfterWindowFunctionProjectionJoinsNumberedRows()
     {
         // A left join keeps every outer row, so it takes several matches per row to disturb the numbering.
         var query = DbContext.TestRows
@@ -448,7 +448,7 @@ public partial class SubQueryTests
             .OrderBy(j => j.Id)
             .ThenBy(j => j.InnerId);
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 #endif
 }

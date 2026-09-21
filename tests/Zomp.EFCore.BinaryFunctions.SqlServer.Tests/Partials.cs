@@ -2,5 +2,4 @@
 
 namespace Zomp.EFCore.BinaryFunctions.Testing;
 
-[Collection(nameof(SqlServerCollection))]
-public partial class BinaryTests(ITestOutputHelper output) : TestBase(output) { }
+public partial class BinaryTests : TestBase { }

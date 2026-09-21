@@ -2,8 +2,8 @@ namespace Zomp.EFCore.WindowFunctions.Testing;
 
 public partial class MaxTests
 {
-    [Fact]
-    public void SimpleMax()
+    [Test]
+    public async Task SimpleMax()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max(r.Id, EF.Functions.Over()));
@@ -12,11 +12,11 @@ public partial class MaxTests
 
         var maxId = TestRows.Max(r => r.Id);
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (int?)maxId);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxDifferByExpressionOnly()
+    [Test]
+    public async Task MaxDifferByExpressionOnly()
     {
         var query = DbContext.TestRows
         .Select(r => new
@@ -31,11 +31,11 @@ public partial class MaxTests
         var expectedMaxTimesTwo = TestRows.Max(r => r.Id * 2);
 
         var distinctResults = result.Distinct().Single();
-        Assert.Equal(expectedMax, distinctResults.Max);
-        Assert.Equal(expectedMaxTimesTwo, distinctResults.MaxTimesTwo);
+        await Assert.That(distinctResults.Max).IsEqualTo(expectedMax);
+        await Assert.That(distinctResults.MaxTimesTwo).IsEqualTo(expectedMaxTimesTwo);
     }
 
-    [Fact]
+    [Test]
     public void MaxWithOrder()
     {
         var query = DbContext.TestRows
@@ -44,8 +44,8 @@ public partial class MaxTests
         var result = query.ToList();
     }
 
-    [Fact]
-    public void SimpleMaxNullable()
+    [Test]
+    public async Task SimpleMaxNullable()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max(r.Col1, EF.Functions.Over()));
@@ -54,11 +54,11 @@ public partial class MaxTests
 
         var maxId = TestRows.Max(r => r.Col1);
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => maxId);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxBetweenCurrentRowAndOne()
+    [Test]
+    public async Task MaxBetweenCurrentRowAndOne()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromCurrentRow().ToFollowing(1)));
@@ -71,11 +71,11 @@ public partial class MaxTests
             => (int?)(i < TestRows.Length - 1
             ? Math.Max(TestRows[i].Id, TestRows[i + 1].Id)
             : TestRows[i].Id));
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxBetweenTwoPreceding()
+    [Test]
+    public async Task MaxBetweenTwoPreceding()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromPreceding(2).ToPreceding(1)));
@@ -87,11 +87,11 @@ public partial class MaxTests
             => i == 0 ? (int?)null
             : i == 1 ? TestRows[0].Id
             : Math.Max(TestRows[i - 2].Id, TestRows[i - 1].Id));
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxBetweenTwoFollowing()
+    [Test]
+    public async Task MaxBetweenTwoFollowing()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromFollowing(1).ToFollowing(2)));
@@ -103,11 +103,11 @@ public partial class MaxTests
             => i < TestRows.Length - 2
             ? Math.Max(TestRows[i + 1].Id, TestRows[i + 2].Id)
             : i < TestRows.Length - 1 ? TestRows[i + 1].Id : (int?)null);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxBetweenFollowingAndUnbounded()
+    [Test]
+    public async Task MaxBetweenFollowingAndUnbounded()
     {
         var query = DbContext.TestRows
         .Select(r => new
@@ -123,11 +123,11 @@ public partial class MaxTests
         var expectedSequence = TestRows
             .Select((_, i)
             => i < TestRows.Length - 1 ? maxId : (int?)null);
-        Assert.Equal(expectedSequence, result.Select(r => r.Max));
+        await Assert.That(result.Select(r => r.Max)).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxWithPartition()
+    [Test]
+    public async Task MaxWithPartition()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max(
@@ -140,11 +140,11 @@ public partial class MaxTests
             .ToDictionary(r => r.Key, r => r.Max(s => s.Id));
 
         var expectedSequence = TestRows.Select(r => (int?)groups[r.Id / 10]);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxWith2Partitions()
+    [Test]
+    public async Task MaxWith2Partitions()
     {
         var query = DbContext.TestRows
         .Select(r => new
@@ -162,11 +162,11 @@ public partial class MaxTests
             .ToDictionary(r => r.Key, r => r.Max(s => (int?)s.Id));
 
         var expectedSequence = TestRows.Select(r => groups[(r.Id / 10, r.Date.DayOfYear % 2)]);
-        Assert.Equal(expectedSequence, result.Select(r => r.Max));
+        await Assert.That(result.Select(r => r.Max)).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void SimpleMaxWithCast()
+    [Test]
+    public async Task SimpleMaxWithCast()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max((long)r.Id, EF.Functions.Over()));
@@ -175,11 +175,11 @@ public partial class MaxTests
 
         var maxId = TestRows.Max(r => r.Id);
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (long?)maxId);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxWithCastToString()
+    [Test]
+    public async Task MaxWithCastToString()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max(r.Col1.ToString(), EF.Functions.Over()));
@@ -188,11 +188,11 @@ public partial class MaxTests
 
         var max = TestRows.Max(r => r.Col1?.ToString(CultureInfo.InvariantCulture));
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => max);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void MaxBinary()
+    [Test]
+    public async Task MaxBinary()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Max(r.IdBytes, EF.Functions.Over()));
@@ -200,7 +200,7 @@ public partial class MaxTests
         var result = query.ToList();
 
         var maxId = TestRows.Max(r => BitConverter.ToInt16(r.IdBytes));
-        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => BitConverter.GetBytes(maxId));
-        Assert.Equal(expectedSequence, result);
+        var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (byte[]?)BitConverter.GetBytes(maxId));
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 }

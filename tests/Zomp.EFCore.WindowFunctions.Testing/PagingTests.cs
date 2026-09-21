@@ -10,38 +10,38 @@ namespace Zomp.EFCore.WindowFunctions.Testing;
 /// </remarks>
 public partial class PagingTests
 {
-    [Fact]
-    public void First()
+    [Test]
+    public async Task First()
     {
         var result = DbContext.TestRows.OrderBy(r => r.Id).First();
 
         var expected = TestRows.OrderBy(r => r.Id).First();
 
-        Assert.Equal(expected, result, TestRowEqualityComparer.Default);
+        await Assert.That(result).IsEqualTo(expected, TestRowEqualityComparer.Default);
     }
 
-    [Fact]
-    public void Take()
+    [Test]
+    public async Task Take()
     {
         var result = DbContext.TestRows.OrderBy(r => r.Id).Take(3).ToList();
 
         var expected = TestRows.OrderBy(r => r.Id).Take(3);
 
-        Assert.Equal(expected, result, TestRowEqualityComparer.Default);
+        await Assert.That(result).IsEquivalentTo(expected, TestRowEqualityComparer.Default, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void SkipAndTake()
+    [Test]
+    public async Task SkipAndTake()
     {
         var result = DbContext.TestRows.OrderBy(r => r.Id).Skip(2).Take(3).ToList();
 
         var expected = TestRows.OrderBy(r => r.Id).Skip(2).Take(3);
 
-        Assert.Equal(expected, result, TestRowEqualityComparer.Default);
+        await Assert.That(result).IsEquivalentTo(expected, TestRowEqualityComparer.Default, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void TakeWithWindowFunction()
+    [Test]
+    public async Task TakeWithWindowFunction()
     {
         var query = DbContext.TestRows
             .OrderBy(r => r.Id)
@@ -50,11 +50,11 @@ public partial class PagingTests
 
         var result = query.ToList();
 
-        Assert.Equal([1L, 2L, 3L], result);
+        await Assert.That(result).IsEquivalentTo([1L, 2L, 3L], CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void TakeBetweenWindowFunctions()
+    [Test]
+    public async Task TakeBetweenWindowFunctions()
     {
         // The second window function pushes the limited query down, so the limit ends up inside a subquery.
         var query = DbContext.TestRows
@@ -69,6 +69,6 @@ public partial class PagingTests
         var expectedSequence = TestRows.OrderBy(r => r.Id).Take(3)
             .Select((r, i) => new { r.Id, Reversed = 3L - i });
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 }

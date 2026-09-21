@@ -2,8 +2,8 @@
 
 public partial class CombinedTests
 {
-    [Fact]
-    public void LastNonNullArithmetic()
+    [Test]
+    public async Task LastNonNullArithmetic()
     {
         var query = DbContext.TestRows
         .Select(r => new
@@ -18,13 +18,13 @@ public partial class CombinedTests
         var result = query.ToList();
 
         var expectedSequence = TestFixture.TestRows.LastNonNull(r => r.Col1);
-        Assert.Equal(expectedSequence, result.Select(r => r.LastNonNull));
+        await Assert.That(result.Select(r => r.LastNonNull)).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [SkippableFact]
-    public void LastNonNull()
+    [Test]
+    public async Task LastNonNull()
     {
-        Skip.If(DbContext.IsSqlite, "SQLite has nothing that reads an integer back out of a blob: CAST treats the bytes as text");
+        Skip.When(DbContext.IsSqlite, "SQLite has nothing that reads an integer back out of a blob: CAST treats the bytes as text");
 
         var query = DbContext.TestRows
         .Select(r => new
@@ -43,13 +43,13 @@ public partial class CombinedTests
         var result = query.ToList();
 
         var expectedSequence = TestFixture.TestRows.LastNonNull(r => r.Col1);
-        Assert.Equal(expectedSequence, result.Select(r => r.LastNonNull));
+        await Assert.That(result.Select(r => r.LastNonNull)).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [SkippableFact]
-    public void LastNonNullShorthand()
+    [Test]
+    public async Task LastNonNullShorthand()
     {
-        Skip.If(DbContext.IsSqlite, "SQLite has nothing that reads an integer back out of a blob: CAST treats the bytes as text");
+        Skip.When(DbContext.IsSqlite, "SQLite has nothing that reads an integer back out of a blob: CAST treats the bytes as text");
 
         var query = DbContext.TestRows
         .Select(r => new
@@ -66,6 +66,6 @@ public partial class CombinedTests
         var result = query.ToList();
 
         var expectedSequence = TestFixture.TestRows.LastNonNull(r => r.Col1);
-        Assert.Equal(expectedSequence, result.Select(r => r.LastNonNull));
+        await Assert.That(result.Select(r => r.LastNonNull)).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 }

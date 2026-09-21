@@ -1,7 +1,6 @@
 namespace Zomp.EFCore.WindowFunctions.Sqlite.Tests;
 
-[Collection(nameof(SqliteCollection))]
-public class SqliteSpecificTests(ITestOutputHelper output) : TestBase(output)
+public class SqliteSpecificTests : TestBase
 {
     /// <summary>
     /// Ensures paging is generated with SQLite's <c>LIMIT</c> rather than ANSI <c>OFFSET ... FETCH</c>.
@@ -11,12 +10,13 @@ public class SqliteSpecificTests(ITestOutputHelper output) : TestBase(output)
     /// replace the SQLite query SQL generator with the provider agnostic one, which broke every
     /// query using Take / Skip / First, whether or not it contained a window function.
     /// </remarks>
-    [Fact]
-    public void Issue23PagingUsesLimit()
+    /// <returns>A task that completes when the SQL has been checked.</returns>
+    [Test]
+    public async Task Issue23PagingUsesLimit()
     {
         var sql = DbContext.TestRows.OrderBy(r => r.Id).Take(1).ToQueryString();
 
-        Assert.Contains("LIMIT", sql, StringComparison.Ordinal);
-        Assert.DoesNotContain("FETCH", sql, StringComparison.Ordinal);
+        await Assert.That(sql).Contains("LIMIT", StringComparison.Ordinal);
+        await Assert.That(sql).DoesNotContain("FETCH", StringComparison.Ordinal);
     }
 }

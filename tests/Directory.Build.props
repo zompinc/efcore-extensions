@@ -27,17 +27,15 @@
     <NoWarn>$(NoWarn);SA1601</NoWarn>
     <NoWarn>$(NoWarn);SA1502</NoWarn>
 
+    <!-- An awaited TUnit assertion returns the value it checked -->
+    <NoWarn>$(NoWarn);IDE0058</NoWarn>
+
     <!-- Tests exercise the experimental AsSubQuery -->
     <NoWarn>$(NoWarn);ZOMPEF001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">
-    <PackageReference Include="coverlet.collector" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
-    <PackageReference Include="MartinCostello.Logging.XUnit" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.skippablefact" />
-    <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
+    <PackageReference Include="TUnit" />
   </ItemGroup>
 
   <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">
@@ -45,8 +43,7 @@
     <Using Include="Microsoft.Extensions.Logging" />
     <Using Include="System.Globalization" />
     <Using Include="System.Linq.Expressions" />
-    <Using Include="Xunit" />
-    <Using Include="Xunit.Abstractions" />
+    <Using Include="TUnit.Assertions.Enums" />
     <Using Include="Zomp.EFCore.Testing" />
     <Using Include="Zomp.EFCore.Testing.TestFixture" Static="true" />
   </ItemGroup>

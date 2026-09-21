@@ -1,7 +1,10 @@
 ﻿namespace Zomp.EFCore.Testing;
 
-public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
+public class TestDbContext : DbContext
 {
+    // One instance for every context: EF Core builds a new internal service provider when the logging delegate changes.
+    private static readonly Action<string> WriteToTestOutput = line => TestContext.Current?.OutputWriter.WriteLine(line);
+
     public DbSet<TestRow> TestRows { get; set; } = null!;
 
     public bool IsSqlServer => Database.ProviderName?.Contains("SqlServer", StringComparison.OrdinalIgnoreCase) ?? false;
@@ -26,10 +29,8 @@ public class TestDbContext(ILoggerFactory? loggerFactory = null) : DbContext
     {
         base.OnConfiguring(optionsBuilder);
 
-        if (loggerFactory is not null)
-        {
-            _ = optionsBuilder.UseLoggerFactory(loggerFactory);
-        }
+        // Written to the output of the test that runs the query, so a failure shows its SQL.
+        _ = optionsBuilder.LogTo(WriteToTestOutput);
     }
 
     private static string GetConnectionString(string? connectionTemplate, string defaultTemplate, string databaseName)

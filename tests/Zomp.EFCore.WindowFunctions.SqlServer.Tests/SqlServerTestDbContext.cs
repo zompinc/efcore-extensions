@@ -1,6 +1,6 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.SqlServer.Tests;
 
-public class SqlServerTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbContext(loggerFactory)
+public class SqlServerTestDbContext : TestDbContext
 {
     private static string ConnectionString { get; } = GetSqlServerConnectionString("Zomp_EfCore_WindowFunctions_Tests");
 
