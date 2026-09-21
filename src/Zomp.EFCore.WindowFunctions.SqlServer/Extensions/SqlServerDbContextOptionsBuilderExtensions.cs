@@ -30,6 +30,7 @@ public static class SqlServerDbContextOptionsBuilderExtensions
         ((IDbContextOptionsBuilderInfrastructure)coreOptionsBuilder).AddOrUpdateExtension(extension);
         _ = coreOptionsBuilder.ReplaceService<IRelationalParameterBasedSqlProcessorFactory, WindowFunctionsSqlServerParameterBasedSqlProcessorFactory>();
         _ = coreOptionsBuilder.ReplaceService<IQuerySqlGeneratorFactory, WindowFunctionsSqlServerQuerySqlGeneratorFactory>();
+        _ = coreOptionsBuilder.ReplaceService<IWindowFunctionsTranslatorPluginFactory, SqlServerWindowFunctionsTranslatorPluginFactory>();
         _ = coreOptionsBuilder.ReplaceService<IEvaluatableExpressionFilter, WindowFunctionsSqlServerEvaluatableExpressionFilter>();
         _ = coreOptionsBuilder.ReplaceService<IQueryableMethodTranslatingExpressionVisitorFactory, WindowFunctionsSqlServerQueryableMethodTranslatingExpressionVisitorFactory>();
         _ = coreOptionsBuilder.ReplaceService<IQueryTranslationPreprocessorFactory, WindowFunctionsRelationalQueryTranslationPreprocessorFactory>();

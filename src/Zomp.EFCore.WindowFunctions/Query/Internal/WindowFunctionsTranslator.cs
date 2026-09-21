@@ -29,6 +29,10 @@ public class WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactor
                 nameof(DbFunctionsExtensions.Rank) => Parse(arguments, "RANK"),
                 nameof(DbFunctionsExtensions.DenseRank) => Parse(arguments, "DENSE_RANK"),
                 nameof(DbFunctionsExtensions.PercentRank) => Parse(arguments, "PERCENT_RANK"),
+                nameof(DbFunctionsExtensions.StandardDeviationSample) => Parse(arguments, "STDDEV_SAMP", typeof(double)),
+                nameof(DbFunctionsExtensions.StandardDeviationPopulation) => Parse(arguments, "STDDEV_POP", typeof(double)),
+                nameof(DbFunctionsExtensions.VarianceSample) => Parse(arguments, "VAR_SAMP", typeof(double)),
+                nameof(DbFunctionsExtensions.VariancePopulation) => Parse(arguments, "VAR_POP", typeof(double)),
 
                 nameof(DbFunctionsExtensions.OrderBy) => OrderBy(arguments, true),
                 nameof(DbFunctionsExtensions.OrderByDescending) => OrderBy(arguments, false),
