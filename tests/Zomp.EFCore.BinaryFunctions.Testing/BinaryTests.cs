@@ -2,11 +2,9 @@
 
 public partial class BinaryTests
 {
-    [SkippableFact]
+    [Fact]
     public void CastDateToByteArray()
     {
-        Skip.If(DbContext.IsPostgreSQL, "Need to query cast(extract(epoch from t.\"Date\") as BigInt)");
-
         var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Date));
 
@@ -49,7 +47,6 @@ public partial class BinaryTests
     public void CastBoolToByteArray()
     {
         Skip.If(DbContext.IsSqlite, "Gets stored as text");
-        Skip.If(DbContext.IsPostgreSQL, "TODO: convert to bit");
 
         var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Id % 3 == 2 ? (bool?)null : r.Id % 3 == 0));
@@ -62,16 +59,15 @@ public partial class BinaryTests
         Assert.Equal(expectedSequence, result);
     }
 
-    [SkippableFact]
+    [Fact]
     public void SimpleCastGuid()
     {
-        Skip.If(DbContext.IsPostgreSQL, "Need to convert UUID to bytea");
-
         var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.SomeGuid));
         var result = query.ToList();
 
-        var expectedSequence = TestFixture.TestRows.Select(r => r.SomeGuid.ToByteArray());
+        // PostgreSQL keeps a uuid in the order it is written. SQL Server and .NET store the first three groups little-endian.
+        var expectedSequence = TestFixture.TestRows.Select(r => r.SomeGuid.ToByteArray(bigEndian: DbContext.IsPostgreSQL));
 
         Assert.Equal(expectedSequence, result);
     }
@@ -80,13 +76,12 @@ public partial class BinaryTests
     public void ConcatenateGuidAndInt()
     {
         Skip.If(DbContext.IsSqlite, "SQLite has no built-in mechanism to concatenate blobs. https://stackoverflow.com/a/45611692");
-        Skip.If(DbContext.IsPostgreSQL, "Need to convert UUID to bytea");
 
         var query = DbContext.TestRows
             .Select(r => EF.Functions.Concat(EF.Functions.GetBytes(r.SomeGuid), EF.Functions.GetBytes(r.Id)));
 
         var expectedSequence = TestFixture.TestRows
-            .Select(r => ReverseEndianAndCombine(r.SomeGuid, r.Id));
+            .Select(r => ReverseEndianAndCombine(r.SomeGuid, r.Id, DbContext.IsPostgreSQL));
 
         var result = query.ToList();
 
@@ -150,7 +145,6 @@ public partial class BinaryTests
     public void BinaryCastFromDoubleToLong()
     {
         Skip.If(DbContext.IsSqlite, "TODO: implement / drop");
-        Skip.If(DbContext.IsPostgreSQL, "Find a way to avoid the error: cannot cast type double precision to bit");
 
         var shortOverflow = 1 << 16;
         var query = DbContext.TestRows
@@ -168,10 +162,10 @@ public partial class BinaryTests
         Assert.Equal(expectedSequence, result);
     }
 
-    private static byte[] ReverseEndianAndCombine(Guid x, int y)
+    private static byte[] ReverseEndianAndCombine(Guid x, int y, bool bigEndianGuid)
     {
         var bytes = new byte[20];
-        _ = x.TryWriteBytes(bytes);
+        _ = x.TryWriteBytes(bytes, bigEndianGuid, out _);
         BinaryPrimitives.WriteInt32BigEndian(bytes.AsSpan(16), y);
         return bytes;
     }
