@@ -104,4 +104,58 @@ public partial class AnalyticTests
         var expectedSequence = TestRows.LastNonNull(r => r.Col1);
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
+
+    [Test]
+    public async Task FirstValueWithPartition()
+    {
+        var result = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.FirstValue(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id)))
+            .ToList();
+
+        var expected = TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => TestRows.Where(t => t.Id / 10 == r.Id / 10).OrderBy(t => t.Id).First().Col1);
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task LastValueToEndOfPartition()
+    {
+        var result = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.LastValue(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id).Rows().FromCurrentRow().ToUnbounded()))
+            .ToList();
+
+        var expected = TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => TestRows.Where(t => t.Id / 10 == r.Id / 10).OrderBy(t => t.Id).Last().Col1);
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task LastValueWithDefaultFrameIsCurrentRow()
+    {
+        // With ORDER BY the default frame ends at the current row, and Id has no peers.
+        var result = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.LastValue(r.Col1, EF.Functions.Over().OrderBy(r.Id)))
+            .ToList();
+
+        await Assert.That(result).IsEquivalentTo(TestRows.OrderBy(r => r.Id).Select(r => r.Col1), CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task FirstValueOfString()
+    {
+        var result = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.FirstValue(r.Id.ToString(), EF.Functions.Over().OrderByDescending(r.Id)))
+            .ToList();
+
+        var last = TestRows.Max(r => r.Id).ToString(CultureInfo.InvariantCulture);
+        await Assert.That(result).IsEquivalentTo(TestRows.Select(_ => (string?)last), CollectionOrdering.Matching);
+    }
 }

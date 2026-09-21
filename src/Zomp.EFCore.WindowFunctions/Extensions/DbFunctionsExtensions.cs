@@ -29,6 +29,18 @@ public static partial class DbFunctionsExtensions
         => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(Count)) + UseWindowFunctions);
 
     /// <summary>
+    /// The NTILE window function divides the rows of the partition, in order, into the given number of buckets as equal
+    /// in size as possible, and returns the bucket of the current row, numbered from 1.
+    /// </summary>
+    /// <param name="_">The <see cref="DbFunctions"/> instance.</param>
+    /// <param name="buckets">The number of buckets. Earlier buckets get one row more when the rows do not divide evenly.</param>
+    /// <param name="over">over clause.</param>
+    /// <returns>The bucket of the current row.</returns>
+    /// <exception cref="InvalidOperationException">Occurs on client-side evaluation.</exception>
+    public static long NTile(this DbFunctions _, int buckets, OverClause over)
+        => throw new InvalidOperationException(CoreStrings.FunctionOnClient(nameof(NTile)) + UseWindowFunctions);
+
+    /// <summary>
     /// Returns an instance of the Over clause.
     /// </summary>
     /// <param name="_">The <see cref="DbFunctions"/> instance.</param>
