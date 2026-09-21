@@ -27,7 +27,6 @@
     <PackageReference Include="InfoOf.Fody" PrivateAssets="all" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
   </ItemGroup>
   <ItemGroup>
     <!-- Generates the DbFunctionsExtensions window function overloads -->
