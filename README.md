@@ -123,7 +123,7 @@ var query = dbContext.TestRows
 });
 ```
 
-### Select and Where with an index
+### Select and Where with an index, and DistinctBy
 
 The index overload of `Select`, which EF Core does not translate ([dotnet/efcore#24218](https://github.com/dotnet/efcore/issues/24218)), becomes `ROW_NUMBER() - 1`, ordered like the rows reaching the `Select`:
 
@@ -140,6 +140,8 @@ ORDER BY [t].[Col1]
 ```
 
 `Where((r, i) => ...)` is translated the same way, numbering the rows in a subquery and filtering on the number.
+
+`DistinctBy`, which EF Core does not translate either, keeps the first row of each key the same way, with `ROW_NUMBER() OVER(PARTITION BY <key> ORDER BY ...)`. A composite key such as `new { r.A, r.B }` is partitioned by each of its members.
 
 Rows are numbered as LINQ numbers them: after a `Where` or `Skip` before the `Select`, and before a `Where` after it. Without an `OrderBy` the rows, and so the numbers, come in no defined order. Ties in the ordering are numbered in no defined order either, so order by something unique when the numbers matter.
 
