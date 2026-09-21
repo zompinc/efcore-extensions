@@ -18,23 +18,6 @@ public static class WindowFunctionsEvaluatableExpressionFilter
 
     internal static readonly MethodInfo AsSubQueryMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.AsSubQuery));
 
-    private static readonly MethodInfo DenseRankMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.DenseRank));
-    private static readonly MethodInfo PercentRankMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.PercentRank));
-    private static readonly MethodInfo RankMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.Rank));
-    private static readonly MethodInfo RowNumberMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.RowNumber));
-    private static readonly MethodInfo CountMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.Count));
-    ////private static readonly MethodInfo CountTResultMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.Count), "TResult");
-
-    private static readonly HashSet<MethodInfo> PreventEvaluationSet =
-    [
-        RowNumberMethod,
-        RankMethod,
-        DenseRankMethod,
-        PercentRankMethod,
-        CountMethod,
-        ////CountTResultMethod,
-    ];
-
     /// <summary>
     /// Determines if expression should be compiled and evaluated.
     /// </summary>
@@ -42,17 +25,8 @@ public static class WindowFunctionsEvaluatableExpressionFilter
     /// <returns>false if expression should be filtered.</returns>
     public static bool IsEvaluatableExpression(Expression expression)
     {
-        if (expression is MethodCallExpression methodCallExpression)
-        {
-            var declaringType = methodCallExpression.Method.DeclaringType;
-            var method = methodCallExpression.Method;
-            if ((PreventEvaluationSet.Contains(method) || method.Name == nameof(DbFunctionsExtensions.Count))
-                && declaringType == typeof(DbFunctionsExtensions))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        // A window function only runs in the database, even when nothing in the call depends on the row.
+        return expression is not MethodCallExpression { Method: var method }
+            || !WindowFunctionMethods.Contains(method, CompareNameAndDeclaringType.Default);
     }
 }
