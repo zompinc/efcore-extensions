@@ -4,6 +4,7 @@ public partial class AnalyticTests
 {
     private const int Offset = 2;
     private const int Default = 56;
+    private const string NoNthValueOnSqlServer = "SQL Server has no NTH_VALUE";
 
     [Test]
     public async Task LeadBasic()
@@ -157,5 +158,49 @@ public partial class AnalyticTests
 
         var last = TestRows.Max(r => r.Id).ToString(CultureInfo.InvariantCulture);
         await Assert.That(result).IsEquivalentTo(TestRows.Select(_ => (string?)last), CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task NthValueWithPartition()
+    {
+        Skip.When(DbContext.IsSqlServer, NoNthValueOnSqlServer);
+
+        var result = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.NthValue(r.Col1, 2, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id).Rows().FromUnbounded().ToUnbounded()))
+            .ToList();
+
+        var expected = TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => TestRows.Where(t => t.Id / 10 == r.Id / 10).OrderBy(t => t.Id).Skip(1).FirstOrDefault()?.Col1);
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task NthValueWithDefaultFrame()
+    {
+        Skip.When(DbContext.IsSqlServer, NoNthValueOnSqlServer);
+
+        // The default frame ends at the current row, so the first row has no second one yet.
+        var result = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.NthValue(r.Id, 2, EF.Functions.Over().OrderBy(r.Id)))
+            .ToList();
+
+        var ordered = TestRows.OrderBy(r => r.Id).ToArray();
+        var expected = ordered.Select((_, i) => i == 0 ? null : (int?)ordered[1].Id);
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task NthValueIsNotSupportedOnSqlServer()
+    {
+        Skip.Unless(DbContext.IsSqlServer, "Only SQL Server lacks NTH_VALUE");
+
+        await Assert.That(() => DbContext.TestRows.Select(r => EF.Functions.NthValue(r.Id, 2, EF.Functions.Over().OrderBy(r.Id))).ToList())
+            .Throws<InvalidOperationException>()
+            .WithMessageContaining("SQL Server has no NTH_VALUE", StringComparison.Ordinal);
     }
 }
