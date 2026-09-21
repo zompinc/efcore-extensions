@@ -19,4 +19,17 @@ public class SqliteSpecificTests : TestBase
         await Assert.That(sql).Contains("LIMIT", StringComparison.Ordinal);
         await Assert.That(sql).DoesNotContain("FETCH", StringComparison.Ordinal);
     }
+
+    /// <summary>
+    /// SQLite has no standard deviation or variance, and by default says so rather than approximating them.
+    /// </summary>
+    /// <returns>A task that completes when the exception has been checked.</returns>
+    [Test]
+    public async Task StandardDeviationIsNotSupportedByDefault()
+    {
+        var query = DbContext.TestRows
+            .Select(r => EF.Functions.StandardDeviationSample(r.Col1, EF.Functions.Over()));
+
+        await Assert.That(() => query.ToList()).Throws<InvalidOperationException>().WithMessageContaining("approximateStandardDeviationAndVariance", StringComparison.Ordinal);
+    }
 }

@@ -28,5 +28,7 @@ public partial class AnalyticTests : TestBase { }
 
 public partial class SubQueryTests : TestBase { }
 
+public partial class StatisticsTests : TestBase { }
+
 public partial class PagingTests : TestBase { }
 #pragma warning restore SA1402 // File may only contain a single type
