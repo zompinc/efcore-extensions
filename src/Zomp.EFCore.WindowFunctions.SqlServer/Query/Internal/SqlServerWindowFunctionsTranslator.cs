@@ -17,6 +17,7 @@ public class SqlServerWindowFunctionsTranslator(ISqlExpressionFactory sqlExpress
         "STDDEV_POP" => "STDEVP",
         "VAR_SAMP" => "VAR",
         "VAR_POP" => "VARP",
+        "NTH_VALUE" => throw new InvalidOperationException($"SQL Server has no NTH_VALUE function, so {nameof(DbFunctionsExtensions.NthValue)} cannot be translated."),
         _ => functionName,
     };
 }

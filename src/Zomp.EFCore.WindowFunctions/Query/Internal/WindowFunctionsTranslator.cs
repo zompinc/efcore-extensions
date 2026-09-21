@@ -33,6 +33,7 @@ public class WindowFunctionsTranslator(ISqlExpressionFactory sqlExpressionFactor
                 nameof(DbFunctionsExtensions.NTile) => Parse(arguments, "NTILE", typeof(long)),
                 nameof(DbFunctionsExtensions.FirstValue) => Parse(arguments, "FIRST_VALUE"),
                 nameof(DbFunctionsExtensions.LastValue) => Parse(arguments, "LAST_VALUE"),
+                nameof(DbFunctionsExtensions.NthValue) => Parse(arguments, "NTH_VALUE"),
                 nameof(DbFunctionsExtensions.StandardDeviationSample) => Parse(arguments, "STDDEV_SAMP", typeof(double)),
                 nameof(DbFunctionsExtensions.StandardDeviationPopulation) => Parse(arguments, "STDDEV_POP", typeof(double)),
                 nameof(DbFunctionsExtensions.VarianceSample) => Parse(arguments, "VAR_SAMP", typeof(double)),

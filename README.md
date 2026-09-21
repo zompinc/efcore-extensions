@@ -37,6 +37,7 @@ Window functions supported:
 - LAG
 - FIRST_VALUE
 - LAST_VALUE (with `OrderBy` the default frame ends at the current row, so add a frame such as `.Rows().FromCurrentRow().ToUnbounded()` to get the last row of the partition)
+- NTH_VALUE (not on SQL Server, which has no such function; same frame caveat as LAST_VALUE)
 - Standard deviation and variance, sample and population (`StandardDeviationSample`, `StandardDeviationPopulation`, `VarianceSample`, `VariancePopulation`)
 
 SQLite has no standard deviation or variance, so these throw there unless you opt in to an approximation computed from AVG, SUM and COUNT over the same window. It loses precision when the values are large and close together, such as timestamps:
