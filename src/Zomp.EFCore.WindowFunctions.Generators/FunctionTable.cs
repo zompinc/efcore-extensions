@@ -18,5 +18,9 @@ internal static class FunctionTable
         new("PercentRank", "The PERCENT_RANK() window function returns the percent rank value of the expression across all input values.", FunctionType.NoArguments, VariationType.Generic, nonNullableReturnType: true, specificReturnType: "double"),
         new("Lead", "The LEAD window function returns the values for a row at a given offset below (after) the current row in the partition.", FunctionType.LeadLag),
         new("Lag", "The LAG window function returns the values for a row at a given offset above (before) the current row in the partition.", FunctionType.LeadLag),
+        new("StandardDeviationSample", "The sample standard deviation window function (STDEV on SQL Server, STDDEV_SAMP elsewhere) returns the sample standard deviation of the expression across all input values.", variationType: VariationType.StructsOnly, specificReturnType: "double"),
+        new("StandardDeviationPopulation", "The population standard deviation window function (STDEVP on SQL Server, STDDEV_POP elsewhere) returns the population standard deviation of the expression across all input values.", variationType: VariationType.StructsOnly, specificReturnType: "double"),
+        new("VarianceSample", "The sample variance window function (VAR on SQL Server, VAR_SAMP elsewhere) returns the sample variance of the expression across all input values.", variationType: VariationType.StructsOnly, specificReturnType: "double"),
+        new("VariancePopulation", "The population variance window function (VARP on SQL Server, VAR_POP elsewhere) returns the population variance of the expression across all input values.", variationType: VariationType.StructsOnly, specificReturnType: "double"),
     ];
 }

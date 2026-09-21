@@ -5,7 +5,13 @@
 /// </summary>
 public class SqliteDbContextOptionsExtension : IDbContextOptionsExtension
 {
-    private ExtensionInfo? info;
+    private SqliteExtensionInfo? info;
+
+    /// <summary>
+    /// Gets a value indicating whether standard deviation and variance are computed from AVG, SUM and COUNT,
+    /// which SQLite has, rather than throwing.
+    /// </summary>
+    public bool ApproximateStandardDeviationAndVariance { get; init; }
 
     /// <inheritdoc/>
     public DbContextOptionsExtensionInfo Info => info ??= new(this);

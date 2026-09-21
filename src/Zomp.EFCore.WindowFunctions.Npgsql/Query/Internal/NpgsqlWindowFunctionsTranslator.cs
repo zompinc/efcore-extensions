@@ -12,8 +12,9 @@ public class NpgsqlWindowFunctionsTranslator(ISqlExpressionFactory sqlExpression
     {
         var retval = base.Parse(WithoutRespectNulls(arguments), functionName, resultType);
 
-        // count returns bigint in PostgreSQL, which Npgsql refuses to read as an int.
-        if (functionName == "COUNT" && retval.Type != typeof(long))
+        // count returns bigint and the statistical functions numeric for integer input, which Npgsql refuses
+        // to read as the int or double the method returns.
+        if ((functionName == "COUNT" && retval.Type != typeof(long)) || functionName is "STDDEV_SAMP" or "STDDEV_POP" or "VAR_SAMP" or "VAR_POP")
         {
             retval = new SqlUnaryExpression(ExpressionType.Convert, retval, retval.Type, null);
         }
