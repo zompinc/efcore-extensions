@@ -20,9 +20,15 @@
       "group": "test",
       "args": [
         "test",
-        "${workspaceFolder}/Zomp.EFCore.WindowFunctions.slnx",
-        "--settings",
-        "tests/coverlet.runsettings"
+        "--solution",
+        "${workspaceFolder}/Zomp.EFCore.Extensions.slnx",
+        "--coverage",
+        "--coverage-output-format",
+        "cobertura",
+        "--coverage-output",
+        "coverage.cobertura.xml",
+        "--coverage-settings",
+        "tests/CodeCoverage.config"
       ],
       "problemMatcher": "$msCompile"
     },
@@ -33,7 +39,7 @@
       "command": "powershell",
       "args": [
         "-command",
-        "Remove-Item -Recurse -Include TestResults -Path ${workspaceFolder}/tests"
+        "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue -Path ${workspaceFolder}/artifacts/test"
       ]
     },
     {
@@ -45,7 +51,7 @@
         "tool",
         "run",
         "reportgenerator",
-        "-reports:${workspaceFolder}\\tests\\**\\coverage.cobertura.xml",
+        "-reports:${workspaceFolder}\\artifacts\\test\\**\\coverage.cobertura.xml",
         "-targetdir:${workspaceFolder}\\reports\\coverage"
       ],
       "dependsOn": [
