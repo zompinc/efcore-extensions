@@ -1,0 +1,134 @@
+﻿namespace Zomp.EFCore.WindowFunctions.Query.Internal;
+
+/// <summary>
+/// Rewrites Select with an element index, which EF Core does not translate, to Select with ROW_NUMBER() - 1 in place of the index.
+/// The window is ordered like the rows reaching the Select, by the OrderBy and ThenBy calls before it.
+/// </summary>
+/// <remarks>
+/// Has to run before <see cref="WindowFunctionProjectionDetector"/>, which then pushes the query into a subquery where a filter
+/// follows the Select or a row limit precedes it, so the rows are numbered as LINQ numbers them.
+/// </remarks>
+internal sealed class SelectWithIndexExpressionVisitor : ExpressionVisitor
+{
+    private static readonly MethodInfo SelectMethod = typeof(Queryable).GetMethods()
+        .Single(m => m.Name == nameof(Queryable.Select) && SelectorParameterCount(m) == 1);
+
+    private static readonly MethodInfo SelectWithIndexMethod = typeof(Queryable).GetMethods()
+        .Single(m => m.Name == nameof(Queryable.Select) && SelectorParameterCount(m) == 2);
+
+    private static readonly MethodInfo RowNumberMethod = typeof(DbFunctionsExtensions).GetMethods()
+        .Single(m => m.Name == nameof(DbFunctionsExtensions.RowNumber) && !m.IsGenericMethod);
+
+    private static readonly MethodInfo OrderByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.OrderBy), typeof(OverClause));
+    private static readonly MethodInfo OrderByDescendingMethod = FunctionsMethod(nameof(DbFunctionsExtensions.OrderByDescending), typeof(OverClause));
+    private static readonly MethodInfo ThenByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ThenBy), typeof(OrderByClause));
+    private static readonly MethodInfo ThenByDescendingMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ThenByDescending), typeof(OrderByClause));
+
+    /// <summary>
+    /// Operators that keep the order of the rows they are given.
+    /// </summary>
+    private static readonly FrozenSet<string> OrderPreservingOperators =
+    [
+        nameof(DbFunctionsExtensions.AsSubQuery),
+        nameof(Queryable.Skip),
+        nameof(Queryable.Take),
+        nameof(Queryable.Where),
+    ];
+
+    // What EF.Functions in a query is evaluated to before translation.
+    private static readonly Expression Functions = Expression.Constant(EF.Functions);
+
+    /// <inheritdoc/>
+    protected override Expression VisitMethodCall(MethodCallExpression node)
+    {
+        var visited = (MethodCallExpression)base.VisitMethodCall(node);
+
+        if (!visited.Method.IsGenericMethod
+            || visited.Method.GetGenericMethodDefinition() != SelectWithIndexMethod
+            || visited.Arguments[1] is not UnaryExpression { NodeType: ExpressionType.Quote, Operand: LambdaExpression selector })
+        {
+            return visited;
+        }
+
+        var source = visited.Arguments[0];
+        var element = selector.Parameters[0];
+        var index = Expression.Convert(
+            Expression.Subtract(Expression.Call(RowNumberMethod, Functions, Over(source, element)), Expression.Constant(1L)),
+            typeof(int));
+
+        var body = ReplacingExpressionVisitor.Replace(selector.Parameters[1], index, selector.Body);
+        var select = SelectMethod.MakeGenericMethod(element.Type, selector.ReturnType);
+
+        return Expression.Call(select, source, Expression.Quote(Expression.Lambda(body, element)));
+    }
+
+    /// <summary>
+    /// Builds the over clause from the OrderBy and ThenBy calls that order <paramref name="source"/>.
+    /// </summary>
+    /// <remarks>
+    /// Without them the rows come in no defined order, and ORDER BY a constant numbers them in whatever order the database
+    /// reads them. SQL Server requires an ORDER BY in ROW_NUMBER.
+    /// </remarks>
+    private static Expression Over(Expression source, ParameterExpression element)
+    {
+        var orderings = new List<(LambdaExpression Key, bool Descending)>();
+        while (source is MethodCallExpression { Method: var method } call
+            && (method.DeclaringType == typeof(Queryable) || method.DeclaringType == typeof(DbFunctionsExtensions)))
+        {
+            if (method.Name is nameof(Queryable.OrderBy) or nameof(Queryable.OrderByDescending)
+                or nameof(Queryable.ThenBy) or nameof(Queryable.ThenByDescending))
+            {
+                if (call.Arguments is not [_, UnaryExpression { Operand: LambdaExpression key }])
+                {
+                    // An OrderBy with a comparer has no SQL ordering to copy.
+                    orderings.Clear();
+                    break;
+                }
+
+                orderings.Insert(0, (key, method.Name.EndsWith("Descending", StringComparison.Ordinal)));
+                if (method.Name.StartsWith(nameof(Queryable.OrderBy), StringComparison.Ordinal))
+                {
+                    break;
+                }
+            }
+            else if (!OrderPreservingOperators.Contains(method.Name))
+            {
+                orderings.Clear();
+                break;
+            }
+
+            source = call.Arguments[0];
+        }
+
+        // What EF.Functions.Over() in a query is evaluated to before translation.
+        Expression over = Expression.Constant(OverClause.Instance);
+        if (orderings.Count == 0)
+        {
+            return Expression.Call(OrderByMethod.MakeGenericMethod(typeof(int)), over, Expression.Constant(1));
+        }
+
+        for (var i = 0; i < orderings.Count; ++i)
+        {
+            var (key, descending) = orderings[i];
+            var method = (i == 0, descending) switch
+            {
+                (true, false) => OrderByMethod,
+                (true, true) => OrderByDescendingMethod,
+                (false, false) => ThenByMethod,
+                (false, true) => ThenByDescendingMethod,
+            };
+
+            var keyBody = ReplacingExpressionVisitor.Replace(key.Parameters[0], element, key.Body);
+            over = Expression.Call(method.MakeGenericMethod(key.ReturnType), over, keyBody);
+        }
+
+        return over;
+    }
+
+    private static MethodInfo FunctionsMethod(string name, Type firstParameter)
+        => typeof(DbFunctionsExtensions).GetMethods()
+            .Single(m => m.Name == name && m.GetParameters()[0].ParameterType == firstParameter);
+
+    private static int SelectorParameterCount(MethodInfo select)
+        => select.GetParameters()[1].ParameterType.GetGenericArguments()[0].GetGenericArguments().Length - 1;
+}
