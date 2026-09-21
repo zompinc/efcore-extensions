@@ -12,6 +12,7 @@ internal sealed class Configuration(
     int numberOfOptionalArguments)
 {
     private static readonly Argument Offset = new("long", "offset", "The offset.");
+    private static readonly Argument N = new("long", "n", "The row of the window frame to return the value from, counting from 1.");
     private static readonly Argument NullHandling = new("NullHandling?", "nullHandling", "Respect nulls or ignore nulls. If omitted or <see langword=\"null\" /> is specified, provider's default is used which is to respect nulls.");
 
     public bool CustomReturnType => customReturnType;
@@ -48,6 +49,7 @@ internal sealed class Configuration(
         FunctionType.NoArguments => [],
         FunctionType.SingleArgument => [MainExpression],
         FunctionType.LeadLag => GetLeadLagArguments(),
+        FunctionType.NthValue => [MainExpression, N],
         _ => throw new InvalidOperationException($"Unknown function type {functionType}."),
     };
 

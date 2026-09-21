@@ -8,4 +8,5 @@ internal enum FunctionType
     NoArguments,
     SingleArgument,
     LeadLag,
+    NthValue,
 }

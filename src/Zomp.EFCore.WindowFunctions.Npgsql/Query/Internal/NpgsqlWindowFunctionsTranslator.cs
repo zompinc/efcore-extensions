@@ -12,9 +12,9 @@ public class NpgsqlWindowFunctionsTranslator(ISqlExpressionFactory sqlExpression
     {
         var retval = base.Parse(WithoutRespectNulls(arguments), functionName, resultType);
 
-        // count returns bigint and the statistical functions numeric for integer input, which Npgsql refuses
-        // to read as the int or double the method returns.
-        if ((functionName == "COUNT" && retval.Type != typeof(long)) || functionName is "STDDEV_SAMP" or "STDDEV_POP" or "VAR_SAMP" or "VAR_POP")
+        // count returns bigint, ntile integer and the statistical functions numeric for integer input, which
+        // Npgsql refuses to read as the int, long or double the method returns.
+        if ((functionName == "COUNT" && retval.Type != typeof(long)) || functionName is "NTILE" or "STDDEV_SAMP" or "STDDEV_POP" or "VAR_SAMP" or "VAR_POP")
         {
             retval = new SqlUnaryExpression(ExpressionType.Convert, retval, retval.Type, null);
         }

@@ -89,4 +89,86 @@ public partial class RankTests
 
         await Assert.That(result.Select(r => r)).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
+
+    [Test]
+    public async Task NTileBasic()
+    {
+        var result = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.NTile(3, EF.Functions.Over().OrderBy(r.Id)))
+            .ToList();
+
+        await Assert.That(result).IsEquivalentTo(NTiles(TestRows.Length, 3), CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task NTileWithPartitionAndVariable()
+    {
+        var buckets = 2;
+        var result = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.NTile(buckets, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id)))
+            .ToList();
+
+        var expected = TestRows
+            .OrderBy(r => r.Id)
+            .GroupBy(r => r.Id / 10)
+            .SelectMany(g => NTiles(g.Count(), buckets));
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task NTileWithWhere()
+    {
+        var result = DbContext.TestRows
+            .Where(r => EF.Functions.NTile(2, EF.Functions.Over().OrderBy(r.Id)) == 1)
+            .OrderBy(r => r.Id)
+            .Select(r => r.Id)
+            .ToList();
+
+        var ordered = TestRows.OrderBy(r => r.Id).ToArray();
+        var expected = NTiles(ordered.Length, 2).Zip(ordered).Where(p => p.First == 1).Select(p => p.Second.Id);
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task CumeDistBasic()
+    {
+        var result = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.CumeDist(EF.Functions.Over().OrderBy(r.Id / 10)))
+            .ToList();
+
+        var expected = TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => (double)TestRows.Count(t => t.Id / 10 <= r.Id / 10) / TestRows.Length);
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task CumeDistEmptyOver()
+    {
+        Skip.When(DbContext.IsSqlServer, "SQL Server requires ORDER BY for CUME_DIST");
+
+        // Without ORDER BY every row is a peer of every other, so the distribution is 1 throughout.
+        var result = DbContext.TestRows
+            .Select(r => EF.Functions.CumeDist(EF.Functions.Over()))
+            .ToList();
+
+        await Assert.That(result).IsEquivalentTo(TestRows.Select(_ => 1.0), CollectionOrdering.Matching);
+    }
+
+    /// <summary>
+    /// The buckets NTILE gives to <paramref name="count"/> ordered rows: as equal as possible, the earlier ones one larger.
+    /// </summary>
+    private static IEnumerable<long> NTiles(int count, int buckets)
+    {
+        var size = count / buckets;
+        var larger = count % buckets;
+        return Enumerable.Range(0, count)
+            .Select(i => i < larger * (size + 1) ? (i / (size + 1)) + 1L : larger + ((i - (larger * (size + 1))) / size) + 1L);
+    }
 }

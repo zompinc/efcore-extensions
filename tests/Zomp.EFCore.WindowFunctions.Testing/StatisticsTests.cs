@@ -79,6 +79,42 @@ public partial class StatisticsTests
         await Assert.That(result.Select(Round)).IsEquivalentTo(expected.Select(Round), CollectionOrdering.Matching);
     }
 
+    [Test]
+    public async Task VariancePopulationWithWhere()
+    {
+        Skip.When(DbContext.IsSqlite, NotOnSqlite);
+
+        // The partitions of Col1 are {10, -1}, {-12} and {1759}; only the first varies.
+        var result = DbContext.TestRows
+            .Where(r => EF.Functions.VariancePopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)) > 0)
+            .OrderBy(r => r.Id)
+            .Select(r => r.Id)
+            .ToList();
+
+        var expected = TestRows
+            .Where(r => PopulationVariance(TestRows.Where(t => t.Id / 10 == r.Id / 10).Select(t => t.Col1)) > 0)
+            .OrderBy(r => r.Id)
+            .Select(r => r.Id);
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task MaxOverStandardDeviation()
+    {
+        Skip.When(DbContext.IsSqlite, NotOnSqlite);
+
+        var result = DbContext.TestRows
+            .Select(r => EF.Functions.StandardDeviationPopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
+            .Max();
+
+        var expected = TestRows
+            .Select(r => Sqrt(PopulationVariance(TestRows.Where(t => t.Id / 10 == r.Id / 10).Select(t => t.Col1))))
+            .Max();
+
+        await Assert.That(Round(result)).IsEqualTo(Round(expected));
+    }
+
     internal static double? SampleVariance(IEnumerable<int?> values)
     {
         var present = values.Where(v => v.HasValue).Select(v => (double)v!.Value).ToArray();

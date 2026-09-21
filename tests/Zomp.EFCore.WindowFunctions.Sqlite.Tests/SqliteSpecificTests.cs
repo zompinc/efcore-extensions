@@ -98,6 +98,24 @@ public class SqliteSpecificTests : TestBase
         await Assert.That(result.Select(StatisticsTests.Round)).IsEquivalentTo(expected.Select(StatisticsTests.Round), CollectionOrdering.Matching);
     }
 
+    [Test]
+    public async Task VariancePopulationApproximatedWithWhere()
+    {
+        using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
+        var result = context.TestRows
+            .Where(r => EF.Functions.VariancePopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)) > 0)
+            .OrderBy(r => r.Id)
+            .Select(r => r.Id)
+            .ToList();
+
+        var expected = TestRows
+            .Where(r => StatisticsTests.PopulationVariance(TestRows.Where(t => t.Id / 10 == r.Id / 10).Select(t => t.Col1)) > 0)
+            .OrderBy(r => r.Id)
+            .Select(r => r.Id);
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
     /// <summary>
     /// A compiled query is cached per internal service provider, so the option must be part of what decides whether
     /// two contexts share one. Otherwise the approximated query would be reused where the option is off.
