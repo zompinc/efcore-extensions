@@ -38,6 +38,22 @@
     <PackageReference Include="TUnit" />
   </ItemGroup>
 
+  <!-- Run the libraries on the latest EF Core patch (see Directory.Packages.props). -->
+  <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" VersionOverride="$(NetRuntimeLatest)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" VersionOverride="$(NetRuntimeLatest)" />
+  </ItemGroup>
+  <ItemGroup Condition="$(AssemblyName.EndsWith('.SqlServer.Tests'))">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" VersionOverride="$(NetRuntimeLatest)" />
+  </ItemGroup>
+  <ItemGroup Condition="$(AssemblyName.EndsWith('.Sqlite.Tests'))">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" VersionOverride="$(NetRuntimeLatest)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" VersionOverride="$(NetRuntimeLatest)" />
+  </ItemGroup>
+  <ItemGroup Condition="$(AssemblyName.EndsWith('.Npgsql.Tests'))">
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" VersionOverride="$(NpgsqlVersionLatest)" />
+  </ItemGroup>
+
   <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.Extensions.Logging" />

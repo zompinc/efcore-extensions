@@ -10,6 +10,15 @@
   <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_8)) and !$(DefineConstants.Contains(EF_CORE_9))">
     <NetRuntime>10.0.0</NetRuntime>
     <NpgsqlVersion>10.0.0</NpgsqlVersion>
+    <!-- The packages depend on the lowest version above. The tests run on the latest patch, which is
+         what users run: the libraries derive from EF Core's .Internal classes, and those can change
+         between patches. -->
+    <NetRuntimeLatest>10.0.12</NetRuntimeLatest>
+    <NpgsqlVersionLatest>10.0.3</NpgsqlVersionLatest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NetRuntimeLatest Condition="'$(NetRuntimeLatest)' == ''">$(NetRuntime)</NetRuntimeLatest>
+    <NpgsqlVersionLatest Condition="'$(NpgsqlVersionLatest)' == ''">$(NpgsqlVersion)</NpgsqlVersionLatest>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Fody" Version="6.9.3" />
