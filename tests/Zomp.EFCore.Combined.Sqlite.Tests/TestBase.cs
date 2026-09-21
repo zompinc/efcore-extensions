@@ -1,8 +1,8 @@
 ﻿namespace Zomp.EFCore.Combined.Sqlite.Tests;
 
-public class TestBase(ITestOutputHelper output) : IDisposable
+public class TestBase : IDisposable
 {
-    protected SqliteTestDbContext DbContext { get; } = new(output.ToLoggerFactory());
+    protected SqliteTestDbContext DbContext { get; } = new();
 
     public void Dispose()
     {

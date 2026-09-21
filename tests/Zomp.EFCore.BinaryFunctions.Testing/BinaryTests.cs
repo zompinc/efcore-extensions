@@ -2,7 +2,7 @@
 
 public partial class BinaryTests
 {
-    [Fact]
+    [Test]
     public void CastDateToByteArray()
     {
         var query = DbContext.TestRows
@@ -11,8 +11,8 @@ public partial class BinaryTests
         var result = query.ToList();
     }
 
-    [Fact]
-    public void CastIntToByteArray()
+    [Test]
+    public async Task CastIntToByteArray()
     {
         var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Id));
@@ -22,11 +22,11 @@ public partial class BinaryTests
         var expectedSequence = TestFixture.TestRows
             .Select(r => BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(r.Id)));
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CastNullableIntToByteArray()
+    [Test]
+    public async Task CastNullableIntToByteArray()
     {
         var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Col1));
@@ -36,11 +36,11 @@ public partial class BinaryTests
         var expectedSequence = TestFixture.TestRows
             .Select(r => r.Col1.HasValue ? BitConverter.GetBytes(BinaryPrimitives.ReverseEndianness(r.Col1.Value)) : null);
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CastBoolToByteArray()
+    [Test]
+    public async Task CastBoolToByteArray()
     {
         var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Id % 3 == 2 ? (bool?)null : r.Id % 3 == 0));
@@ -50,11 +50,11 @@ public partial class BinaryTests
         var expectedSequence = TestFixture.TestRows
             .Select(r => r.Id % 3 == 2 ? null : BitConverter.GetBytes(r.Id % 3 == 0));
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void SimpleCastGuid()
+    [Test]
+    public async Task SimpleCastGuid()
     {
         var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.SomeGuid));
@@ -63,25 +63,25 @@ public partial class BinaryTests
         // PostgreSQL keeps a uuid in the order it is written. SQL Server and .NET store the first three groups little-endian.
         var expectedSequence = TestFixture.TestRows.Select(r => r.SomeGuid.ToByteArray(bigEndian: DbContext.IsPostgreSQL));
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void ConcatenateGuidAndInt()
+    [Test]
+    public async Task ConcatenateGuidAndInt()
     {
         var query = DbContext.TestRows
             .Select(r => EF.Functions.Concat(EF.Functions.GetBytes(r.SomeGuid), EF.Functions.GetBytes(r.Id)));
 
         var expectedSequence = TestFixture.TestRows
-            .Select(r => ReverseEndianAndCombine(r.SomeGuid, r.Id, DbContext.IsPostgreSQL));
+            .Select(r => (byte[]?)ReverseEndianAndCombine(r.SomeGuid, r.Id, DbContext.IsPostgreSQL));
 
         var result = query.ToList();
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void ConcatenateTwoInts()
+    [Test]
+    public async Task ConcatenateTwoInts()
     {
         var query = DbContext.TestRows
             .Where(r => r.Col1.HasValue)
@@ -90,15 +90,15 @@ public partial class BinaryTests
 
         var expectedSequence = TestFixture.TestRows
             .Where(r => r.Col1.HasValue)
-            .Select(r => ReverseEndianAndCombine(r.Id, r.Col1!.Value));
+            .Select(r => (byte[]?)ReverseEndianAndCombine(r.Id, r.Col1!.Value));
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [SkippableFact]
-    public void DoubleConversion()
+    [Test]
+    public async Task DoubleConversion()
     {
-        Skip.If(DbContext.IsPostgreSQL, "Must be able to convert double precision into bit(64) or bytea");
+        Skip.When(DbContext.IsPostgreSQL, "Must be able to convert double precision into bit(64) or bytea");
 
         var query = DbContext.TestRows
             .Where(r => r.Col1.HasValue)
@@ -109,11 +109,11 @@ public partial class BinaryTests
             .Where(r => r.Col1.HasValue)
             .Select(r => (double?)r.Col1!.Value / 2d);
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void BinaryCastFromIntToShort()
+    [Test]
+    public async Task BinaryCastFromIntToShort()
     {
         var shortOverflow = 1 << 16;
         var query = DbContext.TestRows
@@ -128,13 +128,13 @@ public partial class BinaryTests
                 return MemoryMarshal.GetReference(MemoryMarshal.Cast<int, short>(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(ref @ref), 1)));
             });
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [SkippableFact]
-    public void BinaryCastFromDoubleToLong()
+    [Test]
+    public async Task BinaryCastFromDoubleToLong()
     {
-        Skip.If(DbContext.IsSqlite, "TODO: implement / drop");
+        Skip.When(DbContext.IsSqlite, "TODO: implement / drop");
 
         var shortOverflow = 1 << 16;
         var query = DbContext.TestRows
@@ -149,7 +149,7 @@ public partial class BinaryTests
                 return MemoryMarshal.GetReference(MemoryMarshal.Cast<double, long>(MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(ref @ref), 1)));
             });
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
     private static byte[] ReverseEndianAndCombine(Guid x, int y, bool bigEndianGuid)

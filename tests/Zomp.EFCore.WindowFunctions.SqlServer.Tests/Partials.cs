@@ -3,36 +3,30 @@
 namespace Zomp.EFCore.WindowFunctions.Testing;
 
 #pragma warning disable SA1402 // File may only contain a single type
-[Collection(nameof(SqlServerCollection))]
-public partial class MaxTests(ITestOutputHelper output) : TestBase(output) { }
+public partial class MaxTests : TestBase { }
 
-[Collection(nameof(SqlServerCollection))]
-public partial class NullTests(ITestOutputHelper output) : TestBase(output) { }
+public partial class NullTests : TestBase { }
 
-public partial class AvgTests<TResult>(ITestOutputHelper output) : TestBase(output) { }
+public partial class AvgTests<TResult> : TestBase { }
 
-[Collection(nameof(SqlServerCollection))]
-public partial class AvgTests(ITestOutputHelper output) : AvgTests<int>(output) { }
+[InheritsTests]
+public partial class AvgTests : AvgTests<int> { }
 
-[Collection(nameof(SqlServerCollection))]
-public partial class RankTests(ITestOutputHelper output) : TestBase(output) { }
+public partial class RankTests : TestBase { }
 
-public partial class SumTests<TResult>(ITestOutputHelper output) : TestBase(output) { }
+public partial class SumTests<TResult> : TestBase { }
 
-[Collection(nameof(SqlServerCollection))]
-public partial class SumTests(ITestOutputHelper output) : SumTests<int>(output) { }
+[InheritsTests]
+public partial class SumTests : SumTests<int> { }
 
-public partial class CountTests<TResult>(ITestOutputHelper output) : TestBase(output) { }
+public partial class CountTests<TResult> : TestBase { }
 
-[Collection(nameof(SqlServerCollection))]
-public partial class CountTests(ITestOutputHelper output) : CountTests<int>(output) { }
+[InheritsTests]
+public partial class CountTests : CountTests<int> { }
 
-[Collection(nameof(SqlServerCollection))]
-public partial class AnalyticTests(ITestOutputHelper output) : TestBase(output) { }
+public partial class AnalyticTests : TestBase { }
 
-[Collection(nameof(SqlServerCollection))]
-public partial class SubQueryTests(ITestOutputHelper output) : TestBase(output) { }
+public partial class SubQueryTests : TestBase { }
 
-[Collection(nameof(SqlServerCollection))]
-public partial class PagingTests(ITestOutputHelper output) : TestBase(output) { }
+public partial class PagingTests : TestBase { }
 #pragma warning restore SA1402 // File may only contain a single type

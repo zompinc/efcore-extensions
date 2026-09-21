@@ -4,7 +4,7 @@ public sealed class SqlServerFixture : TestFixture
 {
     public override async Task InitializeAsync()
     {
-        TestDBContext = new SqlServerTestDbContext(Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance);
+        TestDBContext = new SqlServerTestDbContext();
         await base.InitializeAsync();
     }
 

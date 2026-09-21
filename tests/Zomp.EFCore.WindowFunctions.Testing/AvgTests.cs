@@ -3,23 +3,23 @@
 public abstract partial class AvgTests<TResult>
     where TResult : IConvertible
 {
-    [Fact]
-    public void AvgBasic()
+    [Test]
+    public async Task AvgBasic()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Avg<int, TResult>(r.Id, EF.Functions.Over()));
 
         var result = query.ToList().Distinct();
 
-        _ = Assert.Single(result);
+        await Assert.That(result).HasSingleItem();
 
         var expected = ExpectedAverage(TestRows, r => r.Id);
 
-        Assert.Equal(expected, result.Single()!.ToDecimal(null), 10);
+        await Assert.That(Math.Round(result.Single()!.ToDecimal(null), 10)).IsEqualTo(Math.Round(expected, 10));
     }
 
-    [Fact]
-    public void AvgWithPartition()
+    [Test]
+    public async Task AvgWithPartition()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Avg<int, TResult>(
@@ -32,11 +32,11 @@ public abstract partial class AvgTests<TResult>
             .ToDictionary(r => r.Key, r => ExpectedAverage(r, s => s.Id));
 
         var expectedSequence = TestRows.Select(r => (decimal?)groups[r.Id / 10]);
-        Assert.Equal(expectedSequence, result.Select(r => r?.ToDecimal(null)));
+        await Assert.That(result.Select(r => r?.ToDecimal(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void AvgDoubleWithPartition()
+    [Test]
+    public async Task AvgDoubleWithPartition()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Avg(
@@ -49,11 +49,11 @@ public abstract partial class AvgTests<TResult>
             .ToDictionary(r => r.Key, r => r.Average(s => s.Id));
 
         var expectedSequence = TestRows.Select(r => (double?)groups[r.Id / 10]);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void AvgNullableWithPartition()
+    [Test]
+    public async Task AvgNullableWithPartition()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Avg(
@@ -66,7 +66,7 @@ public abstract partial class AvgTests<TResult>
             .ToDictionary(r => r.Key, r => r.Average(s => s.Col1));
 
         var expectedSequence = TestRows.Select(r => groups[r.Id / 10]);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
     /// <remarks>

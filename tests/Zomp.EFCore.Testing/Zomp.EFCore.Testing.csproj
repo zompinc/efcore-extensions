@@ -8,7 +8,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
-    <PackageReference Include="xunit" />
+    <PackageReference Include="TUnit.Core" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Microsoft.EntityFrameworkCore" />
@@ -16,6 +16,6 @@
     <Using Include="Microsoft.Extensions.Logging" />
     <Using Include="System.Collections.Immutable" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
-    <Using Include="Xunit" />
+    <Using Include="TUnit.Core" />
   </ItemGroup>
 </Project>

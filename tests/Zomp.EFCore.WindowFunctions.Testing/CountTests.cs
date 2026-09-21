@@ -3,8 +3,8 @@ namespace Zomp.EFCore.WindowFunctions.Testing;
 public abstract partial class CountTests<TResult>
     where TResult : IConvertible
 {
-    [Fact]
-    public void CountStarAsInt()
+    [Test]
+    public async Task CountStarAsInt()
     {
         // https://github.com/zompinc/efcore-extensions/issues/26
         var query = DbContext.TestRows
@@ -13,11 +13,11 @@ public abstract partial class CountTests<TResult>
         var result = query.ToList();
 
         var expectedSequence = Enumerable.Repeat(TestRows.Length, TestRows.Length);
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountStar()
+    [Test]
+    public async Task CountStar()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<TResult>(EF.Functions.Over()));
@@ -26,11 +26,11 @@ public abstract partial class CountTests<TResult>
 
         var maxId = TestRows.Length;
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => maxId);
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountBasic()
+    [Test]
+    public async Task CountBasic()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<int, TResult>(r.Id, EF.Functions.Over()));
@@ -39,11 +39,11 @@ public abstract partial class CountTests<TResult>
 
         var maxId = TestRows.Length;
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => maxId);
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountBasicNullable()
+    [Test]
+    public async Task CountBasicNullable()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over()));
@@ -52,11 +52,11 @@ public abstract partial class CountTests<TResult>
 
         var countId = TestRows.Count(x => x.Col1 is not null);
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => countId);
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountBetweenCurrentRowAndNext()
+    [Test]
+    public async Task CountBetweenCurrentRowAndNext()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<int, TResult>(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromCurrentRow().ToFollowing(1)));
@@ -65,11 +65,11 @@ public abstract partial class CountTests<TResult>
 
         var expectedSequence = TestRows
             .Select((_, i) => i < TestRows.Length - 1 ? 2 : 1);
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountBetweenCurrentRowAndNextNullable()
+    [Test]
+    public async Task CountBetweenCurrentRowAndNextNullable()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over().OrderBy(r.Id).Rows().FromCurrentRow().ToFollowing(1)));
@@ -78,11 +78,11 @@ public abstract partial class CountTests<TResult>
 
         var expectedSequence = TestRows.Select((_, i)
             => TestRows.CountNonNulls(z => z.Col1, i, i + 1));
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountBetweenTwoPreceding()
+    [Test]
+    public async Task CountBetweenTwoPreceding()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over().OrderBy(r.Id).Rows().FromPreceding(2).ToPreceding(1)));
@@ -91,11 +91,11 @@ public abstract partial class CountTests<TResult>
 
         var expectedSequence = TestRows.Select((_, i)
             => TestRows.CountNonNulls(z => z.Col1, i - 2, i - 1));
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountBetweenTwoFollowing()
+    [Test]
+    public async Task CountBetweenTwoFollowing()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<int?, TResult>(r.Col1, EF.Functions.Over().OrderBy(r.Id).Rows().FromFollowing(1).ToFollowing(2)));
@@ -104,11 +104,11 @@ public abstract partial class CountTests<TResult>
 
         var expectedSequence = TestRows.Select((_, i)
             => TestRows.CountNonNulls(z => z.Col1, i + 1, i + 2));
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountBetweenFollowingAndUnbounded()
+    [Test]
+    public async Task CountBetweenFollowingAndUnbounded()
     {
         var query = DbContext.TestRows
         .Select(r => new
@@ -122,11 +122,11 @@ public abstract partial class CountTests<TResult>
 
         var expectedSequence = TestRows.Select((_, i)
             => TestRows.CountNonNulls(z => z.Col1, i + 1, TestRows.Length - 1));
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        await Assert.That(result.Select(r => r.Count.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountWithPartition()
+    [Test]
+    public async Task CountWithPartition()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<int?, TResult>(
@@ -141,11 +141,11 @@ public abstract partial class CountTests<TResult>
             r => r.Count(z => z.Col1 is not null));
 
         var expectedSequence = TestRows.Select(r => groups[r.Id / 10]);
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountWith2Partitions()
+    [Test]
+    public async Task CountWith2Partitions()
     {
         var query = DbContext.TestRows
         .Select(r => new
@@ -165,11 +165,11 @@ public abstract partial class CountTests<TResult>
             r => r.Count());
 
         var expectedSequence = TestRows.Select(r => groups[(r.Id / 10, r.Date.DayOfYear % 2)]);
-        Assert.Equal(expectedSequence, result.Select(r => r.Count.ToInt32(null)));
+        await Assert.That(result.Select(r => r.Count.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void SimpleCountWithCast()
+    [Test]
+    public async Task SimpleCountWithCast()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<long, TResult>(r.Id, EF.Functions.Over()));
@@ -178,11 +178,11 @@ public abstract partial class CountTests<TResult>
 
         var count = TestRows.Length;
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => count);
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountWithCastToString()
+    [Test]
+    public async Task CountWithCastToString()
     {
         // Nullable<T>.ToString() is never null, so the null has to be kept explicitly for COUNT to skip it.
         var query = DbContext.TestRows
@@ -192,11 +192,11 @@ public abstract partial class CountTests<TResult>
 
         var count = TestRows.Count(r => r.Col1?.ToString(CultureInfo.InvariantCulture) != null);
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => count);
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void CountBinary()
+    [Test]
+    public async Task CountBinary()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Count<byte[]?, TResult>(r.IdBytes, EF.Functions.Over()));
@@ -206,6 +206,6 @@ public abstract partial class CountTests<TResult>
         var count = TestRows.Length;
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => count);
 
-        Assert.Equal(expectedSequence, result.Select(r => r.ToInt32(null)));
+        await Assert.That(result.Select(r => r.ToInt32(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 }

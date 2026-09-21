@@ -1,6 +1,6 @@
 ﻿namespace Zomp.EFCore.Testing;
 
-public class TestFixture : IAsyncLifetime
+public class TestFixture
 {
     /// <summary>
     /// Gets the test rows.
@@ -13,7 +13,10 @@ public class TestFixture : IAsyncLifetime
 
     public TestDbContext? TestDBContext { get; set; }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Creates the database and fills it with <see cref="TestRows"/>.
+    /// </summary>
+    /// <returns>A task that completes when the rows are saved.</returns>
     public virtual async Task InitializeAsync()
     {
         ArgumentNullException.ThrowIfNull(TestDBContext);
@@ -25,7 +28,10 @@ public class TestFixture : IAsyncLifetime
         _ = await TestDBContext.SaveChangesAsync();
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Deletes the database unless the settings ask to keep it.
+    /// </summary>
+    /// <returns>A task that completes when the database is deleted.</returns>
     public virtual async Task DisposeAsync()
     {
         ArgumentNullException.ThrowIfNull(TestDBContext);

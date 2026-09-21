@@ -3,8 +3,8 @@
 public abstract partial class SumTests<TResult>
         where TResult : IConvertible
 {
-    [Fact]
-    public void SimpleSum()
+    [Test]
+    public async Task SimpleSum()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Sum<int, TResult>(r.Id, EF.Functions.Over()));
@@ -13,11 +13,11 @@ public abstract partial class SumTests<TResult>
 
         var sumId = TestRows.Sum(r => r.Id);
         var expectedSequence = Enumerable.Range(0, TestRows.Length).Select(_ => (long?)sumId);
-        Assert.Equal(expectedSequence, result.Select(r => r?.ToInt64(null)));
+        await Assert.That(result.Select(r => r?.ToInt64(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void SumWithPartition()
+    [Test]
+    public async Task SumWithPartition()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Sum<int, TResult>(
@@ -30,11 +30,11 @@ public abstract partial class SumTests<TResult>
             .ToDictionary(r => r.Key, r => r.Sum(s => s.Id));
 
         var expectedSequence = TestRows.Select(r => (long?)groups[r.Id / 10]);
-        Assert.Equal(expectedSequence, result.Select(r => r?.ToInt64(null)));
+        await Assert.That(result.Select(r => r?.ToInt64(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void SumWithPartitionAndOrder()
+    [Test]
+    public async Task SumWithPartitionAndOrder()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Sum<int, TResult>(
@@ -52,6 +52,6 @@ public abstract partial class SumTests<TResult>
                 .Where(z => z.Id <= r.Id)
                 .Sum(s => (long)s.Id));
 
-        Assert.Equal(expectedSequence, result.Select(r => r!.ToInt64(null)));
+        await Assert.That(result.Select(r => r!.ToInt64(null))).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 }

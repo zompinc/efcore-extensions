@@ -2,8 +2,8 @@
 
 public partial class RankTests
 {
-    [Fact]
-    public void RowNumberBasic()
+    [Test]
+    public async Task RowNumberBasic()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(r.Id).PartitionBy(r.Id / 10)));
@@ -14,13 +14,13 @@ public partial class RankTests
             .SelectMany(g =>
                 g.Select((j, i) => (long)(i + 1)));
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [SkippableFact]
-    public void RowNumberEmptyOver()
+    [Test]
+    public async Task RowNumberEmptyOver()
     {
-        Skip.If(DbContext.IsSqlServer);
+        Skip.When(DbContext.IsSqlServer, "SQL Server requires ORDER BY for ROW_NUMBER");
 
         var query = DbContext.TestRows
             .Select(r => EF.Functions.RowNumber(EF.Functions.Over()));
@@ -30,11 +30,11 @@ public partial class RankTests
         var expectedSequence = TestRows
             .Select((j, i) => (long)(i + 1));
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void RankBasic()
+    [Test]
+    public async Task RankBasic()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.Rank(EF.Functions.Over().OrderBy(r.Id / 10)));
@@ -48,11 +48,11 @@ public partial class RankTests
                 .Where(g => g.Key < v)
                 .Sum(g => g.Count()) + 1);
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void DenseRankBasic()
+    [Test]
+    public async Task DenseRankBasic()
     {
         var query = DbContext.TestRows
         .Select(r => EF.Functions.DenseRank(EF.Functions.Over().OrderBy(r.Id / 10)));
@@ -63,11 +63,11 @@ public partial class RankTests
             .GroupBy(r => r.Id / 10)
             .SelectMany((g, i) => g.Select(j => (long)(i + 1)));
 
-        Assert.Equal(expectedSequence, result);
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
-    [Fact]
-    public void PercentRankBasic()
+    [Test]
+    public async Task PercentRankBasic()
     {
         var nullsLast = DbContext.IsPostgreSQL;
 
@@ -87,6 +87,6 @@ public partial class RankTests
                 .Where(g => comparer.Compare(g.Key, v) < 0)
                 .Sum(g => g.Count()) / (double)(TestRows.Length - 1));
 
-        Assert.Equal(expectedSequence, result.Select(r => r));
+        await Assert.That(result.Select(r => r)).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 }

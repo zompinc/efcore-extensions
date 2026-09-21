@@ -1,6 +1,6 @@
 ﻿namespace Zomp.EFCore.BinaryFunctions.Npgsql.Tests;
 
-public class NpgsqlTestDbContext(ILoggerFactory? loggerFactory = null) : TestDbContext(loggerFactory)
+public class NpgsqlTestDbContext : TestDbContext
 {
     private static string ConnectionString { get; } = GetNpgsqlConnectionString("Zomp_EfCore_BinaryFunctions_Tests");
 
