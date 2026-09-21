@@ -5,24 +5,16 @@
 /// </summary>
 public static class WindowFunctionsEvaluatableExpressionFilter
 {
-    private static readonly HashSet<string> WindowFunctionNames =
-    [
-        nameof(DbFunctionsExtensions.Avg),
-        nameof(DbFunctionsExtensions.Count),
-        nameof(DbFunctionsExtensions.DenseRank),
-        nameof(DbFunctionsExtensions.Lag),
-        nameof(DbFunctionsExtensions.Lead),
-        nameof(DbFunctionsExtensions.Min),
-        nameof(DbFunctionsExtensions.Max),
-        nameof(DbFunctionsExtensions.PercentRank),
-        nameof(DbFunctionsExtensions.Rank),
-        nameof(DbFunctionsExtensions.RowNumber),
-        nameof(DbFunctionsExtensions.Sum),
-    ];
-
-    [SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1202:Elements should be ordered by access", Justification = "Has to come after private fields")]
+    /// <summary>
+    /// The window functions: extensions of <see cref="DbFunctions"/> that take an <see cref="OverClause"/>. Derived rather than
+    /// listed so that a new function is pushed into a subquery inside Where, a join or an aggregate without being registered here.
+    /// </summary>
     internal static readonly FrozenSet<MethodInfo> WindowFunctionMethods =
-        typeof(DbFunctionsExtensions).GetMethods().Where(x => WindowFunctionNames.Contains(x.Name)).ToFrozenSet();
+        typeof(DbFunctionsExtensions).GetMethods()
+            .Where(m => m.GetParameters() is [{ ParameterType: var first }, ..] parameters
+                && first == typeof(DbFunctions)
+                && parameters.Any(p => p.ParameterType == typeof(OverClause)))
+            .ToFrozenSet();
 
     internal static readonly MethodInfo AsSubQueryMethod = Info.OfMethod(ThisAssembly.AssemblyName, $"{ThisAssembly.RootNamespace}.{nameof(DbFunctionsExtensions)}", nameof(DbFunctionsExtensions.AsSubQuery));
 
