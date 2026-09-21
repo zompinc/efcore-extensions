@@ -11,11 +11,9 @@ public partial class BinaryTests
         var result = query.ToList();
     }
 
-    [SkippableFact]
+    [Fact]
     public void CastIntToByteArray()
     {
-        Skip.If(DbContext.IsSqlite, "Investigate why INTEGER returns as text");
-
         var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Id));
 
@@ -27,11 +25,9 @@ public partial class BinaryTests
         Assert.Equal(expectedSequence, result);
     }
 
-    [SkippableFact]
+    [Fact]
     public void CastNullableIntToByteArray()
     {
-        Skip.If(DbContext.IsSqlite, "Investigate why INTEGER returns as text");
-
         var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Col1));
 
@@ -43,11 +39,9 @@ public partial class BinaryTests
         Assert.Equal(expectedSequence, result);
     }
 
-    [SkippableFact]
+    [Fact]
     public void CastBoolToByteArray()
     {
-        Skip.If(DbContext.IsSqlite, "Gets stored as text");
-
         var query = DbContext.TestRows
             .Select(r => EF.Functions.GetBytes(r.Id % 3 == 2 ? (bool?)null : r.Id % 3 == 0));
 
@@ -72,11 +66,9 @@ public partial class BinaryTests
         Assert.Equal(expectedSequence, result);
     }
 
-    [SkippableFact]
+    [Fact]
     public void ConcatenateGuidAndInt()
     {
-        Skip.If(DbContext.IsSqlite, "SQLite has no built-in mechanism to concatenate blobs. https://stackoverflow.com/a/45611692");
-
         var query = DbContext.TestRows
             .Select(r => EF.Functions.Concat(EF.Functions.GetBytes(r.SomeGuid), EF.Functions.GetBytes(r.Id)));
 
@@ -88,11 +80,9 @@ public partial class BinaryTests
         Assert.Equal(expectedSequence, result);
     }
 
-    [SkippableFact]
+    [Fact]
     public void ConcatenateTwoInts()
     {
-        Skip.If(DbContext.IsSqlite, "SQLite has no built-in mechanism to concatenate blobs. https://stackoverflow.com/a/45611692");
-
         var query = DbContext.TestRows
             .Where(r => r.Col1.HasValue)
             .Select(r => EF.Functions.Concat(EF.Functions.GetBytes(r.Id), EF.Functions.GetBytes(r.Col1!.Value)));
