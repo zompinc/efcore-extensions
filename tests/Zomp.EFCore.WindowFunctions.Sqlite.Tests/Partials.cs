@@ -35,4 +35,6 @@ public partial class PagingTests : TestBase { }
 public partial class SelectWithIndexTests : TestBase { }
 
 public partial class WhereWithIndexTests : TestBase { }
+
+public partial class DistinctByTests : TestBase { }
 #pragma warning restore SA1402 // File may only contain a single type
