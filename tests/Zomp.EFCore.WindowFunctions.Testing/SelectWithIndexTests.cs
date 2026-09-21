@@ -119,4 +119,56 @@ public partial class SelectWithIndexTests
 
         await Assert.That(result).IsEquivalentTo(Enumerable.Range(0, TestRows.Length));
     }
+
+    [Test]
+    public async Task AfterProjection()
+    {
+        var result = DbContext.TestRows
+            .OrderByDescending(r => r.Id)
+            .Select(r => new { r.Id, r.Col1 })
+            .Select((x, i) => new { x.Id, Index = i })
+            .ToList();
+
+        var expected = TestRows
+            .OrderByDescending(r => r.Id)
+            .Select(r => new { r.Id, r.Col1 })
+            .Select((x, i) => new { x.Id, Index = i });
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task AfterProjectionFilterAndSkip()
+    {
+        var result = DbContext.TestRows
+            .OrderByDescending(r => r.Id)
+            .Select(r => new { r.Id, r.Col1 })
+            .Where(x => x.Id > 2)
+            .Skip(1)
+            .Select((x, i) => new { x.Id, Index = i })
+            .ToList();
+
+        var expected = TestRows
+            .OrderByDescending(r => r.Id)
+            .Select(r => new { r.Id, r.Col1 })
+            .Where(x => x.Id > 2)
+            .Skip(1)
+            .Select((x, i) => new { x.Id, Index = i });
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task NotTranslatedWhenTheOrderingCannotBeFollowed()
+    {
+        // The ordering is behind a projection with a window function, which cannot be folded into the Select without
+        // changing the window. Numbering in some other order would be wrong, so the query is left for EF Core to reject.
+        await Assert.That(() => DbContext.TestRows
+                .OrderByDescending(r => r.Id)
+                .Select(r => new { r.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(r.Id)) })
+                .Select((x, i) => new { x.Id, Index = i })
+                .ToList())
+            .Throws<InvalidOperationException>()
+            .WithMessageContaining("could not be translated", StringComparison.Ordinal);
+    }
 }
