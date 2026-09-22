@@ -31,6 +31,7 @@
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlVersion)" />
     <PackageVersion Include="TUnit" Version="1.68.17" />
     <PackageVersion Include="TUnit.Core" Version="1.68.17" />
+    <PackageVersion Include="Verify.TUnit" Version="33.1.1" />
     <PackageVersion Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.2" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
   </ItemGroup>

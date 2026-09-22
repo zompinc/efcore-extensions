@@ -32,10 +32,24 @@
 
     <!-- Tests exercise the experimental AsSubQuery -->
     <NoWarn>$(NoWarn);ZOMPEF001</NoWarn>
+
+    <!--
+      Verify requires a maintenance fee, from which open source projects that earn no revenue are exempt
+      (https://github.com/VerifyTests/Verify/blob/main/docs/maintenance-fee.md). The exemption lasts at most 12 months:
+      the build fails with SC021 after the month below until it is renewed.
+    -->
+    <Verify_SponsorshipExemption>OpenSource</Verify_SponsorshipExemption>
+    <Verify_SponsorshipExemptionUntil>2027-09</Verify_SponsorshipExemptionUntil>
   </PropertyGroup>
 
   <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">
     <PackageReference Include="TUnit" />
+  </ItemGroup>
+
+  <!-- Snapshots of the SQL the window function rewrites generate, one folder per provider -->
+  <ItemGroup Condition="$(AssemblyName.StartsWith('Zomp.EFCore.WindowFunctions.')) And $(AssemblyName.EndsWith('.Tests'))">
+    <PackageReference Include="Verify.TUnit" />
+    <Using Include="VerifyTUnit.Verifier" Static="true" />
   </ItemGroup>
 
   <ItemGroup Condition="$(AssemblyName.EndsWith('.Tests'))">
