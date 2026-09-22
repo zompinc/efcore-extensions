@@ -1,0 +1,3 @@
+﻿SELECT t."Id", LAG(t."Id", 1) OVER(ORDER BY t."Id") AS "PreviousId", LEAD(t."Col1", 1) OVER(ORDER BY t."Id") AS "NextCol1"
+FROM "TestRows" AS t
+ORDER BY t."Id"

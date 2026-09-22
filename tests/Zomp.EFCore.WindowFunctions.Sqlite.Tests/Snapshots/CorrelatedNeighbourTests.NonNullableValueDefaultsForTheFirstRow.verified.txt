@@ -1,0 +1,3 @@
+﻿SELECT "t"."Id", CAST(LAG("t"."Id", 1) OVER(ORDER BY "t"."Id") AS INTEGER), CAST(LAG("t"."Date", 1) OVER(ORDER BY "t"."Id") AS TEXT)
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"

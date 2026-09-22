@@ -17,8 +17,13 @@
 /// takes in the rows tied with the current one. Strictly before it, <c>&lt;</c> or <c>&gt;</c>, is only expressible for Count,
 /// as RANK() - 1: with ties it is not a frame.
 /// </para>
+/// <para>
+/// A value of the previous row, the first of the rows before the current one ordered down to it, becomes LAG, and of the next
+/// row LEAD. Only when the order is unique, a key or unique index of the entity, is that row the one LAG reads.
+/// </para>
 /// </remarks>
-internal sealed class CorrelatedWindowExpressionVisitor : ExpressionVisitor
+/// <param name="model">The model, which says which properties are unique.</param>
+internal sealed class CorrelatedWindowExpressionVisitor(IModel model) : ExpressionVisitor
 {
     private static readonly MethodInfo SelectMethod = typeof(Queryable).GetMethods()
         .Single(m => m.Name == nameof(Queryable.Select)
@@ -36,7 +41,7 @@ internal sealed class CorrelatedWindowExpressionVisitor : ExpressionVisitor
             return visited;
         }
 
-        var replacer = new SubqueryReplacer(source, selector.Parameters[0]);
+        var replacer = new SubqueryReplacer(model, source, selector.Parameters[0]);
         var body = replacer.Visit(selector.Body);
 
         return replacer.Replaced
@@ -48,7 +53,7 @@ internal sealed class CorrelatedWindowExpressionVisitor : ExpressionVisitor
     /// Replaces the correlated aggregates over <paramref name="source"/> with window functions over the current row,
     /// <paramref name="row"/>.
     /// </summary>
-    private sealed class SubqueryReplacer(Expression source, ParameterExpression row) : ExpressionVisitor
+    private sealed class SubqueryReplacer(IModel model, Expression source, ParameterExpression row) : ExpressionVisitor
     {
         private static readonly MethodInfo RankMethod = typeof(DbFunctionsExtensions).GetMethods()
             .Single(m => m.Name == nameof(DbFunctionsExtensions.Rank) && !m.IsGenericMethod);
@@ -61,7 +66,7 @@ internal sealed class CorrelatedWindowExpressionVisitor : ExpressionVisitor
         /// <inheritdoc/>
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            if (Window(node) is { } window)
+            if ((Window(node) ?? Neighbour(node)) is { } window)
             {
                 Replaced = true;
                 return window;
@@ -74,6 +79,52 @@ internal sealed class CorrelatedWindowExpressionVisitor : ExpressionVisitor
             => predicate is BinaryExpression { NodeType: ExpressionType.AndAlso } and
                 ? Conjuncts(and.Left).Concat(Conjuncts(and.Right))
                 : [predicate];
+
+        /// <summary>
+        /// Finds LAG or LEAD, a window function taking an expression, an offset and an over clause, for a value of
+        /// <paramref name="valueType"/>.
+        /// </summary>
+        private static MethodInfo? NeighbourMethod(string name, Type valueType)
+        {
+            var underlying = Nullable.GetUnderlyingType(valueType);
+            foreach (var candidate in typeof(DbFunctionsExtensions).GetMethods())
+            {
+                if (candidate.Name != name
+                    || candidate.GetParameters() is not [_, { ParameterType: var parameter }, { ParameterType: var offset }, { ParameterType: var over }]
+                    || offset != typeof(long)
+                    || over != typeof(OverClause))
+                {
+                    continue;
+                }
+
+                if (!candidate.IsGenericMethodDefinition)
+                {
+                    if (parameter == valueType)
+                    {
+                        return candidate;
+                    }
+
+                    continue;
+                }
+
+                var takesNullable = parameter.IsGenericType && parameter.GetGenericTypeDefinition() == typeof(Nullable<>);
+                if (candidate.GetGenericArguments().Length != 1 || takesNullable != (underlying is not null))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    return candidate.MakeGenericMethod(underlying ?? valueType);
+                }
+                catch (ArgumentException)
+                {
+                    // The type does not meet the candidate's constraint, such as a class for a struct overload.
+                }
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Removes the OrderBy and ThenBy calls that do not decide which rows a query returns: those above its filters, before any
@@ -106,6 +157,117 @@ internal sealed class CorrelatedWindowExpressionVisitor : ExpressionVisitor
             var finder = new ParameterFinder(parameter);
             _ = finder.Visit(expression);
             return finder.Found;
+        }
+
+        /// <summary>
+        /// Recognizes a value of the previous or next row: the rows before, or after, the current one in a unique order, ordered
+        /// down, or up, to it, projected to the value, first or default.
+        /// </summary>
+        private Expression? Neighbour(MethodCallExpression call)
+        {
+            if (call is not { Method.Name: nameof(Queryable.FirstOrDefault), Arguments: [MethodCallExpression { Method.Name: nameof(Queryable.Select) } select] }
+                || call.Method.DeclaringType != typeof(Queryable)
+                || select.Method.DeclaringType != typeof(Queryable)
+                || select.Arguments[1] is not UnaryExpression { Operand: LambdaExpression { Parameters.Count: 1 } value })
+            {
+                return null;
+            }
+
+            var predicates = new List<LambdaExpression>();
+            var orderedBy = new List<(LambdaExpression Key, bool Descending)>();
+            var inner = select.Arguments[0];
+            while (inner is MethodCallExpression { Method: var method } innerCall && method.DeclaringType == typeof(Queryable))
+            {
+                if (method.Name == nameof(Queryable.Where)
+                    && innerCall.Arguments[1] is UnaryExpression { Operand: LambdaExpression { Parameters.Count: 1 } filter }
+                    && References(filter.Body, row))
+                {
+                    predicates.Add(filter);
+                }
+                else if (method.Name is nameof(Queryable.OrderBy) or nameof(Queryable.OrderByDescending)
+                    && innerCall.Arguments[1] is UnaryExpression { Operand: LambdaExpression orderingKey })
+                {
+                    orderedBy.Add((orderingKey, method.Name == nameof(Queryable.OrderByDescending)));
+                }
+                else
+                {
+                    break;
+                }
+
+                inner = innerCall.Arguments[0];
+            }
+
+            if (orderedBy is not [var (orderKey, descending)]
+                || !ExpressionEqualityComparer.Instance.Equals(WithoutOrdering(inner), WithoutOrdering(source)))
+            {
+                return null;
+            }
+
+            var keys = new List<Expression>();
+            var comparisons = new List<(Expression Key, ExpressionType Comparison)>();
+            foreach (var predicate in predicates)
+            {
+                foreach (var conjunct in Conjuncts(predicate.Body))
+                {
+                    switch (Correlation(conjunct, predicate.Parameters[0]))
+                    {
+                        case (var key, ExpressionType.Equal):
+                            keys.Add(key);
+                            break;
+                        case { } comparison:
+                            comparisons.Add(comparison);
+                            break;
+                        default:
+                            return null;
+                    }
+                }
+            }
+
+            // LAG: the rows before the current one, nearest first. LEAD: the rows after it, nearest first.
+            var (function, ordering) = (comparisons, descending) switch
+            {
+                ([(var key, ExpressionType.LessThan)], true) => (nameof(DbFunctionsExtensions.Lag), key),
+                ([(var key, ExpressionType.GreaterThan)], false) => (nameof(DbFunctionsExtensions.Lead), key),
+                _ => (null, null),
+            };
+
+            if (function is null
+                || !ExpressionEqualityComparer.Instance.Equals(ReplacingExpressionVisitor.Replace(orderKey.Parameters[0], row, orderKey.Body), ordering)
+                || !IsUnique(ordering))
+            {
+                return null;
+            }
+
+            var valueOfRow = ReplacingExpressionVisitor.Replace(value.Parameters[0], row, value.Body);
+            if (NeighbourMethod(function, valueOfRow.Type) is not { } neighbourMethod)
+            {
+                return null;
+            }
+
+            var over = OverClauseBuilder.Build(row, keys, [(Expression.Lambda(ordering, row), false)], requireOrderBy: true);
+            Expression result = Expression.Call(neighbourMethod, OverClauseBuilder.Functions, valueOfRow, Expression.Constant(1L), over);
+
+            // FirstOrDefault gives the default of a non-nullable value when there is no such row, where LAG and LEAD give NULL.
+            if (call.Type.IsValueType && Nullable.GetUnderlyingType(call.Type) is null)
+            {
+                result = Expression.Coalesce(result, Expression.Default(call.Type));
+            }
+
+            return result.Type == call.Type ? result : Expression.Convert(result, call.Type);
+        }
+
+        /// <summary>
+        /// Checks that <paramref name="key"/> is a property of the current row no two rows share: a key, or the only property of a
+        /// unique index.
+        /// </summary>
+        private bool IsUnique(Expression key)
+        {
+            return key is MemberExpression { Expression: var instance, Member: var member }
+                && instance == row
+                && model.FindEntityType(row.Type) is { } entityType
+                && entityType.FindProperty(member) is { IsNullable: false } property
+                && (entityType.GetKeys().Any(k => k.Properties is [var p] && p == property)
+                    || entityType.GetIndexes().Any(i => i.IsUnique && i.Properties is [var p] && p == property));
         }
 
         private Expression? Window(MethodCallExpression call)

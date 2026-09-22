@@ -1,0 +1,8 @@
+﻿SELECT "t"."Id", (
+    SELECT "t0"."Id" / 10
+    FROM "TestRows" AS "t0"
+    WHERE "t0"."Id" / 10 < "t"."Id" / 10
+    ORDER BY "t0"."Id" / 10 DESC
+    LIMIT 1) AS "PreviousTens"
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"

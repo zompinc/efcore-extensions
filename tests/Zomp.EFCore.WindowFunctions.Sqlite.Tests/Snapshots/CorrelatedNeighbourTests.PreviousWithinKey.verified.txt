@@ -1,0 +1,3 @@
+﻿SELECT "t"."Id", CAST(LAG("t"."Id", 1) OVER(PARTITION BY "t"."Id" / 10 ORDER BY "t"."Id") AS INTEGER) AS "PreviousInTens"
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"
