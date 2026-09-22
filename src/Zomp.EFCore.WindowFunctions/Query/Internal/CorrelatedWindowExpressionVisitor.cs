@@ -2,12 +2,21 @@
 
 /// <summary>
 /// Rewrites aggregates of correlated subqueries in a projection to window functions: a Count, LongCount, Sum, Min, Max or Average
-/// of the rows sharing a key with the current row becomes the aggregate over a partition by that key.
+/// of the rows sharing a key with the current row becomes the aggregate over a partition by that key, and of the rows before it
+/// in some order, a running aggregate or RANK.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Only a subquery that reads exactly the rows the projection reads, filters included, is rewritten, since a window only sees
-/// those rows, and only when it is correlated by equalities of the same expression on both sides, <c>t.Key == r.Key</c>. A
-/// subquery that is anything else stays a correlated subquery, which is slower but gives the same result.
+/// those rows, and only when it is correlated by equalities of the same expression on both sides, <c>t.Key == r.Key</c>, and at
+/// most one comparison of a non-nullable expression, <c>t.Order &lt;= r.Order</c>. A subquery that is anything else stays a
+/// correlated subquery, which is slower but gives the same result.
+/// </para>
+/// <para>
+/// Up to and including the current row, <c>&lt;=</c> or <c>&gt;=</c>, is the default frame of an ordered window, since it
+/// takes in the rows tied with the current one. Strictly before it, <c>&lt;</c> or <c>&gt;</c>, is only expressible for Count,
+/// as RANK() - 1: with ties it is not a frame.
+/// </para>
 /// </remarks>
 internal sealed class CorrelatedWindowExpressionVisitor : ExpressionVisitor
 {
@@ -41,6 +50,9 @@ internal sealed class CorrelatedWindowExpressionVisitor : ExpressionVisitor
     /// </summary>
     private sealed class SubqueryReplacer(Expression source, ParameterExpression row) : ExpressionVisitor
     {
+        private static readonly MethodInfo RankMethod = typeof(DbFunctionsExtensions).GetMethods()
+            .Single(m => m.Name == nameof(DbFunctionsExtensions.Rank) && !m.IsGenericMethod);
+
         /// <summary>
         /// Gets a value indicating whether any subquery was replaced.
         /// </summary>
@@ -135,55 +147,86 @@ internal sealed class CorrelatedWindowExpressionVisitor : ExpressionVisitor
             }
 
             var keys = new List<Expression>();
+            (Expression Key, ExpressionType Comparison)? ordering = null;
             foreach (var predicate in predicates)
             {
                 foreach (var conjunct in Conjuncts(predicate.Body))
                 {
-                    if (Key(conjunct, predicate.Parameters[0]) is not { } key)
+                    switch (Correlation(conjunct, predicate.Parameters[0]))
                     {
-                        return null;
+                        case (var key, ExpressionType.Equal):
+                            keys.Add(key);
+                            break;
+                        case ({ Type.IsValueType: true } key, var comparison) when ordering is null && Nullable.GetUnderlyingType(key.Type) is null:
+                            ordering = (key, comparison);
+                            break;
+                        default:
+                            return null;
                     }
-
-                    keys.Add(key);
                 }
             }
 
-            var over = OverClauseBuilder.Build(row, keys, [], requireOrderBy: false);
-
-            return call.Method.Name switch
-            {
-                nameof(Queryable.Count) => WindowAggregates.Count(over),
-                nameof(Queryable.LongCount) => WindowAggregates.LongCount(over),
-                _ => WindowAggregates.Aggregate(
-                    call.Method.Name,
-                    ReplacingExpressionVisitor.Replace(value!.Parameters[0], row, value.Body),
-                    call.Type,
-                    over),
-            };
-        }
-
-        /// <summary>
-        /// Recognizes <c>t.Key == r.Key</c>, in either order, where both sides are the same expression of their row.
-        /// </summary>
-        /// <returns>The key of the current row, or <see langword="null"/> for anything else.</returns>
-        private Expression? Key(Expression conjunct, ParameterExpression other)
-        {
-            if (conjunct is not BinaryExpression { NodeType: ExpressionType.Equal } equal)
+            var strict = ordering is (_, ExpressionType.LessThan or ExpressionType.GreaterThan);
+            if (strict && call.Method.Name is not (nameof(Queryable.Count) or nameof(Queryable.LongCount)))
             {
                 return null;
             }
 
-            var (otherSide, rowSide) = (References(equal.Left, other), References(equal.Left, row), References(equal.Right, other), References(equal.Right, row)) switch
+            List<(LambdaExpression Key, bool Descending)> orderings = ordering is var (orderingKey, direction)
+                ? [(Expression.Lambda(orderingKey, row), direction is ExpressionType.GreaterThan or ExpressionType.GreaterThanOrEqual)]
+                : [];
+            var over = OverClauseBuilder.Build(row, keys, orderings, requireOrderBy: false);
+
+            // The rows strictly before the current one in order are as many as its RANK() - 1.
+            return strict
+                ? Expression.Convert(Expression.Subtract(Expression.Call(RankMethod, OverClauseBuilder.Functions, over), Expression.Constant(1L)), call.Type)
+                : call.Method.Name switch
+                {
+                    nameof(Queryable.Count) => WindowAggregates.Count(over),
+                    nameof(Queryable.LongCount) => WindowAggregates.LongCount(over),
+                    _ => WindowAggregates.Aggregate(
+                        call.Method.Name,
+                        ReplacingExpressionVisitor.Replace(value!.Parameters[0], row, value.Body),
+                        call.Type,
+                        over),
+                };
+        }
+
+        /// <summary>
+        /// Recognizes <c>t.Key == r.Key</c> or a comparison such as <c>t.Key &lt;= r.Key</c>, in either order, where both sides are
+        /// the same expression of their row.
+        /// </summary>
+        /// <returns>
+        /// The key of the current row and the comparison, written as the other row's key compared with the current row's, or
+        /// <see langword="null"/> for anything else.
+        /// </returns>
+        private (Expression Key, ExpressionType Comparison)? Correlation(Expression conjunct, ParameterExpression other)
+        {
+            if (conjunct is not BinaryExpression comparison
+                || comparison.NodeType is not (ExpressionType.Equal or ExpressionType.LessThan or ExpressionType.LessThanOrEqual
+                    or ExpressionType.GreaterThan or ExpressionType.GreaterThanOrEqual))
             {
-                (true, false, false, true) => (equal.Left, equal.Right),
-                (false, true, true, false) => (equal.Right, equal.Left),
-                _ => (null, null),
+                return null;
+            }
+
+            var (otherSide, rowSide, flipped) = (References(comparison.Left, other), References(comparison.Left, row), References(comparison.Right, other), References(comparison.Right, row)) switch
+            {
+                (true, false, false, true) => (comparison.Left, comparison.Right, false),
+                (false, true, true, false) => (comparison.Right, comparison.Left, true),
+                _ => (null, null, false),
             };
 
-            return otherSide is not null
-                && ExpressionEqualityComparer.Instance.Equals(ReplacingExpressionVisitor.Replace(other, row, otherSide), rowSide)
-                ? rowSide
-                : null;
+            return otherSide is null
+                || !ExpressionEqualityComparer.Instance.Equals(ReplacingExpressionVisitor.Replace(other, row, otherSide), rowSide)
+                ? null
+                : (rowSide, (comparison.NodeType, flipped) switch
+                {
+                    (ExpressionType.LessThan, true) => ExpressionType.GreaterThan,
+                    (ExpressionType.LessThanOrEqual, true) => ExpressionType.GreaterThanOrEqual,
+                    (ExpressionType.GreaterThan, true) => ExpressionType.LessThan,
+                    (ExpressionType.GreaterThanOrEqual, true) => ExpressionType.LessThanOrEqual,
+                    (var type, _) => type,
+                });
         }
     }
 

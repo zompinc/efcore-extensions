@@ -198,7 +198,9 @@ SELECT [t].[Id], COUNT(*) OVER(PARTITION BY [t].[Category]) AS [InCategory], ...
 FROM [TestRows] AS [t]
 ```
 
-The subquery must read the same rows as the outer query, with the same filters, since the window only sees those, and be correlated by equalities of the same expression on both sides. Any other subquery is left as it is.
+A comparison with the current row turns it into a running aggregate or rank: counting the rows before the current one, `Count(t => t.Date < r.Date)`, becomes `RANK() OVER(ORDER BY Date) - 1`, and the rows up to and including it, `Where(t => t.Date <= r.Date).Sum(t => t.Amount)`, become `SUM(Amount) OVER(ORDER BY Date)`, whose default frame includes the rows tied with the current one. The two combine, as in a running total within each category.
+
+The subquery must read the same rows as the outer query, with the same filters, since the window only sees those. It must be correlated by equalities of the same expression on both sides and at most one comparison of a non-nullable expression; strictly before the current row (`<` or `>`) is only translated for `Count`, as with ties it is not a window frame. Any other subquery is left as it is.
 
 ### Experimental APIs
 

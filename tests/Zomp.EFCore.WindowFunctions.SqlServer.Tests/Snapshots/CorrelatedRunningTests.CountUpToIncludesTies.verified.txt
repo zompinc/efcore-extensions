@@ -1,9 +1,3 @@
-﻿SELECT [t].[Id], (
-    SELECT COUNT(*)
-    FROM [TestRows] AS [t0]
-    WHERE [t0].[Id] / 10 <= [t].[Id] / 10) AS [UpTo], (
-    SELECT COUNT(*)
-    FROM [TestRows] AS [t1]
-    WHERE [t].[Id] / 10 <= [t1].[Id] / 10) AS [From]
+﻿SELECT [t].[Id], COUNT(*) OVER(ORDER BY [t].[Id] / 10) AS [UpTo], COUNT(*) OVER(ORDER BY [t].[Id] / 10 DESC) AS [From]
 FROM [TestRows] AS [t]
 ORDER BY [t].[Id]
