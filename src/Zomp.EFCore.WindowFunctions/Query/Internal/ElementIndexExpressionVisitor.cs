@@ -1,8 +1,9 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Query.Internal;
 
 /// <summary>
-/// Rewrites Select and Where with an element index, which EF Core does not translate, to use ROW_NUMBER() - 1 in place of the
-/// index. The window is ordered like the rows reaching the operator, by the OrderBy and ThenBy calls before it.
+/// Rewrites operators EF Core does not translate but ROW_NUMBER can express: Select and Where with an element index, which use
+/// ROW_NUMBER() - 1 in place of the index, and DistinctBy, which keeps the first row of each key. The window is ordered like the
+/// rows reaching the operator, by the OrderBy and ThenBy calls before it.
 /// </summary>
 /// <remarks>
 /// Has to run before <see cref="WindowFunctionProjectionDetector"/>, which then pushes the query into a subquery where a filter
@@ -22,6 +23,9 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
     private static readonly MethodInfo WhereWithIndexMethod = typeof(Queryable).GetMethods()
         .Single(m => m.Name == nameof(Queryable.Where) && SelectorParameterCount(m) == 2);
 
+    private static readonly MethodInfo DistinctByMethod = typeof(Queryable).GetMethods()
+        .Single(m => m.Name == nameof(Queryable.DistinctBy) && m.GetParameters().Length == 2);
+
     private static readonly MethodInfo RowNumberMethod = typeof(DbFunctionsExtensions).GetMethods()
         .Single(m => m.Name == nameof(DbFunctionsExtensions.RowNumber) && !m.IsGenericMethod);
 
@@ -29,6 +33,8 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
     private static readonly MethodInfo OrderByDescendingMethod = FunctionsMethod(nameof(DbFunctionsExtensions.OrderByDescending), typeof(OverClause));
     private static readonly MethodInfo ThenByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ThenBy), typeof(OrderByClause));
     private static readonly MethodInfo ThenByDescendingMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ThenByDescending), typeof(OrderByClause));
+    private static readonly MethodInfo PartitionByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.PartitionBy), typeof(OverClause));
+    private static readonly MethodInfo ThenPartitionByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ThenBy), typeof(PartitionByClause));
 
     /// <summary>
     /// Operators that keep the order of the rows they are given.
@@ -58,15 +64,29 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
         var method = visited.Method.GetGenericMethodDefinition();
         return method == SelectWithIndexMethod ? RewriteSelect(source, lambda) ?? visited
             : method == WhereWithIndexMethod ? RewriteWhere(source, lambda) ?? visited
+            : method == DistinctByMethod ? RewriteDistinctBy(source, lambda) ?? visited
             : visited;
     }
 
     /// <summary>
-    /// Rewrites Where with an index to number the rows with Select with an index, filter them, and project the rows back out.
+    /// Rewrites DistinctBy to number the rows of each key, keep the first and project the rows back out.
     /// </summary>
-    private static MethodCallExpression? RewriteWhere(Expression source, LambdaExpression predicate)
+    /// <remarks>
+    /// PARTITION BY puts null keys together, as DistinctBy does. An anonymous key is partitioned by each of its members.
+    /// </remarks>
+    private static MethodCallExpression? RewriteDistinctBy(Expression source, LambdaExpression key)
+        => RewriteNumbered(source, key.Parameters[0].Type, key, (_, index) => Expression.Equal(index, Expression.Constant(0)));
+
+    /// <summary>
+    /// Numbers the rows of <paramref name="source"/>, within each <paramref name="partition"/> if there is one, keeps those
+    /// passing <paramref name="condition"/> on the row and its number, and projects the rows back out.
+    /// </summary>
+    private static MethodCallExpression? RewriteNumbered(
+        Expression source,
+        Type elementType,
+        LambdaExpression? partition,
+        Func<Expression, Expression, Expression> condition)
     {
-        var elementType = predicate.Parameters[0].Type;
         var indexedType = typeof(IndexedElement<>).MakeGenericType(elementType);
         var item = indexedType.GetProperty(nameof(IndexedElement<>.Item))!;
         var indexProperty = indexedType.GetProperty(nameof(IndexedElement<>.Index))!;
@@ -78,30 +98,40 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
             element,
             index);
 
-        if (RewriteSelect(source, numbering) is not { } numbered)
+        if (RewriteSelect(source, numbering, partition) is not { } numbered)
         {
             return null;
         }
 
         var indexed = Expression.Parameter(indexedType, "w");
-        var filter = new ReplacingExpressionVisitor(
-                [predicate.Parameters[0], predicate.Parameters[1]],
-                [Expression.Property(indexed, item), Expression.Property(indexed, indexProperty)])
-            .Visit(predicate.Body);
-
-        var where = Expression.Call(WhereMethod.MakeGenericMethod(indexedType), numbered, Expression.Quote(Expression.Lambda(filter, indexed)));
+        var itemAccess = Expression.Property(indexed, item);
+        var indexAccess = Expression.Property(indexed, indexProperty);
+        var where = Expression.Call(
+            WhereMethod.MakeGenericMethod(indexedType),
+            numbered,
+            Expression.Quote(Expression.Lambda(condition(itemAccess, indexAccess), indexed)));
         return Expression.Call(
             SelectMethod.MakeGenericMethod(indexedType, elementType),
             where,
-            Expression.Quote(Expression.Lambda(Expression.Property(indexed, item), indexed)));
+            Expression.Quote(Expression.Lambda(itemAccess, indexed)));
     }
 
+    /// <summary>
+    /// Rewrites Where with an index to number the rows with Select with an index, filter them, and project the rows back out.
+    /// </summary>
+    private static MethodCallExpression? RewriteWhere(Expression source, LambdaExpression predicate)
+        => RewriteNumbered(
+            source,
+            predicate.Parameters[0].Type,
+            partition: null,
+            (item, index) => new ReplacingExpressionVisitor([predicate.Parameters[0], predicate.Parameters[1]], [item, index]).Visit(predicate.Body));
+
     /// <returns>The rewritten Select, or <see langword="null"/> when the rows are ordered by something it cannot follow.</returns>
-    private static MethodCallExpression? RewriteSelect(Expression source, LambdaExpression selector)
+    private static MethodCallExpression? RewriteSelect(Expression source, LambdaExpression selector, LambdaExpression? partition = null)
     {
-        (source, selector) = FoldProjections(source, selector);
+        (source, selector, partition) = FoldProjections(source, selector, partition);
         var element = selector.Parameters[0];
-        if (Over(source, element) is not { } over)
+        if (Over(source, element, partition) is not { } over)
         {
             return null;
         }
@@ -123,7 +153,10 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
     /// <remarks>
     /// A projection with a window function is not folded: moving a filter or row limit ahead of it would change the window.
     /// </remarks>
-    private static (Expression Source, LambdaExpression Selector) FoldProjections(Expression source, LambdaExpression selector)
+    private static (Expression Source, LambdaExpression Selector, LambdaExpression? Partition) FoldProjections(
+        Expression source,
+        LambdaExpression selector,
+        LambdaExpression? partition)
     {
         while (true)
         {
@@ -143,7 +176,7 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
                 || select.Arguments[1] is not UnaryExpression { Operand: LambdaExpression projection }
                 || ContainsWindowFunction(projection))
             {
-                return (source, selector);
+                return (source, selector, partition);
             }
 
             var element = projection.Parameters[0];
@@ -162,6 +195,9 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
                 ReplacingExpressionVisitor.Replace(selector.Parameters[0], projection.Body, selector.Body),
                 element,
                 selector.Parameters[1]);
+            partition = partition is null
+                ? null
+                : Expression.Lambda(ReplacingExpressionVisitor.Replace(partition.Parameters[0], projection.Body, partition.Body), element);
         }
     }
 
@@ -180,7 +216,7 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
     /// reads them. SQL Server requires an ORDER BY in ROW_NUMBER.
     /// </remarks>
     /// <returns>The over clause, or <see langword="null"/> when the rows are ordered by something it cannot follow.</returns>
-    private static Expression? Over(Expression source, ParameterExpression element)
+    private static Expression? Over(Expression source, ParameterExpression element, LambdaExpression? partition)
     {
         var orderings = new List<(LambdaExpression Key, bool Descending)>();
         while (source is MethodCallExpression { Method: var method } call
@@ -216,6 +252,17 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
 
         // What EF.Functions.Over() in a query is evaluated to before translation.
         Expression over = Expression.Constant(OverClause.Instance);
+        if (partition is not null)
+        {
+            var key = ReplacingExpressionVisitor.Replace(partition.Parameters[0], element, partition.Body);
+            var keys = key is NewExpression { Arguments.Count: > 0 } anonymous ? anonymous.Arguments : new ReadOnlyCollection<Expression>([key]);
+            for (var i = 0; i < keys.Count; ++i)
+            {
+                var method = i == 0 ? PartitionByMethod : ThenPartitionByMethod;
+                over = Expression.Call(method.MakeGenericMethod(keys[i].Type), over, keys[i]);
+            }
+        }
+
         if (orderings.Count == 0)
         {
             return Expression.Call(OrderByMethod.MakeGenericMethod(typeof(int)), over, Expression.Constant(1));
