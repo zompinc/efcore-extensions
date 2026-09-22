@@ -1,0 +1,10 @@
+﻿SELECT [t0].[Id]
+FROM (
+    SELECT [t].[Id], SUM(CASE
+        WHEN [t].[Id] <> 3 THEN 0
+        ELSE 1
+    END) OVER(ORDER BY [t].[Id] / 10, [t].[Id] DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS [Index], [t].[Id] / 10 AS [c]
+    FROM [TestRows] AS [t]
+) AS [t0]
+WHERE [t0].[Index] = 0
+ORDER BY [t0].[c], [t0].[Id] DESC

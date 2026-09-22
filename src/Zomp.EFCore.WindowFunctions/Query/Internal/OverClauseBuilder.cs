@@ -18,6 +18,9 @@ internal static class OverClauseBuilder
     private static readonly MethodInfo ThenByDescendingMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ThenByDescending), typeof(OrderByClause));
     private static readonly MethodInfo PartitionByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.PartitionBy), typeof(OverClause));
     private static readonly MethodInfo ThenPartitionByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ThenBy), typeof(PartitionByClause));
+    private static readonly MethodInfo RowsMethod = FunctionsMethod(nameof(DbFunctionsExtensions.Rows), typeof(OrderByClause));
+    private static readonly MethodInfo FromUnboundedMethod = FunctionsMethod(nameof(DbFunctionsExtensions.FromUnbounded), typeof(RowsOrRangeClause));
+    private static readonly MethodInfo ToCurrentRowMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ToCurrentRow), typeof(OrderByClauseWithRowsOrRange));
 
     /// <summary>
     /// Operators that keep the order of the rows they are given.
@@ -129,6 +132,13 @@ internal static class OverClauseBuilder
         => Expression.Convert(
             Expression.Subtract(Expression.Call(RowNumberMethod, Functions, over), Expression.Constant(1L)),
             typeof(int));
+
+    /// <summary>
+    /// Limits an ordered over clause to the rows from the start of the partition to the current row, one row at a time even
+    /// when the ordering has ties.
+    /// </summary>
+    internal static Expression RunningFrame(Expression orderedOver)
+        => Expression.Call(ToCurrentRowMethod, Expression.Call(FromUnboundedMethod, Expression.Call(RowsMethod, orderedOver)));
 
     private static bool IsOrdered(Expression source)
     {

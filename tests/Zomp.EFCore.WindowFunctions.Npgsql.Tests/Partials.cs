@@ -39,4 +39,6 @@ public partial class WhereWithIndexTests : TestBase { }
 public partial class DistinctByTests : TestBase { }
 
 public partial class GroupWindowTests : TestBase { }
+
+public partial class TakeWhileTests : TestBase { }
 #pragma warning restore SA1402 // File may only contain a single type
