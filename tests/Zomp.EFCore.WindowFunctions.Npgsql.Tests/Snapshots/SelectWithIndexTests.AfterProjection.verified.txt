@@ -1,0 +1,3 @@
+﻿SELECT t."Id", CAST(ROW_NUMBER() OVER(ORDER BY t."Id" DESC) - 1 AS integer) AS "Index"
+FROM "TestRows" AS t
+ORDER BY t."Id" DESC

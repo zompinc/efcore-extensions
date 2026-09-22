@@ -1,0 +1,11 @@
+﻿SELECT "t0"."Id", "t0"."RowNumber"
+FROM (
+    SELECT "t"."Id", ROW_NUMBER() OVER(ORDER BY "t"."Id") AS "RowNumber"
+    FROM "TestRows" AS "t"
+) AS "t0"
+INNER JOIN (
+    SELECT "t1"."Id"
+    FROM "TestRows" AS "t1"
+    WHERE "t1"."Id" > 2
+) AS "t2" ON "t0"."Id" = "t2"."Id"
+ORDER BY "t0"."Id"

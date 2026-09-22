@@ -1,0 +1,3 @@
+﻿SELECT CAST(max(AVG(CAST("t"."Col1" AS REAL) * CAST("t"."Col1" AS REAL)) OVER(PARTITION BY "t"."Id" / 10 ) - AVG(CAST("t"."Col1" AS REAL)) OVER(PARTITION BY "t"."Id" / 10 ) * AVG(CAST("t"."Col1" AS REAL)) OVER(PARTITION BY "t"."Id" / 10 ), 0.0) AS REAL)
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"

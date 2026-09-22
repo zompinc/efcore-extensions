@@ -1,0 +1,4 @@
+﻿SELECT "t"."Id", CAST(ROW_NUMBER() OVER(ORDER BY "t"."Id") - 1 AS INTEGER) AS "Index"
+FROM "TestRows" AS "t"
+WHERE "t"."Id" > 2
+ORDER BY "t"."Id"

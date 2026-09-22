@@ -1,0 +1,7 @@
+﻿SELECT t0."Id", t0."RowNumber", t1."Id" AS "InnerId"
+FROM (
+    SELECT t."Id", ROW_NUMBER() OVER(ORDER BY t."Id") AS "RowNumber"
+    FROM "TestRows" AS t
+) AS t0
+LEFT JOIN "TestRows" AS t1 ON t0."Id" / 10 = t1."Id" / 10
+ORDER BY t0."Id", t1."Id"

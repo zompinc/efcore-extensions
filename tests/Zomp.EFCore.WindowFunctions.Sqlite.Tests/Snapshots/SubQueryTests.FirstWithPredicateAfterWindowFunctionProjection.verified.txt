@@ -1,0 +1,3 @@
+﻿SELECT "t"."Id", ROW_NUMBER() OVER(ORDER BY "t"."Id") AS "RowNumber"
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"

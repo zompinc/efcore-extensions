@@ -1,0 +1,11 @@
+﻿.param set @p 1
+
+SELECT "t0"."Id", CAST(ROW_NUMBER() OVER(ORDER BY "t0"."Id" DESC) - 1 AS INTEGER) AS "Index"
+FROM (
+    SELECT "t"."Id"
+    FROM "TestRows" AS "t"
+    WHERE "t"."Id" > 2
+    ORDER BY "t"."Id" DESC
+    LIMIT -1 OFFSET @p
+) AS "t0"
+ORDER BY "t0"."Id" DESC

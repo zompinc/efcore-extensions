@@ -22,6 +22,8 @@ public partial class SelectWithIndexTests
             .Select((r, i) => new { r.Id, Index = i });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -40,6 +42,8 @@ public partial class SelectWithIndexTests
             .Select((r, i) => new { r.Id, Position = i + 1 });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -58,6 +62,8 @@ public partial class SelectWithIndexTests
             .Select((r, i) => new { r.Id, Index = i });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -77,6 +83,8 @@ public partial class SelectWithIndexTests
             .Where(w => w.Id > 2);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -95,6 +103,8 @@ public partial class SelectWithIndexTests
             .Where(w => w.Index % 2 == 1);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -113,6 +123,8 @@ public partial class SelectWithIndexTests
             .Select((r, i) => new { r.Id, Index = i });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -125,6 +137,8 @@ public partial class SelectWithIndexTests
         var result = query.ToList();
 
         await Assert.That(result).IsEquivalentTo(Enumerable.Range(0, TestRows.Length));
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -143,6 +157,8 @@ public partial class SelectWithIndexTests
             .Select((x, i) => new { x.Id, Index = i });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -165,6 +181,8 @@ public partial class SelectWithIndexTests
             .Select((x, i) => new { x.Id, Index = i });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]

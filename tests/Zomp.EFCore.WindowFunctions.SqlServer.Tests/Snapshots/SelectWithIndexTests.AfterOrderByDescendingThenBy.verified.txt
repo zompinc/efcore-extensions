@@ -1,0 +1,3 @@
+﻿SELECT [t].[Id], CAST(ROW_NUMBER() OVER(ORDER BY [t].[Id] / 10 DESC, [t].[Id]) - 1 AS int) + 1 AS [Position]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id] / 10 DESC, [t].[Id]

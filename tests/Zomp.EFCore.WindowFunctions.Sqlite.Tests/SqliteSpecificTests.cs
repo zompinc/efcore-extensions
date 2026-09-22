@@ -46,6 +46,8 @@ public class SqliteSpecificTests : TestBase
         var result = query.ToList();
 
         await StatisticsTests.AssertMatches(result, values => StatisticsTests.Sqrt(StatisticsTests.SampleVariance(values)));
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -59,6 +61,8 @@ public class SqliteSpecificTests : TestBase
         var result = query.ToList();
 
         await StatisticsTests.AssertMatches(result, values => StatisticsTests.Sqrt(StatisticsTests.PopulationVariance(values)));
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -72,6 +76,8 @@ public class SqliteSpecificTests : TestBase
         var result = query.ToList();
 
         await StatisticsTests.AssertMatches(result, StatisticsTests.SampleVariance);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -85,6 +91,8 @@ public class SqliteSpecificTests : TestBase
         var result = query.ToList();
 
         await StatisticsTests.AssertMatches(result, StatisticsTests.PopulationVariance);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -101,6 +109,8 @@ public class SqliteSpecificTests : TestBase
         var expected = ordered.Select((_, i) => StatisticsTests.Sqrt(StatisticsTests.PopulationVariance(ordered[Math.Max(0, i - 1)..(i + 1)])));
 
         await Assert.That(result.Select(StatisticsTests.Round)).IsEquivalentTo(expected.Select(StatisticsTests.Round), CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -120,6 +130,8 @@ public class SqliteSpecificTests : TestBase
             .Select(r => r.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     /// <summary>

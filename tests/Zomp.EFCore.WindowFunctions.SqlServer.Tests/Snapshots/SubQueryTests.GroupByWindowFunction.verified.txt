@@ -1,0 +1,10 @@
+﻿SELECT CAST([t1].[Key] AS bigint) AS [Key], COUNT(*) AS [Count]
+FROM (
+    SELECT [t0].[RowNumber] % 2 AS [Key]
+    FROM (
+        SELECT ROW_NUMBER() OVER(ORDER BY [t].[Id]) AS [RowNumber]
+        FROM [TestRows] AS [t]
+    ) AS [t0]
+) AS [t1]
+GROUP BY [t1].[Key]
+ORDER BY CAST([t1].[Key] AS bigint)

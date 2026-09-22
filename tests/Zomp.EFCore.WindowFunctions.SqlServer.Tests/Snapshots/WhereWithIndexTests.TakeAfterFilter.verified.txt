@@ -1,0 +1,9 @@
+﻿DECLARE @p int = 2;
+
+SELECT TOP(@p) [t0].[Id]
+FROM (
+    SELECT [t].[Id], CAST(ROW_NUMBER() OVER(ORDER BY [t].[Id]) - 1 AS int) AS [Index]
+    FROM [TestRows] AS [t]
+) AS [t0]
+WHERE [t0].[Index] % 2 = 1
+ORDER BY [t0].[Id]

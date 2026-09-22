@@ -1,0 +1,3 @@
+﻿SELECT "t"."Id", "t"."Col1", "t"."Date", "t"."IdBytes", "t"."SomeGuid"
+FROM "TestRows" AS "t"
+ORDER BY ROW_NUMBER() OVER(ORDER BY "t"."Id")

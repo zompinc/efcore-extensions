@@ -1,0 +1,7 @@
+﻿SELECT "t0"."Id", "t0"."RowNumber"
+FROM (
+    SELECT "t"."Id", ROW_NUMBER() OVER(ORDER BY "t"."Id") AS "RowNumber"
+    FROM "TestRows" AS "t"
+) AS "t0"
+WHERE "t0"."Id" > 2
+ORDER BY "t0"."Id"

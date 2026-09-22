@@ -1,0 +1,9 @@
+﻿DECLARE @p int = 3;
+
+SELECT [t0].[Id], MAX([t0].[Id]) OVER() AS [Max]
+FROM (
+    SELECT TOP(@p) [t].[Id]
+    FROM [TestRows] AS [t]
+    ORDER BY [t].[Id]
+) AS [t0]
+ORDER BY [t0].[Id]

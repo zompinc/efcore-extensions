@@ -1,0 +1,7 @@
+﻿SELECT t0."Id"
+FROM (
+    SELECT t."Id", CAST(ROW_NUMBER() OVER(ORDER BY t."Id" DESC) - 1 AS integer) AS "Index"
+    FROM "TestRows" AS t
+) AS t0
+WHERE t0."Index" > 0 AND t0."Id" > 5
+ORDER BY t0."Id" DESC
