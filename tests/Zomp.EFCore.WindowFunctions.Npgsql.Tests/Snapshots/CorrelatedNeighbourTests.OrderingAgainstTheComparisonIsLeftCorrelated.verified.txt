@@ -1,0 +1,8 @@
+﻿SELECT t."Id", (
+    SELECT t0."Id"
+    FROM "TestRows" AS t0
+    WHERE t0."Id" < t."Id"
+    ORDER BY t0."Id"
+    LIMIT 1) AS "FirstId"
+FROM "TestRows" AS t
+ORDER BY t."Id"

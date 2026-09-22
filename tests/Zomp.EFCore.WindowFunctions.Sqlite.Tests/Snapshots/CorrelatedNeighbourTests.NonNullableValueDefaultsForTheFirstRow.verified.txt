@@ -1,0 +1,13 @@
+﻿SELECT "t"."Id", COALESCE((
+    SELECT "t0"."Id"
+    FROM "TestRows" AS "t0"
+    WHERE "t0"."Id" < "t"."Id"
+    ORDER BY "t0"."Id" DESC
+    LIMIT 1), 0) AS "PreviousId", COALESCE((
+    SELECT "t1"."Date"
+    FROM "TestRows" AS "t1"
+    WHERE "t"."Id" > "t1"."Id"
+    ORDER BY "t1"."Id" DESC
+    LIMIT 1), '0001-01-01 00:00:00') AS "PreviousDate"
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"

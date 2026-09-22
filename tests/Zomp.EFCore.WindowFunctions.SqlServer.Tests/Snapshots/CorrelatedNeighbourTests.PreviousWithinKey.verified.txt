@@ -1,0 +1,7 @@
+﻿SELECT [t].[Id], (
+    SELECT TOP(1) [t0].[Id]
+    FROM [TestRows] AS [t0]
+    WHERE [t0].[Id] / 10 = [t].[Id] / 10 AND [t0].[Id] < [t].[Id]
+    ORDER BY [t0].[Id] DESC) AS [PreviousInTens]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]

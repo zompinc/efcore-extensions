@@ -1,0 +1,13 @@
+﻿SELECT t."Id", (
+    SELECT t0."Id"
+    FROM "TestRows" AS t0
+    WHERE t0."Id" < t."Id"
+    ORDER BY t0."Id" DESC
+    LIMIT 1) AS "PreviousId", (
+    SELECT t1."Col1"
+    FROM "TestRows" AS t1
+    WHERE t1."Id" > t."Id"
+    ORDER BY t1."Id"
+    LIMIT 1) AS "NextCol1"
+FROM "TestRows" AS t
+ORDER BY t."Id"

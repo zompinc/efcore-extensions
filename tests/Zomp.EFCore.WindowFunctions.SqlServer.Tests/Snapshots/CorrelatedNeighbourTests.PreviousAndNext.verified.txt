@@ -1,0 +1,11 @@
+﻿SELECT [t].[Id], (
+    SELECT TOP(1) [t0].[Id]
+    FROM [TestRows] AS [t0]
+    WHERE [t0].[Id] < [t].[Id]
+    ORDER BY [t0].[Id] DESC) AS [PreviousId], (
+    SELECT TOP(1) [t1].[Col1]
+    FROM [TestRows] AS [t1]
+    WHERE [t1].[Id] > [t].[Id]
+    ORDER BY [t1].[Id]) AS [NextCol1]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]
