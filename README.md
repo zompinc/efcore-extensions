@@ -153,7 +153,7 @@ Rows are numbered as LINQ numbers them: after a `Where` or `Skip` before the `Se
 SUM(CASE WHEN <predicate> THEN 0 ELSE 1 END) OVER(ORDER BY ... ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
 ```
 
-`TakeWhile` keeps the rows where the count is still 0 and `SkipWhile` the rest, so both stop at the first failing row as LINQ does, unlike `Where`. They need an `OrderBy`: without one there is no first failing row, and EF Core rejects the query. A comparison with NULL fails, as in C#, except when it is negated: EF Core 10 translates `!(r.Col1 <= 0)` in a condition as `NOT (...)`, which is NULL rather than true for a NULL column.
+`TakeWhile` keeps the rows where the count is still 0 and `SkipWhile` the rest, so both stop at the first failing row as LINQ does, unlike `Where`. They need an `OrderBy`: without one there is no first failing row, and EF Core rejects the query. A comparison with NULL fails, as in C#, except when it is negated: EF Core 10 translates `!(r.Col1 <= 0)` in a condition as `NOT (...)`, which is NULL rather than true for a NULL column ([dotnet/efcore#39059](https://github.com/dotnet/efcore/issues/39059)).
 
 ### Per-group values with GroupBy and SelectMany
 

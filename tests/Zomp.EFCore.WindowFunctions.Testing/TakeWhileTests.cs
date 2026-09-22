@@ -73,7 +73,7 @@ public partial class TakeWhileTests
     }
 
     [Test]
-    [Skip("EF Core 10 translates a negated nullable comparison in the condition of a ternary as NOT (...), which is NULL rather than true when the column is NULL")]
+    [Skip("EF Core translates a negated nullable comparison in the condition of a ternary as NOT (...), which is NULL rather than true when the column is NULL: https://github.com/dotnet/efcore/issues/39059")]
     public async Task SkipWhileWithNegatedNullableComparison()
     {
         // !(null <= 0) is true in C#, so the first two rows are skipped: Col1 is null, then 10.
