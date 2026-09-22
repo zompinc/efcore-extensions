@@ -1,0 +1,7 @@
+﻿SELECT [t0].[Id], [t0].[InGroup]
+FROM (
+    SELECT [t].[Id], COUNT(*) OVER(PARTITION BY [t].[Id] / 10 ) AS [InGroup]
+    FROM [TestRows] AS [t]
+) AS [t0]
+WHERE [t0].[InGroup] > 1
+ORDER BY [t0].[Id]

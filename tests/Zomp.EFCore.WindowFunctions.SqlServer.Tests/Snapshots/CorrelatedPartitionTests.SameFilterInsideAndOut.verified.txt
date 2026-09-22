@@ -1,0 +1,4 @@
+﻿SELECT [t].[Id], COUNT(*) OVER(PARTITION BY [t].[Id] / 10 ) AS [InGroup]
+FROM [TestRows] AS [t]
+WHERE [t].[Id] > 2
+ORDER BY [t].[Id]

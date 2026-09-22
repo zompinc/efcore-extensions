@@ -179,6 +179,27 @@ FROM [TestRows] AS [t]
 
 The index within a group, `g.Key`, and the group's `Count`, `LongCount`, `Sum`, `Min`, `Max` and `Average` are translated, with LINQ's results: an average of integers is not truncated, and a sum of nulls is 0. Any other use of the group, such as filtering it, is left for EF Core to reject.
 
+### Correlated aggregates over the same rows
+
+A `Count`, `LongCount`, `Sum`, `Min`, `Max` or `Average` of the rows that share a key with the current row, which EF Core runs as a correlated subquery for each row, becomes one window function partitioned by the key:
+
+```cs
+var query = dbContext.TestRows
+    .Select(r => new
+    {
+        r.Id,
+        InCategory = dbContext.TestRows.Count(t => t.Category == r.Category),
+        CategoryTotal = dbContext.TestRows.Where(t => t.Category == r.Category).Sum(t => t.Amount),
+    });
+```
+
+```sql
+SELECT [t].[Id], COUNT(*) OVER(PARTITION BY [t].[Category]) AS [InCategory], ...
+FROM [TestRows] AS [t]
+```
+
+The subquery must read the same rows as the outer query, with the same filters, since the window only sees those, and be correlated by equalities of the same expression on both sides. Any other subquery is left as it is.
+
 ### Experimental APIs
 
 Window functions used inside `Where`, a join or another window function are pushed down into a subquery automatically. `AsSubQuery()` forces the pushdown where nothing detects the need for it:

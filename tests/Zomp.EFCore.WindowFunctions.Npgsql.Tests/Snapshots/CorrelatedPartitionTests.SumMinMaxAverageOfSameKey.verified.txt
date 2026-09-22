@@ -1,0 +1,3 @@
+﻿SELECT t."Id", COALESCE(SUM(t."Id"::bigint) OVER(PARTITION BY t."Id" / 10 ), 0)::int AS "Total", MIN(t."Col1") OVER(PARTITION BY t."Id" / 10 ) AS "Min", MAX(t."Id") OVER(PARTITION BY t."Id" / 10 ) AS "Max", AVG(t."Id"::double precision) OVER(PARTITION BY t."Id" / 10 ) AS "Average"
+FROM "TestRows" AS t
+ORDER BY t."Id"

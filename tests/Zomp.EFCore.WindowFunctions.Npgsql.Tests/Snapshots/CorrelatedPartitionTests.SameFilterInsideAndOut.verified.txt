@@ -1,0 +1,4 @@
+﻿SELECT t."Id", CAST(COUNT(*) OVER(PARTITION BY t."Id" / 10 ) AS integer) AS "InGroup"
+FROM "TestRows" AS t
+WHERE t."Id" > 2
+ORDER BY t."Id"

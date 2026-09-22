@@ -89,17 +89,35 @@ internal static class OverClauseBuilder
         IReadOnlyList<(LambdaExpression Key, bool Descending)> orderings,
         bool requireOrderBy)
     {
+        if (partition is null)
+        {
+            return Build(element, [], orderings, requireOrderBy);
+        }
+
+        var key = ReplacingExpressionVisitor.Replace(partition.Parameters[0], element, partition.Body);
+        return Build(element, key is NewExpression { Arguments.Count: > 0 } anonymous ? anonymous.Arguments : [key], orderings, requireOrderBy);
+    }
+
+    /// <summary>
+    /// Builds an over clause for <paramref name="element"/>, partitioned by <paramref name="partitionKeys"/>, expressions of the
+    /// element, and ordered by <paramref name="orderings"/>.
+    /// </summary>
+    /// <param name="element">The row the ordering keys are taken from.</param>
+    /// <param name="partitionKeys">The partition keys.</param>
+    /// <param name="orderings">The ordering keys.</param>
+    /// <param name="requireOrderBy">Whether to order by a constant when there are no ordering keys.</param>
+    internal static Expression Build(
+        ParameterExpression element,
+        IReadOnlyList<Expression> partitionKeys,
+        IReadOnlyList<(LambdaExpression Key, bool Descending)> orderings,
+        bool requireOrderBy)
+    {
         // What EF.Functions.Over() in a query is evaluated to before translation.
         Expression over = Expression.Constant(OverClause.Instance);
-        if (partition is not null)
+        for (var i = 0; i < partitionKeys.Count; ++i)
         {
-            var key = ReplacingExpressionVisitor.Replace(partition.Parameters[0], element, partition.Body);
-            var keys = key is NewExpression { Arguments.Count: > 0 } anonymous ? anonymous.Arguments : new ReadOnlyCollection<Expression>([key]);
-            for (var i = 0; i < keys.Count; ++i)
-            {
-                var method = i == 0 ? PartitionByMethod : ThenPartitionByMethod;
-                over = Expression.Call(method.MakeGenericMethod(keys[i].Type), over, keys[i]);
-            }
+            var method = i == 0 ? PartitionByMethod : ThenPartitionByMethod;
+            over = Expression.Call(method.MakeGenericMethod(partitionKeys[i].Type), over, partitionKeys[i]);
         }
 
         if (orderings.Count == 0)
