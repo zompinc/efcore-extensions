@@ -1,0 +1,3 @@
+﻿SELECT "t"."Id", CAST(ROW_NUMBER() OVER(PARTITION BY "t"."Id" / 10 ORDER BY "t"."Id") - 1 AS INTEGER) + 1 AS "Position", CAST(COUNT(*) OVER(PARTITION BY "t"."Id" / 10 ) AS INTEGER) AS "Of"
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"

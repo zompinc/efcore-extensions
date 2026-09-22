@@ -26,30 +26,6 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
     private static readonly MethodInfo DistinctByMethod = typeof(Queryable).GetMethods()
         .Single(m => m.Name == nameof(Queryable.DistinctBy) && m.GetParameters().Length == 2);
 
-    private static readonly MethodInfo RowNumberMethod = typeof(DbFunctionsExtensions).GetMethods()
-        .Single(m => m.Name == nameof(DbFunctionsExtensions.RowNumber) && !m.IsGenericMethod);
-
-    private static readonly MethodInfo OrderByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.OrderBy), typeof(OverClause));
-    private static readonly MethodInfo OrderByDescendingMethod = FunctionsMethod(nameof(DbFunctionsExtensions.OrderByDescending), typeof(OverClause));
-    private static readonly MethodInfo ThenByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ThenBy), typeof(OrderByClause));
-    private static readonly MethodInfo ThenByDescendingMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ThenByDescending), typeof(OrderByClause));
-    private static readonly MethodInfo PartitionByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.PartitionBy), typeof(OverClause));
-    private static readonly MethodInfo ThenPartitionByMethod = FunctionsMethod(nameof(DbFunctionsExtensions.ThenBy), typeof(PartitionByClause));
-
-    /// <summary>
-    /// Operators that keep the order of the rows they are given.
-    /// </summary>
-    private static readonly FrozenSet<string> OrderPreservingOperators =
-    [
-        nameof(DbFunctionsExtensions.AsSubQuery),
-        nameof(Queryable.Skip),
-        nameof(Queryable.Take),
-        nameof(Queryable.Where),
-    ];
-
-    // What EF.Functions in a query is evaluated to before translation.
-    private static readonly Expression Functions = Expression.Constant(EF.Functions);
-
     /// <inheritdoc/>
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
@@ -131,14 +107,12 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
     {
         (source, selector, partition) = FoldProjections(source, selector, partition);
         var element = selector.Parameters[0];
-        if (Over(source, element, partition) is not { } over)
+        if (OverClauseBuilder.FindOrderings(source) is not { } orderings)
         {
             return null;
         }
 
-        var index = Expression.Convert(
-            Expression.Subtract(Expression.Call(RowNumberMethod, Functions, over), Expression.Constant(1L)),
-            typeof(int));
+        var index = OverClauseBuilder.Index(OverClauseBuilder.Build(element, partition, orderings, requireOrderBy: true));
 
         var body = ReplacingExpressionVisitor.Replace(selector.Parameters[1], index, selector.Body);
         var select = SelectMethod.MakeGenericMethod(element.Type, selector.ReturnType);
@@ -207,103 +181,6 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
         _ = detector.Visit(expression);
         return detector.WindowFunctionsCollection.Count > 0;
     }
-
-    /// <summary>
-    /// Builds the over clause from the OrderBy and ThenBy calls that order <paramref name="source"/>.
-    /// </summary>
-    /// <remarks>
-    /// Without them the rows come in no defined order, and ORDER BY a constant numbers them in whatever order the database
-    /// reads them. SQL Server requires an ORDER BY in ROW_NUMBER.
-    /// </remarks>
-    /// <returns>The over clause, or <see langword="null"/> when the rows are ordered by something it cannot follow.</returns>
-    private static Expression? Over(Expression source, ParameterExpression element, LambdaExpression? partition)
-    {
-        var orderings = new List<(LambdaExpression Key, bool Descending)>();
-        while (source is MethodCallExpression { Method: var method } call
-            && (method.DeclaringType == typeof(Queryable) || method.DeclaringType == typeof(DbFunctionsExtensions)))
-        {
-            if (method.Name is nameof(Queryable.OrderBy) or nameof(Queryable.OrderByDescending)
-                or nameof(Queryable.ThenBy) or nameof(Queryable.ThenByDescending))
-            {
-                if (call.Arguments is not [_, UnaryExpression { Operand: LambdaExpression key }])
-                {
-                    // An OrderBy with a comparer has no SQL ordering to copy.
-                    return null;
-                }
-
-                orderings.Insert(0, (key, method.Name.EndsWith("Descending", StringComparison.Ordinal)));
-                if (method.Name.StartsWith(nameof(Queryable.OrderBy), StringComparison.Ordinal))
-                {
-                    break;
-                }
-            }
-            else if (!OrderPreservingOperators.Contains(method.Name))
-            {
-                if (orderings.Count > 0 || IsOrdered(source))
-                {
-                    return null;
-                }
-
-                break;
-            }
-
-            source = call.Arguments[0];
-        }
-
-        // What EF.Functions.Over() in a query is evaluated to before translation.
-        Expression over = Expression.Constant(OverClause.Instance);
-        if (partition is not null)
-        {
-            var key = ReplacingExpressionVisitor.Replace(partition.Parameters[0], element, partition.Body);
-            var keys = key is NewExpression { Arguments.Count: > 0 } anonymous ? anonymous.Arguments : new ReadOnlyCollection<Expression>([key]);
-            for (var i = 0; i < keys.Count; ++i)
-            {
-                var method = i == 0 ? PartitionByMethod : ThenPartitionByMethod;
-                over = Expression.Call(method.MakeGenericMethod(keys[i].Type), over, keys[i]);
-            }
-        }
-
-        if (orderings.Count == 0)
-        {
-            return Expression.Call(OrderByMethod.MakeGenericMethod(typeof(int)), over, Expression.Constant(1));
-        }
-
-        for (var i = 0; i < orderings.Count; ++i)
-        {
-            var (key, descending) = orderings[i];
-            var method = (i == 0, descending) switch
-            {
-                (true, false) => OrderByMethod,
-                (true, true) => OrderByDescendingMethod,
-                (false, false) => ThenByMethod,
-                (false, true) => ThenByDescendingMethod,
-            };
-
-            var keyBody = ReplacingExpressionVisitor.Replace(key.Parameters[0], element, key.Body);
-            over = Expression.Call(method.MakeGenericMethod(key.ReturnType), over, keyBody);
-        }
-
-        return over;
-    }
-
-    private static bool IsOrdered(Expression source)
-    {
-        while (source is MethodCallExpression { Arguments.Count: > 0 } call && typeof(IQueryable).IsAssignableFrom(call.Arguments[0].Type))
-        {
-            if (call.Method.DeclaringType == typeof(Queryable) && call.Method.Name is nameof(Queryable.OrderBy) or nameof(Queryable.OrderByDescending))
-            {
-                return true;
-            }
-
-            source = call.Arguments[0];
-        }
-
-        return false;
-    }
-
-    private static MethodInfo FunctionsMethod(string name, Type firstParameter)
-        => typeof(DbFunctionsExtensions).GetMethods()
-            .Single(m => m.Name == name && m.GetParameters()[0].ParameterType == firstParameter);
 
     private static int SelectorParameterCount(MethodInfo select)
         => select.GetParameters()[1].ParameterType.GetGenericArguments()[0].GetGenericArguments().Length - 1;

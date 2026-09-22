@@ -145,6 +145,30 @@ ORDER BY [t].[Col1]
 
 Rows are numbered as LINQ numbers them: after a `Where` or `Skip` before the `Select`, and before a `Where` after it. Without an `OrderBy` the rows, and so the numbers, come in no defined order. Ties in the ordering are numbered in no defined order either, so order by something unique when the numbers matter.
 
+### Per-group values with GroupBy and SelectMany
+
+`GroupBy` followed by `SelectMany` over each group, which EF Core does not translate, becomes window functions partitioned by the key, so each row keeps its columns next to values of its group:
+
+```cs
+var query = dbContext.TestRows
+    .GroupBy(r => r.Category)
+    .SelectMany(g => g.OrderBy(r => r.Date).Select((r, i) => new
+    {
+        r.Id,
+        Position = i + 1,
+        Of = g.Count(),
+        Share = (double)r.Amount / g.Sum(t => t.Amount),
+    }));
+```
+
+```sql
+SELECT [t].[Id], CAST(ROW_NUMBER() OVER(PARTITION BY [t].[Category] ORDER BY [t].[Date]) - 1 AS int) + 1 AS [Position],
+    COUNT(*) OVER(PARTITION BY [t].[Category]) AS [Of], ...
+FROM [TestRows] AS [t]
+```
+
+The index within a group, `g.Key`, and the group's `Count`, `LongCount`, `Sum`, `Min`, `Max` and `Average` are translated, with LINQ's results: an average of integers is not truncated, and a sum of nulls is 0. Any other use of the group, such as filtering it, is left for EF Core to reject.
+
 ### Experimental APIs
 
 Window functions used inside `Where`, a join or another window function are pushed down into a subquery automatically. `AsSubQuery()` forces the pushdown where nothing detects the need for it:

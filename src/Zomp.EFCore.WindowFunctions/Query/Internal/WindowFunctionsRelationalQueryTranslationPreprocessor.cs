@@ -12,6 +12,7 @@ public class WindowFunctionsRelationalQueryTranslationPreprocessor(QueryTranslat
     public override Expression Process(Expression query)
     {
         query = new InvocationExpressionRemovingExpressionVisitor().Visit(query);
+        query = new GroupWindowExpressionVisitor().Visit(query);
         query = NormalizeQueryableMethod(query);
         query = new ElementIndexExpressionVisitor().Visit(query);
         query = new CallForwardingExpressionVisitor().Visit(query);
