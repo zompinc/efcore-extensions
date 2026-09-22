@@ -1,0 +1,16 @@
+﻿SELECT t."Id", (
+    SELECT count(*)::int
+    FROM "TestRows" AS t0
+    WHERE t0."Id" > 2) AS "Total", (
+    SELECT min(t1."Col1")
+    FROM "TestRows" AS t1
+    WHERE t1."Id" > 2) AS "Min", (
+    SELECT max(t2."Id")
+    FROM "TestRows" AS t2
+    WHERE t2."Id" > 2) AS "Max", (
+    SELECT avg(t3."Id"::double precision)
+    FROM "TestRows" AS t3
+    WHERE t3."Id" > 2) AS "Average"
+FROM "TestRows" AS t
+WHERE t."Id" > 2
+ORDER BY t."Id"

@@ -1,0 +1,5 @@
+﻿SELECT t."Id", t."Id"::double precision / (
+    SELECT COALESCE(sum(t0."Id"), 0)::int
+    FROM "TestRows" AS t0)::double precision AS "Share"
+FROM "TestRows" AS t
+ORDER BY t."Id"

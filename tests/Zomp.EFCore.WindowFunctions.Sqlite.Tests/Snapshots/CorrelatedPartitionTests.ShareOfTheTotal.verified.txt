@@ -1,0 +1,5 @@
+﻿SELECT "t"."Id", CAST("t"."Id" AS REAL) / CAST((
+    SELECT COALESCE(SUM("t0"."Id"), 0)
+    FROM "TestRows" AS "t0") AS REAL) AS "Share"
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"

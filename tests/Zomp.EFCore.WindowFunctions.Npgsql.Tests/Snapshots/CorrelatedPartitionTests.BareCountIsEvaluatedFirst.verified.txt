@@ -1,0 +1,4 @@
+﻿-- @Count='9'
+SELECT t."Id", @Count AS "Total"
+FROM "TestRows" AS t
+ORDER BY t."Id"
