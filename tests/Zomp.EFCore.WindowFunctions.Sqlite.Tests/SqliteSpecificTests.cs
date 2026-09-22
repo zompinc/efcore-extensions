@@ -39,10 +39,11 @@ public class SqliteSpecificTests : TestBase
     public async Task StandardDeviationSampleApproximated()
     {
         using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
-        var result = context.TestRows
+        var query = context.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.StandardDeviationSample(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
-            .ToList();
+            .Select(r => EF.Functions.StandardDeviationSample(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)));
+
+        var result = query.ToList();
 
         await StatisticsTests.AssertMatches(result, values => StatisticsTests.Sqrt(StatisticsTests.SampleVariance(values)));
     }
@@ -51,10 +52,11 @@ public class SqliteSpecificTests : TestBase
     public async Task StandardDeviationPopulationApproximated()
     {
         using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
-        var result = context.TestRows
+        var query = context.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.StandardDeviationPopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
-            .ToList();
+            .Select(r => EF.Functions.StandardDeviationPopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)));
+
+        var result = query.ToList();
 
         await StatisticsTests.AssertMatches(result, values => StatisticsTests.Sqrt(StatisticsTests.PopulationVariance(values)));
     }
@@ -63,10 +65,11 @@ public class SqliteSpecificTests : TestBase
     public async Task VarianceSampleApproximated()
     {
         using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
-        var result = context.TestRows
+        var query = context.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.VarianceSample(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
-            .ToList();
+            .Select(r => EF.Functions.VarianceSample(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)));
+
+        var result = query.ToList();
 
         await StatisticsTests.AssertMatches(result, StatisticsTests.SampleVariance);
     }
@@ -75,10 +78,11 @@ public class SqliteSpecificTests : TestBase
     public async Task VariancePopulationApproximated()
     {
         using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
-        var result = context.TestRows
+        var query = context.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.VariancePopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
-            .ToList();
+            .Select(r => EF.Functions.VariancePopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)));
+
+        var result = query.ToList();
 
         await StatisticsTests.AssertMatches(result, StatisticsTests.PopulationVariance);
     }
@@ -87,10 +91,11 @@ public class SqliteSpecificTests : TestBase
     public async Task StandardDeviationApproximatedOverRowsFrame()
     {
         using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
-        var result = context.TestRows
+        var query = context.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.StandardDeviationPopulation(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromPreceding(1).ToCurrentRow()))
-            .ToList();
+            .Select(r => EF.Functions.StandardDeviationPopulation(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromPreceding(1).ToCurrentRow()));
+
+        var result = query.ToList();
 
         var ordered = TestRows.OrderBy(r => r.Id).Select(r => (int?)r.Id).ToArray();
         var expected = ordered.Select((_, i) => StatisticsTests.Sqrt(StatisticsTests.PopulationVariance(ordered[Math.Max(0, i - 1)..(i + 1)])));
@@ -102,11 +107,12 @@ public class SqliteSpecificTests : TestBase
     public async Task VariancePopulationApproximatedWithWhere()
     {
         using var context = new SqliteTestDbContext { ApproximateStandardDeviationAndVariance = true };
-        var result = context.TestRows
+        var query = context.TestRows
             .Where(r => EF.Functions.VariancePopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)) > 0)
             .OrderBy(r => r.Id)
-            .Select(r => r.Id)
-            .ToList();
+            .Select(r => r.Id);
+
+        var result = query.ToList();
 
         var expected = TestRows
             .Where(r => StatisticsTests.PopulationVariance(TestRows.Where(t => t.Id / 10 == r.Id / 10).Select(t => t.Col1)) > 0)
@@ -129,7 +135,8 @@ public class SqliteSpecificTests : TestBase
             _ = approximating.TestRows.Select(r => EF.Functions.VarianceSample(r.Col1, EF.Functions.Over())).ToList();
         }
 
-        await Assert.That(() => DbContext.TestRows.Select(r => EF.Functions.VarianceSample(r.Col1, EF.Functions.Over())).ToList())
-            .Throws<InvalidOperationException>();
+        var query = DbContext.TestRows.Select(r => EF.Functions.VarianceSample(r.Col1, EF.Functions.Over()));
+
+        await Assert.That(() => query.ToList()).Throws<InvalidOperationException>();
     }
 }

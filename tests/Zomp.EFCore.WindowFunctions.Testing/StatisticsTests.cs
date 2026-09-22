@@ -16,10 +16,11 @@ public partial class StatisticsTests
     {
         Skip.When(DbContext.IsSqlite, NotOnSqlite);
 
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.StandardDeviationSample(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
-            .ToList();
+            .Select(r => EF.Functions.StandardDeviationSample(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)));
+
+        var result = query.ToList();
 
         await AssertMatches(result, values => Sqrt(SampleVariance(values)));
     }
@@ -29,10 +30,11 @@ public partial class StatisticsTests
     {
         Skip.When(DbContext.IsSqlite, NotOnSqlite);
 
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.StandardDeviationPopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
-            .ToList();
+            .Select(r => EF.Functions.StandardDeviationPopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)));
+
+        var result = query.ToList();
 
         await AssertMatches(result, values => Sqrt(PopulationVariance(values)));
     }
@@ -42,10 +44,11 @@ public partial class StatisticsTests
     {
         Skip.When(DbContext.IsSqlite, NotOnSqlite);
 
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.VarianceSample(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
-            .ToList();
+            .Select(r => EF.Functions.VarianceSample(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)));
+
+        var result = query.ToList();
 
         await AssertMatches(result, SampleVariance);
     }
@@ -55,10 +58,11 @@ public partial class StatisticsTests
     {
         Skip.When(DbContext.IsSqlite, NotOnSqlite);
 
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.VariancePopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
-            .ToList();
+            .Select(r => EF.Functions.VariancePopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)));
+
+        var result = query.ToList();
 
         await AssertMatches(result, PopulationVariance);
     }
@@ -68,10 +72,11 @@ public partial class StatisticsTests
     {
         Skip.When(DbContext.IsSqlite, NotOnSqlite);
 
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.StandardDeviationPopulation(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromPreceding(1).ToCurrentRow()))
-            .ToList();
+            .Select(r => EF.Functions.StandardDeviationPopulation(r.Id, EF.Functions.Over().OrderBy(r.Id).Rows().FromPreceding(1).ToCurrentRow()));
+
+        var result = query.ToList();
 
         var ordered = TestRows.OrderBy(r => r.Id).Select(r => (int?)r.Id).ToArray();
         var expected = ordered.Select((_, i) => Sqrt(PopulationVariance(ordered[Math.Max(0, i - 1)..(i + 1)])));
@@ -85,11 +90,12 @@ public partial class StatisticsTests
         Skip.When(DbContext.IsSqlite, NotOnSqlite);
 
         // The partitions of Col1 are {10, -1}, {-12} and {1759}; only the first varies.
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .Where(r => EF.Functions.VariancePopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)) > 0)
             .OrderBy(r => r.Id)
-            .Select(r => r.Id)
-            .ToList();
+            .Select(r => r.Id);
+
+        var result = query.ToList();
 
         var expected = TestRows
             .Where(r => PopulationVariance(TestRows.Where(t => t.Id / 10 == r.Id / 10).Select(t => t.Col1)) > 0)
@@ -104,9 +110,10 @@ public partial class StatisticsTests
     {
         Skip.When(DbContext.IsSqlite, NotOnSqlite);
 
-        var result = DbContext.TestRows
-            .Select(r => EF.Functions.StandardDeviationPopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)))
-            .Max();
+        var query = DbContext.TestRows
+            .Select(r => EF.Functions.StandardDeviationPopulation(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10)));
+
+        var result = query.Max();
 
         var expected = TestRows
             .Select(r => Sqrt(PopulationVariance(TestRows.Where(t => t.Id / 10 == r.Id / 10).Select(t => t.Col1))))

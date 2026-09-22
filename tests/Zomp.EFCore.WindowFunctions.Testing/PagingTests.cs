@@ -13,7 +13,9 @@ public partial class PagingTests
     [Test]
     public async Task First()
     {
-        var result = DbContext.TestRows.OrderBy(r => r.Id).First();
+        var query = DbContext.TestRows.OrderBy(r => r.Id);
+
+        var result = query.First();
 
         var expected = TestRows.OrderBy(r => r.Id).First();
 
@@ -23,7 +25,9 @@ public partial class PagingTests
     [Test]
     public async Task Take()
     {
-        var result = DbContext.TestRows.OrderBy(r => r.Id).Take(3).ToList();
+        var query = DbContext.TestRows.OrderBy(r => r.Id).Take(3);
+
+        var result = query.ToList();
 
         var expected = TestRows.OrderBy(r => r.Id).Take(3);
 
@@ -33,7 +37,9 @@ public partial class PagingTests
     [Test]
     public async Task SkipAndTake()
     {
-        var result = DbContext.TestRows.OrderBy(r => r.Id).Skip(2).Take(3).ToList();
+        var query = DbContext.TestRows.OrderBy(r => r.Id).Skip(2).Take(3);
+
+        var result = query.ToList();
 
         var expected = TestRows.OrderBy(r => r.Id).Skip(2).Take(3);
 

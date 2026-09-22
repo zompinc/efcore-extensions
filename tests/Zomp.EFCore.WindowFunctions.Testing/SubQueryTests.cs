@@ -18,8 +18,9 @@ public partial class SubQueryTests
     [Test]
     public async Task RowNumberWithSingle()
     {
-        var result = DbContext.TestRows
-            .Single(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) == 1);
+        var query = DbContext.TestRows;
+
+        var result = query.Single(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) == 1);
 
         var expected = TestRows.First();
 
@@ -273,9 +274,10 @@ public partial class SubQueryTests
     public async Task AverageOverWindowFunction()
     {
         // https://github.com/zompinc/efcore-extensions/issues/25
-        var result = DbContext.TestRows
-            .Select(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)))
-            .Average();
+        var query = DbContext.TestRows
+            .Select(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)));
+
+        var result = query.Average();
 
         var expected = Enumerable.Range(1, TestRows.Length).Average();
 
@@ -285,9 +287,10 @@ public partial class SubQueryTests
     [Test]
     public async Task MaxOverWindowFunctionMember()
     {
-        var result = DbContext.TestRows
-            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
-            .Max(w => w.RowNumber);
+        var query = DbContext.TestRows
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) });
+
+        var result = query.Max(w => w.RowNumber);
 
         await Assert.That(result).IsEqualTo(TestRows.Length);
     }
@@ -348,10 +351,11 @@ public partial class SubQueryTests
     [Test]
     public async Task FirstWithPredicateAfterWindowFunctionProjection()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
-            .OrderBy(w => w.Id)
-            .First(w => w.Id > 2);
+            .OrderBy(w => w.Id);
+
+        var result = query.First(w => w.Id > 2);
 
         var expected = new { TestRows.OrderBy(t => t.Id).ElementAt(1).Id, RowNumber = 2L };
 
