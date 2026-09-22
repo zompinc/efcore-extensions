@@ -1,0 +1,3 @@
+﻿SELECT t."Id", CAST(COUNT(*) OVER(ORDER BY t."Id" / 10) AS integer) AS "UpTo", CAST(COUNT(*) OVER(ORDER BY t."Id" / 10 DESC) AS integer) AS "From"
+FROM "TestRows" AS t
+ORDER BY t."Id"

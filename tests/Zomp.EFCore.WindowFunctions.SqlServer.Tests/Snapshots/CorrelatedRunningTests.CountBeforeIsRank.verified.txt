@@ -1,0 +1,3 @@
+﻿SELECT [t].[Id], CAST(RANK() OVER(ORDER BY [t].[Id]) - 1 AS int) AS [Position], CAST(RANK() OVER(ORDER BY [t].[Id] / 10) - 1 AS int) + 1 AS [GroupRank]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]

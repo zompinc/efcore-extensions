@@ -1,0 +1,3 @@
+﻿SELECT t."Id", COALESCE(SUM(t."Id"::bigint) OVER(ORDER BY t."Id"), 0)::int AS "RunningTotal", MAX(t."Col1") OVER(ORDER BY t."Id") AS "RunningMax", AVG(t."Id"::double precision) OVER(ORDER BY t."Id") AS "RunningAverage"
+FROM "TestRows" AS t
+ORDER BY t."Id"

@@ -1,0 +1,3 @@
+﻿SELECT [t].[Id], COUNT(*) OVER(ORDER BY [t].[Id] / 10) AS [UpTo], COUNT(*) OVER(ORDER BY [t].[Id] / 10 DESC) AS [From]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]

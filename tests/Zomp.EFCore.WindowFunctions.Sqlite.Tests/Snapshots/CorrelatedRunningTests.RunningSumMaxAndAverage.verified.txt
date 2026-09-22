@@ -1,0 +1,3 @@
+﻿SELECT "t"."Id", CAST(COALESCE(SUM(CAST("t"."Id" AS INTEGER)) OVER(ORDER BY "t"."Id"), 0) AS INTEGER) AS "RunningTotal", CAST(MAX("t"."Col1") OVER(ORDER BY "t"."Id") AS INTEGER) AS "RunningMax", CAST(AVG(CAST("t"."Id" AS REAL)) OVER(ORDER BY "t"."Id") AS REAL) AS "RunningAverage"
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"
