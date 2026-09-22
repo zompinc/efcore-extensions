@@ -1,0 +1,10 @@
+﻿SELECT "t0"."Id", "t0"."Col1"
+FROM (
+    SELECT "t"."Id", "t"."Col1", CAST(SUM(CASE
+        WHEN "t"."Id" > 12 THEN 0
+        ELSE 1
+    END) OVER(ORDER BY "t"."Id" DESC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS INTEGER) AS "Index"
+    FROM "TestRows" AS "t"
+) AS "t0"
+WHERE "t0"."Index" = 0
+ORDER BY "t0"."Id" DESC

@@ -145,6 +145,16 @@ ORDER BY [t].[Col1]
 
 Rows are numbered as LINQ numbers them: after a `Where` or `Skip` before the `Select`, and before a `Where` after it. Without an `OrderBy` the rows, and so the numbers, come in no defined order. Ties in the ordering are numbered in no defined order either, so order by something unique when the numbers matter.
 
+### TakeWhile and SkipWhile
+
+`TakeWhile` and `SkipWhile`, which EF Core does not translate, count the rows that fail the predicate up to each row, over the ordering before them:
+
+```sql
+SUM(CASE WHEN <predicate> THEN 0 ELSE 1 END) OVER(ORDER BY ... ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+```
+
+`TakeWhile` keeps the rows where the count is still 0 and `SkipWhile` the rest, so both stop at the first failing row as LINQ does, unlike `Where`. They need an `OrderBy`: without one there is no first failing row, and EF Core rejects the query. A comparison with NULL fails, as in C#, except when it is negated: EF Core 10 translates `!(r.Col1 <= 0)` in a condition as `NOT (...)`, which is NULL rather than true for a NULL column.
+
 ### Per-group values with GroupBy and SelectMany
 
 `GroupBy` followed by `SelectMany` over each group, which EF Core does not translate, becomes window functions partitioned by the key, so each row keeps its columns next to values of its group:

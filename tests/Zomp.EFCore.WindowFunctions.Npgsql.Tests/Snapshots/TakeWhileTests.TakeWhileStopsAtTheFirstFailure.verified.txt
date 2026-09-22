@@ -1,0 +1,10 @@
+﻿SELECT t0."Id", t0."Col1", t0."Date", t0."IdBytes", t0."SomeGuid"
+FROM (
+    SELECT t."Id", t."Col1", t."Date", t."IdBytes", t."SomeGuid", SUM(CASE
+        WHEN t."Id" <> 7 THEN 0
+        ELSE 1
+    END) OVER(ORDER BY t."Id" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS "Index"
+    FROM "TestRows" AS t
+) AS t0
+WHERE t0."Index" = 0
+ORDER BY t0."Id"

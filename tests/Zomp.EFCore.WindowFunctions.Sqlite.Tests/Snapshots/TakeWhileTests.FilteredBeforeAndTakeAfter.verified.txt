@@ -1,0 +1,14 @@
+﻿.param set @p 2
+
+SELECT "t0"."Id"
+FROM (
+    SELECT "t"."Id", CAST(SUM(CASE
+        WHEN "t"."Id" < 7 THEN 0
+        ELSE 1
+    END) OVER(ORDER BY "t"."Id" ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS INTEGER) AS "Index"
+    FROM "TestRows" AS "t"
+    WHERE "t"."Id" > 2
+) AS "t0"
+WHERE "t0"."Index" > 0
+ORDER BY "t0"."Id"
+LIMIT @p
