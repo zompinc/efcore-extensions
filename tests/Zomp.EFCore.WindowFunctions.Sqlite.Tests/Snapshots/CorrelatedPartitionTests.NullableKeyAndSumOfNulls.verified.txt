@@ -1,9 +1,3 @@
-﻿SELECT "t"."Id", (
-    SELECT COUNT(*)
-    FROM "TestRows" AS "t0"
-    WHERE "t0"."Col1" = "t"."Col1" OR ("t0"."Col1" IS NULL AND "t"."Col1" IS NULL)) AS "SameCol1", (
-    SELECT COALESCE(SUM("t1"."Col1"), 0)
-    FROM "TestRows" AS "t1"
-    WHERE "t1"."Col1" = "t"."Col1" OR ("t1"."Col1" IS NULL AND "t"."Col1" IS NULL)) AS "TotalCol1"
+﻿SELECT "t"."Id", CAST(COUNT(*) OVER(PARTITION BY "t"."Col1" ) AS INTEGER) AS "SameCol1", CAST(COALESCE(SUM(CAST("t"."Col1" AS INTEGER)) OVER(PARTITION BY "t"."Col1" ), 0) AS INTEGER) AS "TotalCol1"
 FROM "TestRows" AS "t"
 ORDER BY "t"."Id"

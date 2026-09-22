@@ -13,6 +13,7 @@ public class WindowFunctionsRelationalQueryTranslationPreprocessor(QueryTranslat
     {
         query = new InvocationExpressionRemovingExpressionVisitor().Visit(query);
         query = new GroupWindowExpressionVisitor().Visit(query);
+        query = new CorrelatedWindowExpressionVisitor().Visit(query);
         query = NormalizeQueryableMethod(query);
         query = new ElementIndexExpressionVisitor().Visit(query);
         query = new CallForwardingExpressionVisitor().Visit(query);

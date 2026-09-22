@@ -1,6 +1,3 @@
-﻿SELECT [t].[Id], (
-    SELECT COUNT(*)
-    FROM [TestRows] AS [t0]
-    WHERE [t0].[Id] / 10 = [t].[Id] / 10) AS [InGroup]
+﻿SELECT [t].[Id], COUNT(*) OVER(PARTITION BY [t].[Id] / 10 ) AS [InGroup]
 FROM [TestRows] AS [t]
 ORDER BY [t].[Id]

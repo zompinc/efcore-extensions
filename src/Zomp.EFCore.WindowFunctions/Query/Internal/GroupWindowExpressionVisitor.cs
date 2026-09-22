@@ -98,9 +98,6 @@ internal sealed class GroupWindowExpressionVisitor : ExpressionVisitor
     private sealed class GroupReplacer(ParameterExpression group, ParameterExpression element, LambdaExpression key, Expression over)
         : ExpressionVisitor
     {
-        private static readonly MethodInfo CountMethod = typeof(DbFunctionsExtensions).GetMethods()
-            .Single(m => m.Name == nameof(DbFunctionsExtensions.Count) && !m.IsGenericMethod);
-
         /// <summary>
         /// Gets a value indicating whether the group is used in a way a window cannot express.
         /// </summary>
@@ -122,11 +119,10 @@ internal sealed class GroupWindowExpressionVisitor : ExpressionVisitor
 
             var aggregate = node switch
             {
-                { Method.Name: nameof(Enumerable.Count), Arguments.Count: 1 } => Expression.Call(CountMethod, OverClauseBuilder.Functions, over),
-                { Method.Name: nameof(Enumerable.LongCount), Arguments.Count: 1 }
-                    => Expression.Convert(Expression.Call(CountMethod, OverClauseBuilder.Functions, over), typeof(long)),
+                { Method.Name: nameof(Enumerable.Count), Arguments.Count: 1 } => WindowAggregates.Count(over),
+                { Method.Name: nameof(Enumerable.LongCount), Arguments.Count: 1 } => WindowAggregates.LongCount(over),
                 { Method.Name: nameof(Enumerable.Sum) or nameof(Enumerable.Min) or nameof(Enumerable.Max) or nameof(Enumerable.Average), Arguments: [_, LambdaExpression value] }
-                    => Aggregate(node.Method.Name, ReplacingExpressionVisitor.Replace(value.Parameters[0], element, value.Body), node.Type),
+                    => WindowAggregates.Aggregate(node.Method.Name, ReplacingExpressionVisitor.Replace(value.Parameters[0], element, value.Body), node.Type, over),
                 _ => null,
             };
 
@@ -145,77 +141,6 @@ internal sealed class GroupWindowExpressionVisitor : ExpressionVisitor
             // Every use of the group this rewrite understands is replaced before its parameter is reached.
             Unsupported |= node == group;
             return node;
-        }
-
-        /// <summary>
-        /// Finds the window function <paramref name="name"/> taking a value of <paramref name="valueType"/>.
-        /// </summary>
-        private static MethodInfo? WindowMethod(string name, Type valueType)
-        {
-            var underlying = Nullable.GetUnderlyingType(valueType);
-            foreach (var candidate in typeof(DbFunctionsExtensions).GetMethods())
-            {
-                if (candidate.Name != name || !candidate.IsGenericMethodDefinition || candidate.GetGenericArguments().Length != 1
-                    || candidate.GetParameters() is not [_, { ParameterType: var parameter }, _])
-                {
-                    continue;
-                }
-
-                var takesNullable = parameter.IsGenericType && parameter.GetGenericTypeDefinition() == typeof(Nullable<>);
-                if (takesNullable != (underlying is not null))
-                {
-                    continue;
-                }
-
-                try
-                {
-                    return candidate.MakeGenericMethod(underlying ?? valueType);
-                }
-                catch (ArgumentException)
-                {
-                    // The type does not meet the candidate's constraint, such as a class for a struct overload.
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// The group's aggregate as a window function over the partition, converted to what LINQ returns.
-        /// </summary>
-        /// <remarks>
-        /// LINQ averages integers as double, where SQL Server's AVG of an integer column is an integer, and sums a group of nulls
-        /// to 0, where SUM returns NULL. The databases also disagree on the type of a sum of integers, int on SQL Server and bigint
-        /// on PostgreSQL, so integers are summed as bigint, or decimal for a bigint column, and cast to the type LINQ returns.
-        /// </remarks>
-        private Expression? Aggregate(string name, Expression value, Type resultType)
-        {
-            var type = Nullable.GetUnderlyingType(value.Type) ?? value.Type;
-            var widened = (name, Type.GetTypeCode(type)) switch
-            {
-                (nameof(Enumerable.Average), not (TypeCode.Decimal or TypeCode.Double)) => typeof(double),
-                (nameof(Enumerable.Sum), TypeCode.Byte or TypeCode.SByte or TypeCode.Int16 or TypeCode.UInt16 or TypeCode.Int32) => typeof(long),
-                (nameof(Enumerable.Sum), TypeCode.Int64) => typeof(decimal),
-                _ => null,
-            };
-
-            if (widened is not null)
-            {
-                value = Expression.Convert(value, Nullable.GetUnderlyingType(value.Type) is null ? widened : typeof(Nullable<>).MakeGenericType(widened));
-            }
-
-            if (WindowMethod(name == nameof(Enumerable.Average) ? nameof(DbFunctionsExtensions.Avg) : name, value.Type) is not { } method)
-            {
-                return null;
-            }
-
-            Expression call = Expression.Call(method, OverClauseBuilder.Functions, value, over);
-            if (name == nameof(Enumerable.Sum) && Nullable.GetUnderlyingType(call.Type) is { } underlying)
-            {
-                call = Expression.Coalesce(call, Expression.Constant(Activator.CreateInstance(underlying), underlying));
-            }
-
-            return call.Type == resultType ? call : Expression.Convert(call, resultType);
         }
     }
 }
