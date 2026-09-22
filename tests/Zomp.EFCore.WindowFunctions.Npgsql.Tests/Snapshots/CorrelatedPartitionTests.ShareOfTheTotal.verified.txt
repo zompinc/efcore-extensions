@@ -1,5 +1,3 @@
-﻿SELECT t."Id", t."Id"::double precision / (
-    SELECT COALESCE(sum(t0."Id"), 0)::int
-    FROM "TestRows" AS t0)::double precision AS "Share"
+﻿SELECT t."Id", t."Id"::double precision / COALESCE(SUM(t."Id"::bigint) OVER(), 0)::int::double precision AS "Share"
 FROM "TestRows" AS t
 ORDER BY t."Id"

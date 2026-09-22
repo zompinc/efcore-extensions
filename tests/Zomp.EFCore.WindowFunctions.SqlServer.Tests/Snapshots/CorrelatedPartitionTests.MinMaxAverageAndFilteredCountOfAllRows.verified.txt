@@ -1,16 +1,4 @@
-﻿SELECT [t].[Id], (
-    SELECT COUNT(*)
-    FROM [TestRows] AS [t0]
-    WHERE [t0].[Id] > 2) AS [Total], (
-    SELECT MIN([t1].[Col1])
-    FROM [TestRows] AS [t1]
-    WHERE [t1].[Id] > 2) AS [Min], (
-    SELECT MAX([t2].[Id])
-    FROM [TestRows] AS [t2]
-    WHERE [t2].[Id] > 2) AS [Max], (
-    SELECT AVG(CAST([t3].[Id] AS float))
-    FROM [TestRows] AS [t3]
-    WHERE [t3].[Id] > 2) AS [Average]
+﻿SELECT [t].[Id], COUNT(*) OVER() AS [Total], MIN([t].[Col1]) OVER() AS [Min], MAX([t].[Id]) OVER() AS [Max], AVG(CAST([t].[Id] AS float)) OVER() AS [Average]
 FROM [TestRows] AS [t]
 WHERE [t].[Id] > 2
 ORDER BY [t].[Id]
