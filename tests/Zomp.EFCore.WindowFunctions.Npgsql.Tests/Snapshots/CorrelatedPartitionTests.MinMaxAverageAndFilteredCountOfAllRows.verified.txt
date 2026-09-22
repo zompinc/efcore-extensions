@@ -1,0 +1,4 @@
+﻿SELECT t."Id", CAST(COUNT(*) OVER() AS integer) AS "Total", MIN(t."Col1") OVER() AS "Min", MAX(t."Id") OVER() AS "Max", AVG(t."Id"::double precision) OVER() AS "Average"
+FROM "TestRows" AS t
+WHERE t."Id" > 2
+ORDER BY t."Id"

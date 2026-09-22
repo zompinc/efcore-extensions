@@ -1,14 +1,14 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Query.Internal;
 
 /// <summary>
-/// Rewrites aggregates of correlated subqueries in a projection to window functions: a Count, LongCount, Sum, Min, Max or Average
-/// of the rows sharing a key with the current row becomes the aggregate over a partition by that key, and of the rows before it
-/// in some order, a running aggregate or RANK.
+/// Rewrites aggregates of subqueries in a projection to window functions: a Count, LongCount, Sum, Min, Max or Average of all the
+/// rows becomes the aggregate over an empty OVER(), of the rows sharing a key with the current row the aggregate over a partition
+/// by that key, and of the rows before it in some order, a running aggregate or RANK.
 /// </summary>
 /// <remarks>
 /// <para>
 /// Only a subquery that reads exactly the rows the projection reads, filters included, is rewritten, since a window only sees
-/// those rows, and only when it is correlated by equalities of the same expression on both sides, <c>t.Key == r.Key</c>, and at
+/// those rows, and only when it is not correlated at all or correlated by equalities of the same expression on both sides, <c>t.Key == r.Key</c>, and at
 /// most one comparison of a non-nullable expression, <c>t.Order &lt;= r.Order</c>. A subquery that is anything else stays a
 /// correlated subquery, which is slower but gives the same result.
 /// </para>
@@ -303,7 +303,7 @@ internal sealed class CorrelatedWindowExpressionVisitor(IModel model) : Expressi
                 inner = whereCall.Arguments[0];
             }
 
-            if (predicates.Count == 0 || !ExpressionEqualityComparer.Instance.Equals(WithoutOrdering(inner), WithoutOrdering(source)))
+            if (!ExpressionEqualityComparer.Instance.Equals(WithoutOrdering(inner), WithoutOrdering(source)))
             {
                 return null;
             }

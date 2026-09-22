@@ -1,0 +1,6 @@
+﻿SELECT [t].[Id], (
+    SELECT COALESCE(SUM([t0].[Id]), 0)
+    FROM [TestRows] AS [t0]) AS [Total]
+FROM [TestRows] AS [t]
+WHERE [t].[Id] > 2
+ORDER BY [t].[Id]

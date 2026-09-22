@@ -198,6 +198,8 @@ SELECT [t].[Id], COUNT(*) OVER(PARTITION BY [t].[Category]) AS [InCategory], ...
 FROM [TestRows] AS [t]
 ```
 
+A subquery that is not correlated at all, over the same rows, becomes the aggregate over an empty window, so a share of the total `(double)r.Amount / dbContext.TestRows.Sum(t => t.Amount)` reads the table once: `SUM(Amount) OVER()`. EF Core runs a bare `dbContext.TestRows.Count()` as a query of its own before translating and passes the number in as a parameter, so that one is left to it; `EF.Functions.Count(EF.Functions.Over())` gives `COUNT(*) OVER()` explicitly.
+
 A comparison with the current row turns it into a running aggregate or rank: counting the rows before the current one, `Count(t => t.Date < r.Date)`, becomes `RANK() OVER(ORDER BY Date) - 1`, and the rows up to and including it, `Where(t => t.Date <= r.Date).Sum(t => t.Amount)`, become `SUM(Amount) OVER(ORDER BY Date)`, whose default frame includes the rows tied with the current one. The two combine, as in a running total within each category.
 
 A value of the previous row, the first of the rows before the current one ordered down to it, becomes `LAG`, and of the next row `LEAD`:

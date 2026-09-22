@@ -1,0 +1,3 @@
+﻿SELECT "t"."Id", CAST("t"."Id" AS REAL) / CAST(CAST(COALESCE(SUM(CAST("t"."Id" AS INTEGER)) OVER(), 0) AS INTEGER) AS REAL) AS "Share"
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"

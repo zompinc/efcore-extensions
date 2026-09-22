@@ -1,0 +1,4 @@
+﻿SELECT [t].[Id], COUNT(*) OVER() AS [Total], MIN([t].[Col1]) OVER() AS [Min], MAX([t].[Id]) OVER() AS [Max], AVG(CAST([t].[Id] AS float)) OVER() AS [Average]
+FROM [TestRows] AS [t]
+WHERE [t].[Id] > 2
+ORDER BY [t].[Id]

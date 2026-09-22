@@ -187,4 +187,96 @@ public partial class CorrelatedPartitionTests
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
         await Verify(query.ToQueryString());
     }
+
+    [Test]
+    public async Task ShareOfTheTotal()
+    {
+        // Not correlated at all: the aggregate of every row the projection reads is the aggregate over an empty OVER().
+        var query = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => new { r.Id, Share = (double)r.Id / DbContext.TestRows.Sum(t => t.Id) });
+
+        var result = query.ToList();
+
+        var expected = TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => new { r.Id, Share = (double)r.Id / TestRows.Sum(t => t.Id) });
+
+        await Assert.That(result.Select(x => (x.Id, Math.Round(x.Share, 10))))
+            .IsEquivalentTo(expected.Select(x => (x.Id, Math.Round(x.Share, 10))), CollectionOrdering.Matching);
+        await Verify(query.ToQueryString());
+    }
+
+    [Test]
+    public async Task MinMaxAverageAndFilteredCountOfAllRows()
+    {
+        var query = DbContext.TestRows
+            .Where(x => x.Id > 2)
+            .OrderBy(r => r.Id)
+            .Select(r => new
+            {
+                r.Id,
+                Total = DbContext.TestRows.Where(x => x.Id > 2).Count(),
+                Min = DbContext.TestRows.Where(x => x.Id > 2).Min(t => t.Col1),
+                Max = DbContext.TestRows.Where(x => x.Id > 2).Max(t => t.Id),
+                Average = DbContext.TestRows.Where(x => x.Id > 2).Average(t => t.Id),
+            });
+
+        var result = query.ToList();
+
+        var expected = TestRows
+            .Where(x => x.Id > 2)
+            .OrderBy(r => r.Id)
+            .Select(r => new
+            {
+                r.Id,
+                Total = TestRows.Where(x => x.Id > 2).Count(),
+                Min = TestRows.Where(x => x.Id > 2).Min(t => t.Col1),
+                Max = TestRows.Where(x => x.Id > 2).Max(t => t.Id),
+                Average = TestRows.Where(x => x.Id > 2).Average(t => t.Id),
+            });
+
+        await Assert.That(result.Select(x => (x.Id, x.Total, x.Min, x.Max, Math.Round(x.Average, 10))))
+            .IsEquivalentTo(expected.Select(x => (x.Id, x.Total, x.Min, x.Max, Math.Round(x.Average, 10))), CollectionOrdering.Matching);
+        await Verify(query.ToQueryString());
+    }
+
+    [Test]
+    public async Task AggregateOfOtherRowsIsLeftAsSubquery()
+    {
+        // The outer query drops rows the sum includes, which a window over the outer rows cannot see.
+        var query = DbContext.TestRows
+            .Where(x => x.Id > 2)
+            .OrderBy(r => r.Id)
+            .Select(r => new { r.Id, Total = DbContext.TestRows.Sum(t => t.Id) });
+
+        var result = query.ToList();
+
+        var expected = TestRows
+            .Where(x => x.Id > 2)
+            .OrderBy(r => r.Id)
+            .Select(r => new { r.Id, Total = TestRows.Sum(t => t.Id) });
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+        await Verify(query.ToQueryString());
+    }
+
+    [Test]
+    public async Task BareCountIsEvaluatedFirst()
+    {
+        // EF Core runs a Count() of a whole table as a query of its own before translating, and passes the number in as a
+        // parameter, so there is no subquery to rewrite.
+        var query = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => new { r.Id, Total = DbContext.TestRows.Count() });
+
+        var result = query.ToList();
+
+        var expected = TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => new { r.Id, Total = TestRows.Length });
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+        await Verify(query.ToQueryString());
+    }
 }
