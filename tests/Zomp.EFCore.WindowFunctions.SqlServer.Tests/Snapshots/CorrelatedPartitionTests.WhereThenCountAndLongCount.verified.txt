@@ -1,0 +1,9 @@
+﻿SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [TestRows] AS [t0]
+    WHERE [t].[Id] / 10 = [t0].[Id] / 10) AS [InGroup], (
+    SELECT COUNT_BIG(*)
+    FROM [TestRows] AS [t1]
+    WHERE [t1].[Id] / 10 = [t].[Id] / 10) AS [InGroupLong]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]

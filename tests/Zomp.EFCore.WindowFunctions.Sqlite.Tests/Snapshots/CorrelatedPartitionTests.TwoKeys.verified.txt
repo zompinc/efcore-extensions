@@ -1,0 +1,6 @@
+﻿SELECT "t"."Id", (
+    SELECT COUNT(*)
+    FROM "TestRows" AS "t0"
+    WHERE "t0"."Id" / 10 = "t"."Id" / 10 AND "t"."Id" % 2 = "t0"."Id" % 2) AS "InGroup"
+FROM "TestRows" AS "t"
+ORDER BY "t"."Id"
