@@ -43,4 +43,6 @@ public partial class GroupWindowTests : TestBase { }
 public partial class TakeWhileTests : TestBase { }
 
 public partial class CorrelatedPartitionTests : TestBase { }
+
+public partial class CorrelatedRunningTests : TestBase { }
 #pragma warning restore SA1402 // File may only contain a single type

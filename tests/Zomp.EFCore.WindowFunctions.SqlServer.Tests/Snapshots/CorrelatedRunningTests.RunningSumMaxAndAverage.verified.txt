@@ -1,0 +1,12 @@
+﻿SELECT [t].[Id], (
+    SELECT COALESCE(SUM([t0].[Id]), 0)
+    FROM [TestRows] AS [t0]
+    WHERE [t0].[Id] <= [t].[Id]) AS [RunningTotal], (
+    SELECT MAX([t1].[Col1])
+    FROM [TestRows] AS [t1]
+    WHERE [t1].[Id] <= [t].[Id]) AS [RunningMax], (
+    SELECT AVG(CAST([t2].[Id] AS float))
+    FROM [TestRows] AS [t2]
+    WHERE [t2].[Id] <= [t].[Id]) AS [RunningAverage]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]

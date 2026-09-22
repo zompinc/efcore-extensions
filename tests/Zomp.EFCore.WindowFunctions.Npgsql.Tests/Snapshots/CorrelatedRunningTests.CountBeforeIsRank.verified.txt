@@ -1,0 +1,9 @@
+﻿SELECT t."Id", (
+    SELECT count(*)::int
+    FROM "TestRows" AS t0
+    WHERE t0."Id" < t."Id") AS "Position", (
+    SELECT count(*)::int
+    FROM "TestRows" AS t1
+    WHERE t1."Id" / 10 < t."Id" / 10) + 1 AS "GroupRank"
+FROM "TestRows" AS t
+ORDER BY t."Id"

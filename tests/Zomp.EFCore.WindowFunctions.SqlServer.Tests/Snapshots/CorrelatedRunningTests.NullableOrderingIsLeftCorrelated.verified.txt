@@ -1,0 +1,6 @@
+﻿SELECT [t].[Id], (
+    SELECT COUNT(*)
+    FROM [TestRows] AS [t0]
+    WHERE [t0].[Col1] < [t].[Col1]) AS [Below]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]
