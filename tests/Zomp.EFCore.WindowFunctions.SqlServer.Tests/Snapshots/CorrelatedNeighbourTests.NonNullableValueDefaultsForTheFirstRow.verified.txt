@@ -1,11 +1,3 @@
-﻿SELECT [t].[Id], COALESCE((
-    SELECT TOP(1) [t0].[Id]
-    FROM [TestRows] AS [t0]
-    WHERE [t0].[Id] < [t].[Id]
-    ORDER BY [t0].[Id] DESC), 0) AS [PreviousId], COALESCE((
-    SELECT TOP(1) [t1].[Date]
-    FROM [TestRows] AS [t1]
-    WHERE [t].[Id] > [t1].[Id]
-    ORDER BY [t1].[Id] DESC), '0001-01-01T00:00:00.0000000') AS [PreviousDate]
+﻿SELECT [t].[Id], LAG([t].[Id], CAST(1 AS bigint)) OVER(ORDER BY [t].[Id]), LAG([t].[Date], CAST(1 AS bigint)) OVER(ORDER BY [t].[Id])
 FROM [TestRows] AS [t]
 ORDER BY [t].[Id]
