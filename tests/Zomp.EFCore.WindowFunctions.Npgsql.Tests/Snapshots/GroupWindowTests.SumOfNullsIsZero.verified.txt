@@ -1,0 +1,3 @@
+﻿SELECT t."Id", COALESCE(SUM(t."Col1"::bigint) OVER(PARTITION BY t."Col1" IS NULL ), 0)::int AS "Total"
+FROM "TestRows" AS t
+ORDER BY t."Id"
