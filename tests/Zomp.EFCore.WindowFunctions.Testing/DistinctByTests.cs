@@ -11,10 +11,11 @@ public partial class DistinctByTests
     [Test]
     public async Task FirstOfEachKey()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .DistinctBy(r => r.Id / 10)
-            .ToList();
+            .DistinctBy(r => r.Id / 10);
+
+        var result = query.ToList();
 
         var expected = TestRows
             .OrderBy(r => r.Id)
@@ -26,11 +27,12 @@ public partial class DistinctByTests
     [Test]
     public async Task FirstOfEachKeyDescending()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderByDescending(r => r.Id)
             .DistinctBy(r => r.Id / 10)
-            .Select(r => r.Id)
-            .ToList();
+            .Select(r => r.Id);
+
+        var result = query.ToList();
 
         var expected = TestRows
             .OrderByDescending(r => r.Id)
@@ -43,11 +45,12 @@ public partial class DistinctByTests
     [Test]
     public async Task CompositeKey()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
             .DistinctBy(r => new { Tens = r.Id / 10, Odd = r.Id % 2 })
-            .Select(r => r.Id)
-            .ToList();
+            .Select(r => r.Id);
+
+        var result = query.ToList();
 
         var expected = TestRows
             .OrderBy(r => r.Id)
@@ -61,11 +64,12 @@ public partial class DistinctByTests
     public async Task NullableKey()
     {
         // LINQ keeps one row for the null key, and PARTITION BY puts the nulls together.
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
             .DistinctBy(r => r.Col1 == null ? null : r.Col1 / 100)
-            .Select(r => r.Id)
-            .ToList();
+            .Select(r => r.Id);
+
+        var result = query.ToList();
 
         var expected = TestRows
             .OrderBy(r => r.Id)
@@ -78,13 +82,14 @@ public partial class DistinctByTests
     [Test]
     public async Task FilteredBeforeAndAfter()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .Where(r => r.Id > 2)
             .OrderBy(r => r.Id)
             .DistinctBy(r => r.Id / 10)
             .Where(r => r.Id > 5)
-            .Select(r => r.Id)
-            .ToList();
+            .Select(r => r.Id);
+
+        var result = query.ToList();
 
         var expected = TestRows
             .Where(r => r.Id > 2)
@@ -99,12 +104,13 @@ public partial class DistinctByTests
     [Test]
     public async Task TakeAfterDistinctBy()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderByDescending(r => r.Id)
             .DistinctBy(r => r.Id / 10)
             .Take(2)
-            .Select(r => r.Id)
-            .ToList();
+            .Select(r => r.Id);
+
+        var result = query.ToList();
 
         var expected = TestRows
             .OrderByDescending(r => r.Id)
@@ -119,10 +125,11 @@ public partial class DistinctByTests
     public async Task WithoutOrderBy()
     {
         // Without an ordering any row of each key may come first, so only the keys are certain.
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .DistinctBy(r => r.Id / 10)
-            .Select(r => r.Id / 10)
-            .ToList();
+            .Select(r => r.Id / 10);
+
+        var result = query.ToList();
 
         await Assert.That(result).IsEquivalentTo(TestRows.Select(r => r.Id / 10).Distinct());
     }
@@ -130,9 +137,10 @@ public partial class DistinctByTests
     [Test]
     public async Task CountOfKeys()
     {
-        var result = DbContext.TestRows
-            .DistinctBy(r => r.Id / 10)
-            .Count();
+        var query = DbContext.TestRows
+            .DistinctBy(r => r.Id / 10);
+
+        var result = query.Count();
 
         await Assert.That(result).IsEqualTo(TestRows.Select(r => r.Id / 10).Distinct().Count());
     }
