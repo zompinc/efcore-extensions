@@ -46,7 +46,7 @@ dotnet_diagnostic.CA1819.severity = none
 dotnet_diagnostic.CA1062.severity = none
 
 # Verify snapshots are written by the tool, as is
-[*.{received,verified}.txt]
+[*.{received,verified}.{txt,cs}]
 charset = utf-8-bom
 end_of_line = lf
 indent_size = unset
