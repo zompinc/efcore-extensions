@@ -93,10 +93,11 @@ public partial class RankTests
     [Test]
     public async Task NTileBasic()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.NTile(3, EF.Functions.Over().OrderBy(r.Id)))
-            .ToList();
+            .Select(r => EF.Functions.NTile(3, EF.Functions.Over().OrderBy(r.Id)));
+
+        var result = query.ToList();
 
         await Assert.That(result).IsEquivalentTo(NTiles(TestRows.Length, 3), CollectionOrdering.Matching);
     }
@@ -105,10 +106,11 @@ public partial class RankTests
     public async Task NTileWithPartitionAndVariable()
     {
         var buckets = 2;
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.NTile(buckets, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id)))
-            .ToList();
+            .Select(r => EF.Functions.NTile(buckets, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id)));
+
+        var result = query.ToList();
 
         var expected = TestRows
             .OrderBy(r => r.Id)
@@ -121,11 +123,12 @@ public partial class RankTests
     [Test]
     public async Task NTileWithWhere()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .Where(r => EF.Functions.NTile(2, EF.Functions.Over().OrderBy(r.Id)) == 1)
             .OrderBy(r => r.Id)
-            .Select(r => r.Id)
-            .ToList();
+            .Select(r => r.Id);
+
+        var result = query.ToList();
 
         var ordered = TestRows.OrderBy(r => r.Id).ToArray();
         var expected = NTiles(ordered.Length, 2).Zip(ordered).Where(p => p.First == 1).Select(p => p.Second.Id);
@@ -136,10 +139,11 @@ public partial class RankTests
     [Test]
     public async Task CumeDistBasic()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.CumeDist(EF.Functions.Over().OrderBy(r.Id / 10)))
-            .ToList();
+            .Select(r => EF.Functions.CumeDist(EF.Functions.Over().OrderBy(r.Id / 10)));
+
+        var result = query.ToList();
 
         var expected = TestRows
             .OrderBy(r => r.Id)
@@ -154,9 +158,10 @@ public partial class RankTests
         Skip.When(DbContext.IsSqlServer, "SQL Server requires ORDER BY for CUME_DIST");
 
         // Without ORDER BY every row is a peer of every other, so the distribution is 1 throughout.
-        var result = DbContext.TestRows
-            .Select(r => EF.Functions.CumeDist(EF.Functions.Over()))
-            .ToList();
+        var query = DbContext.TestRows
+            .Select(r => EF.Functions.CumeDist(EF.Functions.Over()));
+
+        var result = query.ToList();
 
         await Assert.That(result).IsEquivalentTo(TestRows.Select(_ => 1.0), CollectionOrdering.Matching);
     }

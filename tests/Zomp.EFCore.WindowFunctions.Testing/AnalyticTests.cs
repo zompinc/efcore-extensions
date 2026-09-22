@@ -109,10 +109,11 @@ public partial class AnalyticTests
     [Test]
     public async Task FirstValueWithPartition()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.FirstValue(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id)))
-            .ToList();
+            .Select(r => EF.Functions.FirstValue(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id)));
+
+        var result = query.ToList();
 
         var expected = TestRows
             .OrderBy(r => r.Id)
@@ -124,10 +125,11 @@ public partial class AnalyticTests
     [Test]
     public async Task LastValueToEndOfPartition()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.LastValue(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id).Rows().FromCurrentRow().ToUnbounded()))
-            .ToList();
+            .Select(r => EF.Functions.LastValue(r.Col1, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id).Rows().FromCurrentRow().ToUnbounded()));
+
+        var result = query.ToList();
 
         var expected = TestRows
             .OrderBy(r => r.Id)
@@ -140,10 +142,11 @@ public partial class AnalyticTests
     public async Task LastValueWithDefaultFrameIsCurrentRow()
     {
         // With ORDER BY the default frame ends at the current row, and Id has no peers.
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.LastValue(r.Col1, EF.Functions.Over().OrderBy(r.Id)))
-            .ToList();
+            .Select(r => EF.Functions.LastValue(r.Col1, EF.Functions.Over().OrderBy(r.Id)));
+
+        var result = query.ToList();
 
         await Assert.That(result).IsEquivalentTo(TestRows.OrderBy(r => r.Id).Select(r => r.Col1), CollectionOrdering.Matching);
     }
@@ -151,10 +154,11 @@ public partial class AnalyticTests
     [Test]
     public async Task FirstValueOfString()
     {
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.FirstValue(r.Id.ToString(), EF.Functions.Over().OrderByDescending(r.Id)))
-            .ToList();
+            .Select(r => EF.Functions.FirstValue(r.Id.ToString(), EF.Functions.Over().OrderByDescending(r.Id)));
+
+        var result = query.ToList();
 
         var last = TestRows.Max(r => r.Id).ToString(CultureInfo.InvariantCulture);
         await Assert.That(result).IsEquivalentTo(TestRows.Select(_ => (string?)last), CollectionOrdering.Matching);
@@ -165,10 +169,11 @@ public partial class AnalyticTests
     {
         Skip.When(DbContext.IsSqlServer, NoNthValueOnSqlServer);
 
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.NthValue(r.Col1, 2, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id).Rows().FromUnbounded().ToUnbounded()))
-            .ToList();
+            .Select(r => EF.Functions.NthValue(r.Col1, 2, EF.Functions.Over().PartitionBy(r.Id / 10).OrderBy(r.Id).Rows().FromUnbounded().ToUnbounded()));
+
+        var result = query.ToList();
 
         var expected = TestRows
             .OrderBy(r => r.Id)
@@ -183,10 +188,11 @@ public partial class AnalyticTests
         Skip.When(DbContext.IsSqlServer, NoNthValueOnSqlServer);
 
         // The default frame ends at the current row, so the first row has no second one yet.
-        var result = DbContext.TestRows
+        var query = DbContext.TestRows
             .OrderBy(r => r.Id)
-            .Select(r => EF.Functions.NthValue(r.Id, 2, EF.Functions.Over().OrderBy(r.Id)))
-            .ToList();
+            .Select(r => EF.Functions.NthValue(r.Id, 2, EF.Functions.Over().OrderBy(r.Id)));
+
+        var result = query.ToList();
 
         var ordered = TestRows.OrderBy(r => r.Id).ToArray();
         var expected = ordered.Select((_, i) => i == 0 ? null : (int?)ordered[1].Id);
@@ -199,7 +205,9 @@ public partial class AnalyticTests
     {
         Skip.Unless(DbContext.IsSqlServer, "Only SQL Server lacks NTH_VALUE");
 
-        await Assert.That(() => DbContext.TestRows.Select(r => EF.Functions.NthValue(r.Id, 2, EF.Functions.Over().OrderBy(r.Id))).ToList())
+        var query = DbContext.TestRows.Select(r => EF.Functions.NthValue(r.Id, 2, EF.Functions.Over().OrderBy(r.Id)));
+
+        await Assert.That(() => query.ToList())
             .Throws<InvalidOperationException>()
             .WithMessageContaining("SQL Server has no NTH_VALUE", StringComparison.Ordinal);
     }
