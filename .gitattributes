@@ -17,3 +17,6 @@
 *.resx text=auto
 *.xml text=auto
 *.txt text=auto
+
+# Verify snapshots are compared byte for byte
+*.verified.txt text eol=lf working-tree-encoding=UTF-8

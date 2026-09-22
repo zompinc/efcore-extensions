@@ -1,0 +1,10 @@
+﻿SELECT [t].[Id], [t].[Col1], [t].[Date], [t].[IdBytes], [t].[SomeGuid]
+FROM [TestRows] AS [t]
+WHERE [t].[Id] IN (
+    SELECT [t1].[Id]
+    FROM (
+        SELECT [t0].[Id], ROW_NUMBER() OVER(ORDER BY [t0].[Id]) AS [RowNumber]
+        FROM [TestRows] AS [t0]
+    ) AS [t1]
+    WHERE [t1].[RowNumber] = 1
+)

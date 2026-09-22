@@ -1,0 +1,6 @@
+﻿SELECT t0."Id", t0."Col1", t0."Date", t0."IdBytes", t0."SomeGuid"
+FROM (
+    SELECT t."Id", t."Col1", t."Date", t."IdBytes", t."SomeGuid", ROW_NUMBER() OVER(ORDER BY t."Id") AS "P0", ROW_NUMBER() OVER(ORDER BY t."Id") AS "P1"
+    FROM "TestRows" AS t
+) AS t0
+WHERE t0."P0" = 1 OR t0."P1" = 1

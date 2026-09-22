@@ -1,0 +1,9 @@
+﻿-- @p='3'
+SELECT t0."Id", MAX(t0."Id") OVER() AS "Max"
+FROM (
+    SELECT t."Id"
+    FROM "TestRows" AS t
+    ORDER BY t."Id"
+    LIMIT @p
+) AS t0
+ORDER BY t0."Id"

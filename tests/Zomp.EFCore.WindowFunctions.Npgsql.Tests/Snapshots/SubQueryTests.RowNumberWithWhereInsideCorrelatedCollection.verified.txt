@@ -1,0 +1,11 @@
+﻿SELECT t."Id", t2."Id"
+FROM "TestRows" AS t
+LEFT JOIN (
+    SELECT t1."Id"
+    FROM (
+        SELECT t0."Id", ROW_NUMBER() OVER(PARTITION BY t0."Id" / 10 ORDER BY t0."Id") AS "P0"
+        FROM "TestRows" AS t0
+    ) AS t1
+    WHERE t1."P0" = 1
+) AS t2 ON t."Id" = t2."Id"
+ORDER BY t."Id"

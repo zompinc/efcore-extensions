@@ -1,0 +1,6 @@
+﻿SELECT "t0"."Id" / 10
+FROM (
+    SELECT "t"."Id", CAST(ROW_NUMBER() OVER(PARTITION BY "t"."Id" / 10 ORDER BY (SELECT 1)) - 1 AS INTEGER) AS "Index"
+    FROM "TestRows" AS "t"
+) AS "t0"
+WHERE "t0"."Index" = 0

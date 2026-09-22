@@ -1,0 +1,6 @@
+﻿SELECT t0."Id", t0."Col1", t0."Date", t0."IdBytes", t0."SomeGuid"
+FROM (
+    SELECT t."Id", t."Col1", t."Date", t."IdBytes", t."SomeGuid", DENSE_RANK() OVER(ORDER BY t."Id" / 10) AS "P0"
+    FROM "TestRows" AS t
+) AS t0
+WHERE t0."P0" = 2

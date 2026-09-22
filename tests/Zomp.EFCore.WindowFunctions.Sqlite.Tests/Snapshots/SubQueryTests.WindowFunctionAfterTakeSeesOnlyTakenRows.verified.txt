@@ -1,0 +1,10 @@
+﻿.param set @p 3
+
+SELECT "t0"."Id", CAST(MAX("t0"."Id") OVER() AS INTEGER) AS "Max"
+FROM (
+    SELECT "t"."Id"
+    FROM "TestRows" AS "t"
+    ORDER BY "t"."Id"
+    LIMIT @p
+) AS "t0"
+ORDER BY "t0"."Id"

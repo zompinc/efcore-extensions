@@ -13,6 +13,8 @@ public partial class SubQueryTests
         var expected = TestRows.First();
 
         await Assert.That(result.Single()).IsEqualTo(expected, TestRowEqualityComparer.Default);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -25,6 +27,8 @@ public partial class SubQueryTests
         var expected = TestRows.First();
 
         await Assert.That(result).IsEqualTo(expected, TestRowEqualityComparer.Default);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -39,20 +43,24 @@ public partial class SubQueryTests
         var expected = TestRows.First();
 
         await Assert.That(result.Single()).IsEqualTo(expected, TestRowEqualityComparer.Default);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
-    public void NestedWindowFunctions()
+    public async Task NestedWindowFunctions()
     {
         var query = DbContext.TestRows
             .Select(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(
                 EF.Functions.Max(t.Id, EF.Functions.Over()))));
 
         var result = query.ToList();
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
-    public void DoubleNestedWindowFunctions()
+    public async Task DoubleNestedWindowFunctions()
     {
         var query = DbContext.TestRows
             .Select(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(
@@ -60,35 +68,43 @@ public partial class SubQueryTests
                     EF.Functions.Max(t.Id, EF.Functions.Over()), EF.Functions.Over()))));
 
         var result = query.ToList();
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
-    public void WindowFunctionsInOrderBy()
+    public async Task WindowFunctionsInOrderBy()
     {
         var query = DbContext.TestRows
             .OrderBy(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)));
 
         var result = query.ToList();
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
-    public void NestedWindowFunctionsInOrderBy()
+    public async Task NestedWindowFunctionsInOrderBy()
     {
         var query = DbContext.TestRows
             .OrderBy(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(
                 EF.Functions.Max(t.Id, EF.Functions.Over()))));
 
         var result = query.ToList();
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
-    public void WindowFunctionsInThenBy()
+    public async Task WindowFunctionsInThenBy()
     {
         var query = DbContext.TestRows
             .OrderByDescending(t => t.Id)
             .ThenBy(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)));
 
         var result = query.ToList();
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -105,16 +121,20 @@ public partial class SubQueryTests
         var expectedSequence = TestRows.OrderBy(t => t.Id / 10).ThenByDescending(t => t.Id);
 
         await Assert.That(result).IsEquivalentTo(expectedSequence, TestRowEqualityComparer.Default, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
-    public void NestedWindowFunctionsInWhere()
+    public async Task NestedWindowFunctionsInWhere()
     {
         var query = DbContext.TestRows
             .Where(t => EF.Functions.RowNumber(EF.Functions.Over().OrderBy(
                 EF.Functions.Max(t.Id, EF.Functions.Over()))) == 1);
 
         var result = query.ToList();
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -128,6 +148,8 @@ public partial class SubQueryTests
         var expectedSequence = TestRows.Where(t => t.Id / 10 == 1);
 
         await Assert.That(result).IsEquivalentTo(expectedSequence, TestRowEqualityComparer.Default, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -141,6 +163,8 @@ public partial class SubQueryTests
         var expected = TestRows.Last();
 
         await Assert.That(result.Single()).IsEqualTo(expected, TestRowEqualityComparer.Default);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -155,6 +179,8 @@ public partial class SubQueryTests
         var expected = TestRows.First();
 
         await Assert.That(result.Single().t).IsEqualTo(expected, TestRowEqualityComparer.Default);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -172,10 +198,12 @@ public partial class SubQueryTests
         var expected = TestRows.First();
 
         await Assert.That(result.Single()).IsEqualTo(expected, TestRowEqualityComparer.Default);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
-    public void Join()
+    public async Task Join()
     {
         var query = DbContext.TestRows.Join(
             DbContext.TestRows.Select(subRow => new
@@ -188,10 +216,12 @@ public partial class SubQueryTests
             (l, r) => new { r.Id, r.RowNumber });
 
         var queryStr = query.ToQueryString();
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
-    public void WhereDoesNotAffectPrecedingJoin()
+    public async Task WhereDoesNotAffectPrecedingJoin()
     {
         var query = DbContext.TestRows.Join(
             DbContext.TestRows.Select(subRow => new
@@ -205,6 +235,8 @@ public partial class SubQueryTests
             .Where(w => w.Id != -999);
 
         var queryStr = query.ToQueryString();
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -221,6 +253,8 @@ public partial class SubQueryTests
         var expected = TestRows.First();
 
         await Assert.That(result.Single()).IsEqualTo(expected, TestRowEqualityComparer.Default);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -241,6 +275,8 @@ public partial class SubQueryTests
             .Where(w => w.Id > 2);
 
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -268,6 +304,8 @@ public partial class SubQueryTests
 
         await Assert.That(result.Select(r => r.Id)).IsEquivalentTo(expectedSequence.Select(e => e.Id), CollectionOrdering.Matching);
         await Assert.That(result.Select(r => r.FirstOfTen)).IsEquivalentTo(expectedSequence.Select(e => e.FirstOfTen), CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -282,6 +320,8 @@ public partial class SubQueryTests
         var expected = Enumerable.Range(1, TestRows.Length).Average();
 
         await Assert.That(result).IsEqualTo(expected);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -293,6 +333,8 @@ public partial class SubQueryTests
         var result = query.Max(w => w.RowNumber);
 
         await Assert.That(result).IsEqualTo(TestRows.Length);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -312,6 +354,8 @@ public partial class SubQueryTests
             .OrderBy(g => g.Key);
 
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -331,6 +375,8 @@ public partial class SubQueryTests
             .Where(w => w.Id > 2);
 
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -346,6 +392,8 @@ public partial class SubQueryTests
         var expected = new { TestRows.OrderBy(t => t.Id).ElementAt(2).Id, RowNumber = 3L };
 
         await Assert.That(result.Single()).IsEqualTo(expected);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -360,6 +408,8 @@ public partial class SubQueryTests
         var expected = new { TestRows.OrderBy(t => t.Id).ElementAt(1).Id, RowNumber = 2L };
 
         await Assert.That(result).IsEqualTo(expected);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -377,6 +427,8 @@ public partial class SubQueryTests
         var expectedSequence = taken.Select(t => new { t.Id, Max = (int?)taken.Max(x => x.Id) });
 
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -393,6 +445,8 @@ public partial class SubQueryTests
             .Select((t, i) => new { t.Id, RowNumber = i + 1L });
 
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -412,6 +466,8 @@ public partial class SubQueryTests
             .Where(w => w.Id > 2);
 
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -430,6 +486,8 @@ public partial class SubQueryTests
             .Where(w => w.Id > 2);
 
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
 #if NET10_0_OR_GREATER
@@ -453,6 +511,8 @@ public partial class SubQueryTests
             .ThenBy(j => j.InnerId);
 
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 #endif
 }

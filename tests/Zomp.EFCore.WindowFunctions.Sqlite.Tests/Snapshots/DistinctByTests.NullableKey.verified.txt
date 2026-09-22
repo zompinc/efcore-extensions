@@ -1,0 +1,10 @@
+﻿SELECT "t0"."Id"
+FROM (
+    SELECT "t"."Id", CAST(ROW_NUMBER() OVER(PARTITION BY CASE
+        WHEN "t"."Col1" IS NULL THEN NULL
+        ELSE "t"."Col1" / 100
+    END ORDER BY "t"."Id") - 1 AS INTEGER) AS "Index"
+    FROM "TestRows" AS "t"
+) AS "t0"
+WHERE "t0"."Index" = 0
+ORDER BY "t0"."Id"

@@ -1,0 +1,2 @@
+﻿SELECT "t"."Id", "t"."Col1", "t"."Date", "t"."IdBytes", "t"."SomeGuid"
+FROM "TestRows" AS "t"

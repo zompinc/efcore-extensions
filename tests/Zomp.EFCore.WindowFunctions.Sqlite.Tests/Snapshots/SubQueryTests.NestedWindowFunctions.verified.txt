@@ -1,0 +1,8 @@
+﻿SELECT "t1"."P0"
+FROM (
+    SELECT ROW_NUMBER() OVER(ORDER BY "t0"."P0") AS "P0"
+    FROM (
+        SELECT CAST(MAX("t"."Id") OVER() AS INTEGER) AS "P0"
+        FROM "TestRows" AS "t"
+    ) AS "t0"
+) AS "t1"

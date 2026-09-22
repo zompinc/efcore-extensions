@@ -48,6 +48,7 @@
     <Project Path="tests/Zomp.EFCore.Combined.Sqlite.Tests/Zomp.EFCore.Combined.Sqlite.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.Combined.SqlServer.Tests/Zomp.EFCore.Combined.SqlServer.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.Testing/Zomp.EFCore.Testing.csproj" />
+    <Project Path="tests/Zomp.EFCore.WindowFunctions.Generators.Tests/Zomp.EFCore.WindowFunctions.Generators.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.Npgsql.Tests/Zomp.EFCore.WindowFunctions.Npgsql.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.Sqlite.Tests/Zomp.EFCore.WindowFunctions.Sqlite.Tests.csproj" />
     <Project Path="tests/Zomp.EFCore.WindowFunctions.SqlServer.Tests/Zomp.EFCore.WindowFunctions.SqlServer.Tests.csproj" />

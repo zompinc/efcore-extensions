@@ -1,0 +1,7 @@
+﻿SELECT t0."Id", t0."Col1", t0."Date", t0."IdBytes", t0."SomeGuid"
+FROM (
+    SELECT t."Id", t."Col1", t."Date", t."IdBytes", t."SomeGuid", CAST(ROW_NUMBER() OVER(ORDER BY t."Id") - 1 AS integer) AS "Index"
+    FROM "TestRows" AS t
+) AS t0
+WHERE t0."Index" % 2 = 0
+ORDER BY t0."Id"

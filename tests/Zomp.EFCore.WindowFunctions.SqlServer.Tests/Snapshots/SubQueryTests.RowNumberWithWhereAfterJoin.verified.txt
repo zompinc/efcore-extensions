@@ -1,0 +1,7 @@
+﻿SELECT [s].[Id], [s].[Col1], [s].[Date], [s].[IdBytes], [s].[SomeGuid]
+FROM (
+    SELECT [t].[Id], [t].[Col1], [t].[Date], [t].[IdBytes], [t].[SomeGuid], ROW_NUMBER() OVER(ORDER BY [t0].[Id]) AS [P0]
+    FROM [TestRows] AS [t]
+    INNER JOIN [TestRows] AS [t0] ON [t].[Id] = [t0].[Id]
+) AS [s]
+WHERE [s].[P0] = 1

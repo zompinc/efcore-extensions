@@ -22,6 +22,8 @@ public partial class DistinctByTests
             .DistinctBy(r => r.Id / 10);
 
         await Assert.That(result).IsEquivalentTo(expected, TestRowEqualityComparer.Default, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -40,6 +42,8 @@ public partial class DistinctByTests
             .Select(r => r.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -58,6 +62,8 @@ public partial class DistinctByTests
             .Select(r => r.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -77,6 +83,8 @@ public partial class DistinctByTests
             .Select(r => r.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -99,6 +107,8 @@ public partial class DistinctByTests
             .Select(r => r.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -119,6 +129,8 @@ public partial class DistinctByTests
             .Select(r => r.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -132,6 +144,8 @@ public partial class DistinctByTests
         var result = query.ToList();
 
         await Assert.That(result).IsEquivalentTo(TestRows.Select(r => r.Id / 10).Distinct());
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -143,5 +157,7 @@ public partial class DistinctByTests
         var result = query.Count();
 
         await Assert.That(result).IsEqualTo(TestRows.Select(r => r.Id / 10).Distinct().Count());
+
+        await Verify(query.ToQueryString());
     }
 }

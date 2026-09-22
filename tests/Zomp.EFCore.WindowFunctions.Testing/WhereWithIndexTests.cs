@@ -22,6 +22,8 @@ public partial class WhereWithIndexTests
             .Where((r, i) => i % 2 == 0);
 
         await Assert.That(result).IsEquivalentTo(expected, TestRowEqualityComparer.Default, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -42,6 +44,8 @@ public partial class WhereWithIndexTests
             .Select(r => r.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -62,6 +66,8 @@ public partial class WhereWithIndexTests
             .Select(r => r.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -82,6 +88,8 @@ public partial class WhereWithIndexTests
             .Select(r => r.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -100,6 +108,8 @@ public partial class WhereWithIndexTests
             .Select(r => r.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 
     [Test]
@@ -118,5 +128,7 @@ public partial class WhereWithIndexTests
             .Where((x, i) => i % 3 == 0);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
     }
 }

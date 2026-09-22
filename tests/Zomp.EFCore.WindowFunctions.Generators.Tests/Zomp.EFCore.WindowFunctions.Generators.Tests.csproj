@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Zomp.EFCore.WindowFunctions.Generators\Zomp.EFCore.WindowFunctions.Generators.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Declared for the database test projects, which reference Zomp.EFCore.Testing -->
+    <Using Remove="Microsoft.EntityFrameworkCore" />
+    <Using Remove="Microsoft.Extensions.Logging" />
+    <Using Remove="Zomp.EFCore.Testing" />
+    <Using Remove="Zomp.EFCore.Testing.TestFixture" />
+    <Using Include="Microsoft.CodeAnalysis" />
+    <Using Include="Microsoft.CodeAnalysis.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The snapshots are generated C#, kept out of the build -->
+    <Compile Remove="**\*.verified.cs;**\*.received.cs" />
+  </ItemGroup>
+</Project>

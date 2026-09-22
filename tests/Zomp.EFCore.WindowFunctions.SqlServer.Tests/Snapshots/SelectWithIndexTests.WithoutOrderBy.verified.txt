@@ -1,0 +1,2 @@
+﻿SELECT CAST(ROW_NUMBER() OVER(ORDER BY (SELECT 1)) - 1 AS int)
+FROM [TestRows] AS [t]

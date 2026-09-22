@@ -1,0 +1,9 @@
+﻿-- @p='2'
+SELECT t0."Id", ROW_NUMBER() OVER(ORDER BY t0."Id") AS "RowNumber"
+FROM (
+    SELECT t."Id"
+    FROM "TestRows" AS t
+    ORDER BY t."Id"
+    OFFSET @p
+) AS t0
+ORDER BY t0."Id"
