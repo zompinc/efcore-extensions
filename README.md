@@ -123,7 +123,7 @@ var query = dbContext.TestRows
 });
 ```
 
-### Select with an index
+### Select and Where with an index
 
 The index overload of `Select`, which EF Core does not translate ([dotnet/efcore#24218](https://github.com/dotnet/efcore/issues/24218)), becomes `ROW_NUMBER() - 1`, ordered like the rows reaching the `Select`:
 
@@ -138,6 +138,8 @@ SELECT [t].[Id], CAST(ROW_NUMBER() OVER(ORDER BY [t].[Col1]) - 1 AS int) + 1 AS 
 FROM [TestRows] AS [t]
 ORDER BY [t].[Col1]
 ```
+
+`Where((r, i) => ...)` is translated the same way, numbering the rows in a subquery and filtering on the number.
 
 Rows are numbered as LINQ numbers them: after a `Where` or `Skip` before the `Select`, and before a `Where` after it. Without an `OrderBy` the rows, and so the numbers, come in no defined order. Ties in the ordering are numbered in no defined order either, so order by something unique when the numbers matter.
 

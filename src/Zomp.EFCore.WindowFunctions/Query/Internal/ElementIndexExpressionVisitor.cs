@@ -1,20 +1,26 @@
 ﻿namespace Zomp.EFCore.WindowFunctions.Query.Internal;
 
 /// <summary>
-/// Rewrites Select with an element index, which EF Core does not translate, to Select with ROW_NUMBER() - 1 in place of the index.
-/// The window is ordered like the rows reaching the Select, by the OrderBy and ThenBy calls before it.
+/// Rewrites Select and Where with an element index, which EF Core does not translate, to use ROW_NUMBER() - 1 in place of the
+/// index. The window is ordered like the rows reaching the operator, by the OrderBy and ThenBy calls before it.
 /// </summary>
 /// <remarks>
 /// Has to run before <see cref="WindowFunctionProjectionDetector"/>, which then pushes the query into a subquery where a filter
-/// follows the Select or a row limit precedes it, so the rows are numbered as LINQ numbers them.
+/// follows the numbering or a row limit precedes it, so the rows are numbered as LINQ numbers them.
 /// </remarks>
-internal sealed class SelectWithIndexExpressionVisitor : ExpressionVisitor
+internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
 {
     private static readonly MethodInfo SelectMethod = typeof(Queryable).GetMethods()
         .Single(m => m.Name == nameof(Queryable.Select) && SelectorParameterCount(m) == 1);
 
     private static readonly MethodInfo SelectWithIndexMethod = typeof(Queryable).GetMethods()
         .Single(m => m.Name == nameof(Queryable.Select) && SelectorParameterCount(m) == 2);
+
+    private static readonly MethodInfo WhereMethod = typeof(Queryable).GetMethods()
+        .Single(m => m.Name == nameof(Queryable.Where) && SelectorParameterCount(m) == 1);
+
+    private static readonly MethodInfo WhereWithIndexMethod = typeof(Queryable).GetMethods()
+        .Single(m => m.Name == nameof(Queryable.Where) && SelectorParameterCount(m) == 2);
 
     private static readonly MethodInfo RowNumberMethod = typeof(DbFunctionsExtensions).GetMethods()
         .Single(m => m.Name == nameof(DbFunctionsExtensions.RowNumber) && !m.IsGenericMethod);
@@ -44,17 +50,60 @@ internal sealed class SelectWithIndexExpressionVisitor : ExpressionVisitor
         var visited = (MethodCallExpression)base.VisitMethodCall(node);
 
         if (!visited.Method.IsGenericMethod
-            || visited.Method.GetGenericMethodDefinition() != SelectWithIndexMethod
-            || visited.Arguments[1] is not UnaryExpression { NodeType: ExpressionType.Quote, Operand: LambdaExpression selector })
+            || visited.Arguments is not [var source, UnaryExpression { NodeType: ExpressionType.Quote, Operand: LambdaExpression lambda }])
         {
             return visited;
         }
 
-        (var source, selector) = FoldProjections(visited.Arguments[0], selector);
+        var method = visited.Method.GetGenericMethodDefinition();
+        return method == SelectWithIndexMethod ? RewriteSelect(source, lambda) ?? visited
+            : method == WhereWithIndexMethod ? RewriteWhere(source, lambda) ?? visited
+            : visited;
+    }
+
+    /// <summary>
+    /// Rewrites Where with an index to number the rows with Select with an index, filter them, and project the rows back out.
+    /// </summary>
+    private static MethodCallExpression? RewriteWhere(Expression source, LambdaExpression predicate)
+    {
+        var elementType = predicate.Parameters[0].Type;
+        var indexedType = typeof(IndexedElement<>).MakeGenericType(elementType);
+        var item = indexedType.GetProperty(nameof(IndexedElement<>.Item))!;
+        var indexProperty = indexedType.GetProperty(nameof(IndexedElement<>.Index))!;
+
+        var element = Expression.Parameter(elementType, "e");
+        var index = Expression.Parameter(typeof(int), "i");
+        var numbering = Expression.Lambda(
+            Expression.MemberInit(Expression.New(indexedType), Expression.Bind(item, element), Expression.Bind(indexProperty, index)),
+            element,
+            index);
+
+        if (RewriteSelect(source, numbering) is not { } numbered)
+        {
+            return null;
+        }
+
+        var indexed = Expression.Parameter(indexedType, "w");
+        var filter = new ReplacingExpressionVisitor(
+                [predicate.Parameters[0], predicate.Parameters[1]],
+                [Expression.Property(indexed, item), Expression.Property(indexed, indexProperty)])
+            .Visit(predicate.Body);
+
+        var where = Expression.Call(WhereMethod.MakeGenericMethod(indexedType), numbered, Expression.Quote(Expression.Lambda(filter, indexed)));
+        return Expression.Call(
+            SelectMethod.MakeGenericMethod(indexedType, elementType),
+            where,
+            Expression.Quote(Expression.Lambda(Expression.Property(indexed, item), indexed)));
+    }
+
+    /// <returns>The rewritten Select, or <see langword="null"/> when the rows are ordered by something it cannot follow.</returns>
+    private static MethodCallExpression? RewriteSelect(Expression source, LambdaExpression selector)
+    {
+        (source, selector) = FoldProjections(source, selector);
         var element = selector.Parameters[0];
         if (Over(source, element) is not { } over)
         {
-            return visited;
+            return null;
         }
 
         var index = Expression.Convert(
