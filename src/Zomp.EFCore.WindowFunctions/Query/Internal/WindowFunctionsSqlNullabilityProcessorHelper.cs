@@ -6,6 +6,20 @@
 public static class WindowFunctionsSqlNullabilityProcessorHelper
 {
     /// <summary>
+    /// Window functions that return a value for every row. The others, such as SUM, MAX, LAG or FIRST_VALUE, return NULL
+    /// when there is no value to return, like a partition of nulls or the row before the first.
+    /// </summary>
+    private static readonly FrozenSet<string> NeverNull = FrozenSet.Create(
+        StringComparer.OrdinalIgnoreCase,
+        "COUNT",
+        "CUME_DIST",
+        "DENSE_RANK",
+        "NTILE",
+        "PERCENT_RANK",
+        "RANK",
+        "ROW_NUMBER");
+
+    /// <summary>
     /// Visits <see cref="WindowFunctionExpression" /> added by providers and computes its nullability.
     /// </summary>
     /// <param name="windowFunctionExpression">A window function expression to visit.</param>
@@ -17,7 +31,7 @@ public static class WindowFunctionsSqlNullabilityProcessorHelper
         Func<SqlExpression?, SqlExpression?> visit,
         out bool nullable)
     {
-        nullable = false;
+        nullable = !NeverNull.Contains(windowFunctionExpression.Function);
 
         SqlExpression[]? arguments = null;
         for (var i = 0; i < windowFunctionExpression.Arguments.Count; i++)

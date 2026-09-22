@@ -45,4 +45,32 @@ public partial class NullTests
         var expectedSequence = TestRows.Select(r => (int?)groups[r.Col1 == null ? 1 : 2]);
         await Assert.That(result.Select(r => r.Max)).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
+
+    [Test]
+    public async Task CoalesceOverPartitionOfNulls()
+    {
+        // MAX over the partition of rows with no Col1 is NULL, so the fallback applies there.
+        var query = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.Max(r.Col1, EF.Functions.Over().PartitionBy(r.Col1 == null)) ?? -1);
+
+        var result = query.ToList();
+
+        var max = TestRows.Max(r => r.Col1);
+        var expected = TestRows.OrderBy(r => r.Id).Select(r => r.Col1 == null ? -1 : max!.Value);
+
+        await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
+    }
+
+    [Test]
+    public async Task LagIsNullForTheFirstRow()
+    {
+        var query = DbContext.TestRows
+            .OrderBy(r => r.Id)
+            .Select(r => EF.Functions.Lag(r.Id, 1, EF.Functions.Over().OrderBy(r.Id)) == null);
+
+        var result = query.ToList();
+
+        await Assert.That(result).IsEquivalentTo(TestRows.Select((_, i) => i == 0), CollectionOrdering.Matching);
+    }
 }
