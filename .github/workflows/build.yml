@@ -25,10 +25,10 @@ jobs:
 
     services:
       mssql:
-        image: mcr.microsoft.com/mssql/server:2022-latest
+        image: mcr.microsoft.com/mssql/server:2025-latest
         env:
           ACCEPT_EULA: 1
-          SA_PASSWORD: P@ssw0rd
+          MSSQL_SA_PASSWORD: P@ssw0rd
         ports:
           - 31433:1433
       postgres:
