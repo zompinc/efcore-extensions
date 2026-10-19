@@ -105,10 +105,7 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
     private static bool ContainsWindowFunction(MethodCallExpression call)
     {
         var detector = new WindowFunctionDetectorInternal();
-
-        // Rows already in a subquery of their own, such as the inner rows of a join, compute their window functions there,
-        // whatever the query does with them afterwards.
-        foreach (var argument in call.Arguments.Skip(1).Where(a => a is not MethodCallExpression { Method.Name: nameof(DbFunctionsExtensions.AsSubQuery) }))
+        foreach (var argument in call.Arguments.Skip(1))
         {
             _ = detector.Visit(argument);
         }
@@ -153,7 +150,7 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
             && call.Arguments[0].Type.IsGenericType
             && typeof(IQueryable).IsAssignableFrom(call.Arguments[0].Type))
         {
-            if (call.Method.Name == nameof(DbFunctionsExtensions.AsSubQuery))
+            if (WindowFunctionsEvaluatableExpressionFilter.IsAsSubQuery(call.Method))
             {
                 return false;
             }
