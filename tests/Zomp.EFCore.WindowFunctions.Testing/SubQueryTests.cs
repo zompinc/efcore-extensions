@@ -490,6 +490,77 @@ public partial class SubQueryTests
         await Verify(query.ToQueryString());
     }
 
+    [Test]
+    public async Task OrderByNavigationAfterJoinOfNumberedRows()
+    {
+        // Pushing the projection into a subquery must leave the navigations of the outer query expandable.
+        var query = DbContext.TestRows
+            .Select(t => new { t.Id, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(t.Id)) })
+            .Join(DbContext.TestDetails, l => l.Id, d => d.RowId, (l, d) => new { l.RowNumber, Detail = d })
+            .OrderBy(x => x.Detail.Row.Col1)
+            .Select(x => new { x.Detail.Name, x.RowNumber });
+
+        var result = query.ToList();
+
+        var expectedSequence = TestRows
+            .OrderBy(t => t.Id)
+            .Select((t, i) => new { t.Id, RowNumber = i + 1L })
+            .Join(TestFixture.TestDetails, l => l.Id, d => d.RowId, (l, d) => new { l.RowNumber, Detail = d })
+            .OrderBy(x => TestRows.Single(t => t.Id == x.Detail.RowId).Col1)
+            .Select(x => new { x.Detail.Name, x.RowNumber });
+
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
+    }
+
+    [Test]
+    public async Task OrderByNavigationAfterFilteredWindowFunctionProjection()
+    {
+        // The filter pushes the projection into a subquery, and the navigation is read after that.
+        var query = DbContext.TestDetails
+            .Select(d => new { Detail = d, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(d.Id)) })
+            .Where(x => x.RowNumber > 1)
+            .OrderBy(x => x.Detail.Row.Col1)
+            .Select(x => new { x.Detail.Name, x.RowNumber });
+
+        var result = query.ToList();
+
+        var expectedSequence = TestFixture.TestDetails
+            .OrderBy(d => d.Id)
+            .Select((d, i) => new { Detail = d, RowNumber = i + 1L })
+            .Where(x => x.RowNumber > 1)
+            .OrderBy(x => TestRows.Single(t => t.Id == x.Detail.RowId).Col1)
+            .Select(x => new { x.Detail.Name, x.RowNumber });
+
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
+    }
+
+    [Test]
+    public async Task WhereOnNavigationAfterWindowFunctionProjection()
+    {
+        var query = DbContext.TestDetails
+            .Select(d => new { Detail = d, RowNumber = EF.Functions.RowNumber(EF.Functions.Over().OrderBy(d.Id)) })
+            .Where(x => x.Detail.Row.Col1 < 0)
+            .OrderBy(x => x.Detail.Id)
+            .Select(x => new { x.Detail.Name, x.RowNumber });
+
+        var result = query.ToList();
+
+        var expectedSequence = TestFixture.TestDetails
+            .OrderBy(d => d.Id)
+            .Select((d, i) => new { Detail = d, RowNumber = i + 1L })
+            .Where(x => TestRows.Single(t => t.Id == x.Detail.RowId).Col1 < 0)
+            .OrderBy(x => x.Detail.Id)
+            .Select(x => new { x.Detail.Name, x.RowNumber });
+
+        await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
+
+        await Verify(query.ToQueryString());
+    }
+
 #if NET10_0_OR_GREATER
     [Test]
     public async Task LeftJoinAfterWindowFunctionProjectionJoinsNumberedRows()
