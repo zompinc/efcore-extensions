@@ -7,6 +7,8 @@ public class TestDbContext : DbContext
 
     public DbSet<TestRow> TestRows { get; set; } = null!;
 
+    public DbSet<TestDetail> TestDetails { get; set; } = null!;
+
     public bool IsSqlServer => Database.ProviderName?.Contains("SqlServer", StringComparison.OrdinalIgnoreCase) ?? false;
 
     public bool IsPostgreSQL => Database.ProviderName?.Contains("PostgreSQL", StringComparison.OrdinalIgnoreCase) ?? false;
@@ -23,7 +25,10 @@ public class TestDbContext : DbContext
 
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-        => _ = modelBuilder.Entity<TestRow>().Property(x => x.Id).ValueGeneratedNever();
+    {
+        _ = modelBuilder.Entity<TestRow>().Property(x => x.Id).ValueGeneratedNever();
+        _ = modelBuilder.Entity<TestDetail>().Property(x => x.Id).ValueGeneratedNever();
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
