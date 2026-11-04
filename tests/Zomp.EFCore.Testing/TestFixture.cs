@@ -11,6 +11,11 @@ public class TestFixture
     /// </remarks>
     public static ImmutableArray<TestRow> TestRows { get; } = CreateTestRows();
 
+    /// <summary>
+    /// Gets the detail rows, each pointing at a row of <see cref="TestRows"/>.
+    /// </summary>
+    public static ImmutableArray<TestDetail> TestDetails { get; } = CreateTestDetails();
+
     public TestDbContext? TestDBContext { get; set; }
 
     /// <summary>
@@ -24,6 +29,7 @@ public class TestFixture
         _ = await TestDBContext.Database.EnsureCreatedAsync();
 
         await TestDBContext.AddRangeAsync(TestRows);
+        await TestDBContext.AddRangeAsync(TestDetails);
 
         _ = await TestDBContext.SaveChangesAsync();
     }
@@ -52,5 +58,14 @@ public class TestFixture
             new(17, null, new("5c3330cd-a93b-4d6f-b31c-efb735315993"), new(2022, 01, 07), [0, 17]),
             new(19, null, new("e1c5f8f1-18ca-423d-a35e-b9c54f6897d4"), new(2022, 01, 08), [0, 19]),
             new(23, 1759, new("d288c0f2-b2a2-4eef-98cc-1f4726f1277c"), new(2022, 01, 09), [0, 23]),
+        ];
+
+    // Ordering these by Col1 of the row they point at gives a different order than by their own id.
+    private static ImmutableArray<TestDetail> CreateTestDetails() =>
+        [
+            new(1, 3, "three"),
+            new(2, 5, "five"),
+            new(3, 13, "thirteen"),
+            new(4, 23, "twenty-three"),
         ];
 }
