@@ -195,6 +195,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # required to create the tag and GitHub Release
+      id-token: write # required for the OIDC token NuGet trusted publishing exchanges for a push key
     defaults:
       run:
         shell: bash
@@ -218,9 +219,18 @@ jobs:
         env:
           MYGET_PUSH_KEY: ${{ secrets.MYGET_PUSH_KEY }}
 
+      # The trusted publishing policy on nuget.org belongs to this user and allows this
+      # workflow to push Zomp.EFCore.*. The key it returns lives for about an hour.
+      - name: Log in to NuGet
+        id: nuget-login
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
+        uses: NuGet/login@v1
+        with:
+          user: virzak
+
       - name: Push to NuGet
         if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
-        run: dotnet nuget push packages/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
+        run: dotnet nuget push packages/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
 
       # Every package shares one version, so it is read off the base package. The digit in
       # the pattern keeps Zomp.EFCore.WindowFunctions.SqlServer and its siblings out.
