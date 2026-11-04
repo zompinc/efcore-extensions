@@ -29,4 +29,10 @@ public static class WindowFunctionsEvaluatableExpressionFilter
         return expression is not MethodCallExpression { Method: var method }
             || !WindowFunctionMethods.Contains(method, CompareNameAndDeclaringType.Default);
     }
+
+    /// <summary>
+    /// Checks whether <paramref name="method"/> is <see cref="DbFunctionsExtensions.AsSubQuery{TEntity}"/>, for any entity type.
+    /// </summary>
+    internal static bool IsAsSubQuery(MethodInfo method)
+        => method.IsGenericMethod && method.GetGenericMethodDefinition() == AsSubQueryMethod;
 }
