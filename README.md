@@ -218,7 +218,7 @@ The subquery must read the same rows as the outer query, with the same filters, 
 
 ### Experimental APIs
 
-Window functions used inside `Where`, a join or another window function are pushed down into a subquery automatically. `AsSubQuery()` forces the pushdown where nothing detects the need for it:
+Window functions used inside `Where`, a join, an aggregate or another window function are pushed down into a subquery automatically, and so is a projection with a window function that is filtered afterwards, so the rows are numbered before they are filtered, as in LINQ. `AsSubQuery()` forces the pushdown where nothing detects the need for it:
 
 ```cs
 var query = dbContext.TestRows
@@ -231,7 +231,9 @@ var query = dbContext.TestRows
 .Where(r => r.Id > 2);
 ```
 
-Without the call EF Core applies the filter first and the rows are numbered from 1 after filtering. It also works without any window function, for instance to stop a projected subquery from being repeated in a later `Where` ([dotnet/efcore#20291](https://github.com/dotnet/efcore/issues/20291)).
+Here the call is redundant, since the filter after the numbering is detected. It also works without any window function, for instance to stop a projected subquery from being repeated in a later `Where` ([dotnet/efcore#20291](https://github.com/dotnet/efcore/issues/20291)).
+
+After the subquery boundary, EF Core does not expand a navigation read through a member of the projection, such as `.Where(x => x.Detail.Row.Col1 > 0)` after `.Select(d => new { Detail = d, ... })`, and rejects the query as an unmapped member. Read the navigation inside the projection instead.
 
 `AsSubQuery()` is marked `[Experimental]` and may be removed once EF Core no longer needs the hint. Opt in by suppressing `ZOMPEF001`:
 
