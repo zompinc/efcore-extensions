@@ -150,7 +150,7 @@ internal sealed class WindowFunctionProjectionDetector : ExpressionVisitor
             && call.Arguments[0].Type.IsGenericType
             && typeof(IQueryable).IsAssignableFrom(call.Arguments[0].Type))
         {
-            if (call.Method.Name == nameof(DbFunctionsExtensions.AsSubQuery))
+            if (WindowFunctionsEvaluatableExpressionFilter.IsAsSubQuery(call.Method))
             {
                 return false;
             }

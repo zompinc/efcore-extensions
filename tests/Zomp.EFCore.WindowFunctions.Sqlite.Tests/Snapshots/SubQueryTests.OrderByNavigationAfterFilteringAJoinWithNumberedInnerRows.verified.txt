@@ -1,0 +1,9 @@
+﻿SELECT "t"."Name", "t1"."RowNumber"
+FROM "TestDetails" AS "t"
+INNER JOIN (
+    SELECT "t0"."Id", ROW_NUMBER() OVER(ORDER BY "t0"."Id") AS "RowNumber"
+    FROM "TestDetails" AS "t0"
+) AS "t1" ON "t"."Id" = "t1"."Id"
+INNER JOIN "TestRows" AS "t2" ON "t"."RowId" = "t2"."Id"
+WHERE "t1"."RowNumber" > 1
+ORDER BY "t2"."Col1"
