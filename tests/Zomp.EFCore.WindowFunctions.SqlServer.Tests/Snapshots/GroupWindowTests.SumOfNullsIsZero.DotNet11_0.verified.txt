@@ -1,0 +1,6 @@
+﻿SELECT [t].[Id], CAST(COALESCE(SUM(CAST([t].[Col1] AS bigint)) OVER(PARTITION BY CASE
+    WHEN [t].[Col1] IS NULL THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END ), 0) AS int) AS [Total]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]

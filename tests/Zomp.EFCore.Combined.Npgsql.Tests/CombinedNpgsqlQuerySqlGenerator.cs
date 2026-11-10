@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Query;
-#if !EF_CORE_7 && !EF_CORE_6
 using Microsoft.EntityFrameworkCore.Storage;
-#endif
 using Zomp.EFCore.BinaryFunctions.Npgsql.Query.Internal;
 using Zomp.EFCore.WindowFunctions.Query.Internal;
 using Zomp.EFCore.WindowFunctions.Query.SqlExpressions;
@@ -20,6 +18,7 @@ public class CombinedNpgsqlQuerySqlGenerator : BinaryNpgsqlQuerySqlGenerator
     {
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1725:Parameter names should match base declaration", Justification = "EF Core 11 renamed the base parameter; one name serves both")]
     protected override Expression VisitExtension(Expression extensionExpression)
         => extensionExpression switch
         {

@@ -85,7 +85,7 @@ public partial class GroupWindowTests
             .OrderBy(x => x.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]
@@ -118,7 +118,7 @@ public partial class GroupWindowTests
             .OrderBy(x => x.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]
@@ -138,7 +138,7 @@ public partial class GroupWindowTests
             .OrderBy(x => x.Id);
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]

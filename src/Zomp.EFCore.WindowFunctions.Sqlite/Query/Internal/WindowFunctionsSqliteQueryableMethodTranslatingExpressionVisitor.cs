@@ -14,11 +14,7 @@ public class WindowFunctionsSqliteQueryableMethodTranslatingExpressionVisitor : 
     public WindowFunctionsSqliteQueryableMethodTranslatingExpressionVisitor(
         QueryableMethodTranslatingExpressionVisitorDependencies dependencies,
         RelationalQueryableMethodTranslatingExpressionVisitorDependencies relationalDependencies,
-#if !EF_CORE_8
         RelationalQueryCompilationContext queryCompilationContext)
-#else
-        QueryCompilationContext queryCompilationContext)
-#endif
         : base(dependencies, relationalDependencies, queryCompilationContext)
     {
     }
