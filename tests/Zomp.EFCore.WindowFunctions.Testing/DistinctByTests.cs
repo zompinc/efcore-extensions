@@ -84,7 +84,7 @@ public partial class DistinctByTests
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
 
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]
