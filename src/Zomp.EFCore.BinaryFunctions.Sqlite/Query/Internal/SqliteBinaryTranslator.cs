@@ -11,7 +11,11 @@
 public class SqliteBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelationalTypeMappingSource relationalTypeMappingSource) : BinaryTranslator(sqlExpressionFactory, relationalTypeMappingSource)
 {
     private static readonly bool[] OneArgumentPropagatesNullability = [true];
-    private static readonly bool[] PrintfArgumentsPropagateNullability = [false, true];
+
+    // printf prints NULL as 0 and hex(NULL) is an empty string, so neither returns NULL for a NULL argument.
+    // Claiming otherwise lets EF Core 11 drop the CASE that hands NULL on, and NULL comes back as bytes.
+    private static readonly bool[] OneArgumentSwallowsNull = [false];
+    private static readonly bool[] PrintfArgumentsPropagateNullability = [false, false];
 
     private readonly ISqlExpressionFactory sqlExpressionFactory = sqlExpressionFactory;
     private readonly RelationalTypeMapping? byteArrayTypeMapping = relationalTypeMappingSource.FindMapping(typeof(byte[]));
@@ -87,5 +91,5 @@ public class SqliteBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, 
     }
 
     private SqlExpression Hex(SqlExpression bytes)
-        => sqlExpressionFactory.Function("hex", [bytes], true, OneArgumentPropagatesNullability, typeof(string));
+        => sqlExpressionFactory.Function("hex", [bytes], true, OneArgumentSwallowsNull, typeof(string));
 }
