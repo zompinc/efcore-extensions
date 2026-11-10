@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Query;
-#if !EF_CORE_7 && !EF_CORE_6
 using Microsoft.EntityFrameworkCore.Storage;
-#endif
 using Zomp.EFCore.BinaryFunctions.Npgsql.Query.Internal;
 using Zomp.EFCore.WindowFunctions.Query.Internal;
 using Zomp.EFCore.WindowFunctions.Query.SqlExpressions;

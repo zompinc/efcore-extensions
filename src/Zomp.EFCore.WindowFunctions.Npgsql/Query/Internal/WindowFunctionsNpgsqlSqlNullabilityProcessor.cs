@@ -8,7 +8,6 @@
 /// </remarks>
 public class WindowFunctionsNpgsqlSqlNullabilityProcessor : NpgsqlSqlNullabilityProcessor
 {
-#if !EF_CORE_8
     /// <summary>
     /// Initializes a new instance of the <see cref="WindowFunctionsNpgsqlSqlNullabilityProcessor"/> class.
     /// </summary>
@@ -19,18 +18,6 @@ public class WindowFunctionsNpgsqlSqlNullabilityProcessor : NpgsqlSqlNullability
         : base(dependencies, parameters)
     {
     }
-#else
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsNpgsqlSqlNullabilityProcessor"/> class.
-    /// </summary>
-    /// <param name="dependencies">Relational Parameter Based Sql Processor Dependencies.</param>
-    /// <param name="useRelationalNulls">A bool value indicating if relational nulls should be used.</param>
-    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "EF Core 8")]
-    public WindowFunctionsNpgsqlSqlNullabilityProcessor(RelationalParameterBasedSqlProcessorDependencies dependencies, bool useRelationalNulls)
-        : base(dependencies, useRelationalNulls)
-    {
-    }
-#endif
 
     /// <inheritdoc/>
     protected override SqlExpression VisitCustomSqlExpression(SqlExpression sqlExpression, bool allowOptimizedExpansion, out bool nullable)

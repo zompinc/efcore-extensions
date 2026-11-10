@@ -92,19 +92,11 @@ public class BinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, IRelat
             Substring(
                 sqlExpression,
                 offset,
-#if !EF_CORE_8
                 new SqlConstantExpression(Marshal.SizeOf(type), null)),
-#else
-                new SqlConstantExpression(Expression.Constant(Marshal.SizeOf(type)), null)),
-#endif
             type);
 
     private
-#if !EF_CORE_8
         SqlExpression
-#else
-        SqlFunctionExpression
-#endif
         Substring(SqlExpression bytearray, SqlExpression start, SqlExpression length) => sqlExpressionFactory.Function(
             "SUBSTRING",
             [

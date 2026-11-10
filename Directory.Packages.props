@@ -1,13 +1,5 @@
 <Project>
-  <PropertyGroup Condition="$(DefineConstants.Contains(EF_CORE_8))">
-    <NetRuntime>8.0.11</NetRuntime>
-    <NpgsqlVersion>8.0.10</NpgsqlVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_8)) and $(DefineConstants.Contains(EF_CORE_9))">
-    <NetRuntime>9.0.0</NetRuntime>
-    <NpgsqlVersion>9.0.2</NpgsqlVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="!$(DefineConstants.Contains(EF_CORE_8)) and !$(DefineConstants.Contains(EF_CORE_9))">
+  <PropertyGroup>
     <NetRuntime>10.0.0</NetRuntime>
     <NpgsqlVersion>10.0.0</NpgsqlVersion>
   </PropertyGroup>
