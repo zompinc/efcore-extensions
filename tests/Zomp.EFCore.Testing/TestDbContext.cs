@@ -41,7 +41,9 @@ public class TestDbContext : DbContext
     private static string GetConnectionString(string? connectionTemplate, string defaultTemplate, string databaseName)
     {
         var connectionString = connectionTemplate ?? defaultTemplate;
-        return string.Format(connectionString, databaseName);
+
+        // dotnet test runs every target framework of a project at once, each creating the database afresh.
+        return string.Format(connectionString, $"{databaseName}_net{Environment.Version.Major}");
     }
 
     private static TestSettings GetSettings()
