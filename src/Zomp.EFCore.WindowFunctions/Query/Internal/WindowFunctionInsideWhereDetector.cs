@@ -39,7 +39,8 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
             _ = clauseStack.Pop();
         }
 
-        SubqueryType? subqueryType = node.Method.DeclaringType != typeof(Queryable) ? null
+        SubqueryType? subqueryType = node.Method.DeclaringType != typeof(Queryable)
+            ? null
             : node.Method.Name switch
             {
                 nameof(Queryable.Where) => SubqueryType.Where,
@@ -52,7 +53,8 @@ public class WindowFunctionInsideWhereDetector : ExpressionVisitor
             };
 
         var wfNode = WindowFunctionsEvaluatableExpressionFilter.WindowFunctionMethods.Contains(node.Method, CompareNameAndDeclaringType.Default)
-            ? node : null;
+            ? node
+            : null;
 
         _ = clauseStack.TryPeek(out var clause);
 

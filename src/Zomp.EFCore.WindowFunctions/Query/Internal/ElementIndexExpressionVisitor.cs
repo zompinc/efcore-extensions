@@ -50,12 +50,13 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
         }
 
         var method = visited.Method.GetGenericMethodDefinition();
-        return method == SelectWithIndexMethod ? RewriteSelect(source, lambda) ?? visited
-            : method == WhereWithIndexMethod ? RewriteWhere(source, lambda) ?? visited
-            : method == DistinctByMethod ? RewriteDistinctBy(source, lambda) ?? visited
-            : method == TakeWhileMethod ? RewriteWhile(source, lambda, take: true) ?? visited
-            : method == SkipWhileMethod ? RewriteWhile(source, lambda, take: false) ?? visited
-            : visited;
+        var rewritten = method == SelectWithIndexMethod ? RewriteSelect(source, lambda) :
+                        method == WhereWithIndexMethod ? RewriteWhere(source, lambda) :
+                        method == DistinctByMethod ? RewriteDistinctBy(source, lambda) :
+                        method == TakeWhileMethod ? RewriteWhile(source, lambda, take: true) :
+                        method == SkipWhileMethod ? RewriteWhile(source, lambda, take: false) :
+                        null;
+        return rewritten ?? visited;
     }
 
     /// <summary>
@@ -229,9 +230,10 @@ internal sealed class ElementIndexExpressionVisitor : ExpressionVisitor
             {
                 var call = operators[i];
                 var method = call.Method.GetGenericMethodDefinition().MakeGenericMethod(element.Type);
-                folded = Expression.Call(method, [folded, .. call.Arguments.Skip(1).Select(a => a is UnaryExpression { Operand: LambdaExpression predicate }
+                var arguments = call.Arguments.Skip(1).Select(a => a is UnaryExpression { Operand: LambdaExpression predicate }
                     ? Expression.Quote(Expression.Lambda(ReplacingExpressionVisitor.Replace(predicate.Parameters[0], projection.Body, predicate.Body), element))
-                    : a)]);
+                    : a);
+                folded = Expression.Call(method, [folded, .. arguments]);
             }
 
             source = folded;

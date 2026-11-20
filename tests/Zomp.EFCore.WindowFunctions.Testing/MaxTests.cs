@@ -67,10 +67,9 @@ public partial class MaxTests
 
         var maxId = TestRows.Max(r => r.Id);
         var expectedSequence = TestRows
-            .Select((_, i)
-            => (int?)(i < TestRows.Length - 1
-            ? Math.Max(TestRows[i].Id, TestRows[i + 1].Id)
-            : TestRows[i].Id));
+            .Select((_, i) => (int?)(i < TestRows.Length - 1
+                ? Math.Max(TestRows[i].Id, TestRows[i + 1].Id)
+                : TestRows[i].Id));
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
@@ -83,10 +82,9 @@ public partial class MaxTests
         var result = query.ToList();
 
         var expectedSequence = TestRows
-            .Select((_, i)
-            => i == 0 ? (int?)null
-            : i == 1 ? TestRows[0].Id
-            : Math.Max(TestRows[i - 2].Id, TestRows[i - 1].Id));
+            .Select((_, i) => i == 0 ? (int?)null :
+                              i == 1 ? TestRows[0].Id :
+                              Math.Max(TestRows[i - 2].Id, TestRows[i - 1].Id));
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 
@@ -99,10 +97,9 @@ public partial class MaxTests
         var result = query.ToList();
 
         var expectedSequence = TestRows
-            .Select((_, i)
-            => i < TestRows.Length - 2
-            ? Math.Max(TestRows[i + 1].Id, TestRows[i + 2].Id)
-            : i < TestRows.Length - 1 ? TestRows[i + 1].Id : (int?)null);
+            .Select((_, i) => i < TestRows.Length - 2
+                ? Math.Max(TestRows[i + 1].Id, TestRows[i + 2].Id)
+                : i < TestRows.Length - 1 ? TestRows[i + 1].Id : (int?)null);
         await Assert.That(result).IsEquivalentTo(expectedSequence, CollectionOrdering.Matching);
     }
 

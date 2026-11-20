@@ -30,8 +30,8 @@ internal sealed class GroupWindowExpressionVisitor : ExpressionVisitor
             && visited.Arguments is [MethodCallExpression { Method.IsGenericMethod: true } groupBy, UnaryExpression { Operand: LambdaExpression selector }]
             && groupBy.Method.GetGenericMethodDefinition() == GroupByMethod
             && groupBy.Arguments[1] is UnaryExpression { Operand: LambdaExpression key }
-            ? Rewrite(groupBy.Arguments[0], key, selector) ?? visited
-            : visited;
+                ? Rewrite(groupBy.Arguments[0], key, selector) ?? visited
+                : visited;
     }
 
     /// <returns>The rewritten query, or <see langword="null"/> when the group is used in a way a window cannot express.</returns>
@@ -83,10 +83,12 @@ internal sealed class GroupWindowExpressionVisitor : ExpressionVisitor
         var replacer = new GroupReplacer(group, element, key, OverClauseBuilder.Build(element, key, [], requireOrderBy: false));
         result = replacer.Visit(result);
 
-        return replacer.Unsupported ? null : Expression.Call(
-            SelectMethod.MakeGenericMethod(element.Type, result.Type),
-            source,
-            Expression.Quote(Expression.Lambda(result, element)));
+        return replacer.Unsupported
+            ? null
+            : Expression.Call(
+                SelectMethod.MakeGenericMethod(element.Type, result.Type),
+                source,
+                Expression.Quote(Expression.Lambda(result, element)));
     }
 
     private static int SelectorParameterCount(MethodInfo method)

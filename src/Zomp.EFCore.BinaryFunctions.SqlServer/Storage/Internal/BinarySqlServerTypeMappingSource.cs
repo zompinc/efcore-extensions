@@ -38,10 +38,9 @@ public class BinarySqlServerTypeMappingSource : SqlServerTypeMappingSource
 
         var clrType = underlyingMapping.ClrType;
 
-        var fixedSize
-            = clrType == typeof(DateTime) ? 9
-            : clrType == typeof(bool) ? 1
-            : Marshal.SizeOf(clrType);
+        var fixedSize = clrType == typeof(DateTime) ? 9 :
+                        clrType == typeof(bool) ? 1 :
+                        Marshal.SizeOf(clrType);
         return new SqlServerByteArrayTypeMapping(size: fixedSize, fixedLength: true);
     }
 }

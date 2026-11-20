@@ -5,8 +5,8 @@ public class TestRowEqualityComparer : IEqualityComparer<TestRow>
     public static TestRowEqualityComparer Default { get; } = new();
 
     public bool Equals(TestRow? x, TestRow? y) => x is null || y is null
-            ? x is null && y is null
-            : x.Id == y.Id
+        ? x is null && y is null
+        : x.Id == y.Id
             && x.Col1 == y.Col1
             && x.SomeGuid == y.SomeGuid
             && x.Date == y.Date

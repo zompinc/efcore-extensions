@@ -12,9 +12,7 @@ public class BinarySqliteTypeMappingSource(TypeMappingSourceDependencies depende
 {
     /// <inheritdoc/>
     protected override RelationalTypeMapping? FindMapping(in RelationalTypeMappingInfo mappingInfo)
-        => mappingInfo.ClrType is not { } type
-            || !type.IsGenericType
-            || type.GetGenericTypeDefinition() != typeof(FixedByteArray<>)
-            ? base.FindMapping(mappingInfo)
-            : ((IRelationalTypeMappingSource)this).FindMapping(typeof(byte[]));
+        => mappingInfo.ClrType is { IsGenericType: true } type && type.GetGenericTypeDefinition() == typeof(FixedByteArray<>)
+            ? ((IRelationalTypeMappingSource)this).FindMapping(typeof(byte[]))
+            : base.FindMapping(mappingInfo);
 }

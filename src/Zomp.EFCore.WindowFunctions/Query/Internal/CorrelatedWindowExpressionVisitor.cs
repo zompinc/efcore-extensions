@@ -378,17 +378,19 @@ internal sealed class CorrelatedWindowExpressionVisitor(IModel model) : Expressi
                 _ => (null, null, false),
             };
 
-            return otherSide is null
-                || !ExpressionEqualityComparer.Instance.Equals(ReplacingExpressionVisitor.Replace(other, row, otherSide), rowSide)
-                ? null
-                : (rowSide, (comparison.NodeType, flipped) switch
-                {
-                    (ExpressionType.LessThan, true) => ExpressionType.GreaterThan,
-                    (ExpressionType.LessThanOrEqual, true) => ExpressionType.GreaterThanOrEqual,
-                    (ExpressionType.GreaterThan, true) => ExpressionType.LessThan,
-                    (ExpressionType.GreaterThanOrEqual, true) => ExpressionType.LessThanOrEqual,
-                    (var type, _) => type,
-                });
+            if (otherSide is null || !ExpressionEqualityComparer.Instance.Equals(ReplacingExpressionVisitor.Replace(other, row, otherSide), rowSide))
+            {
+                return null;
+            }
+
+            return (rowSide, (comparison.NodeType, flipped) switch
+            {
+                (ExpressionType.LessThan, true) => ExpressionType.GreaterThan,
+                (ExpressionType.LessThanOrEqual, true) => ExpressionType.GreaterThanOrEqual,
+                (ExpressionType.GreaterThan, true) => ExpressionType.LessThan,
+                (ExpressionType.GreaterThanOrEqual, true) => ExpressionType.LessThanOrEqual,
+                (var type, _) => type,
+            });
         }
     }
 
