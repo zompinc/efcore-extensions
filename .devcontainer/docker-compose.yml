@@ -46,12 +46,12 @@ services:
       - postgres
 
   sql-server:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2025-latest
     restart: unless-stopped
     ports:
       - 62433:1433
     environment:
-      SA_PASSWORD: P@ssw0rd
+      MSSQL_SA_PASSWORD: P@ssw0rd
       ACCEPT_EULA: Y
 
 x-podman:
