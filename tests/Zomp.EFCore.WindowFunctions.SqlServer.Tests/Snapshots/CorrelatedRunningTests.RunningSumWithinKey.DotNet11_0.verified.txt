@@ -1,0 +1,3 @@
+﻿SELECT [t].[Id], CAST(COALESCE(SUM(CAST([t].[Id] AS bigint)) OVER(PARTITION BY [t].[Id] / 10 ORDER BY [t].[Id]), 0) AS int) AS [RunningTotal]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]

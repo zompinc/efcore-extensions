@@ -141,10 +141,8 @@ public class WindowFunctionExpression : SqlExpression
         return hash.ToHashCode();
     }
 
-#if !EF_CORE_8
     /// <inheritdoc/>
     public override Expression Quote() => throw new NotImplementedException();
-#endif
 
     /// <inheritdoc />
     protected override Expression VisitChildren(ExpressionVisitor visitor)
@@ -199,8 +197,7 @@ public class WindowFunctionExpression : SqlExpression
 
         if (NullHandling is { } nullHandling)
         {
-            _ = expressionPrinter.Append(nullHandling == WindowFunctions.NullHandling.RespectNulls
-                ? "RESPECT NULLS " : "IGNORE NULLS ");
+            _ = expressionPrinter.Append(nullHandling == WindowFunctions.NullHandling.RespectNulls ? "RESPECT NULLS " : "IGNORE NULLS ");
         }
 
         _ = expressionPrinter.Append("OVER(");
@@ -224,9 +221,9 @@ public class WindowFunctionExpression : SqlExpression
     }
 
     private static Type InferType(string function, IReadOnlyList<SqlExpression> arguments)
-        => arguments is [var e, ..] ? e.Type
-            : function.Equals(nameof(DbFunctionsExtensions.Count), StringComparison.OrdinalIgnoreCase) ? typeof(int)
-            : typeof(long);
+        => arguments is [var e, ..] ? e.Type :
+           function.Equals(nameof(DbFunctionsExtensions.Count), StringComparison.OrdinalIgnoreCase) ? typeof(int) :
+           typeof(long);
 
     private bool Equals(WindowFunctionExpression windowFunctionsExpression)
         => base.Equals(windowFunctionsExpression)

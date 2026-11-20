@@ -1,0 +1,3 @@
+﻿SELECT [t].[Id], CAST(COALESCE(SUM(CAST([t].[Id] AS bigint)) OVER(PARTITION BY [t].[Id] / 10 ), 0) AS int) AS [Total], CAST(COALESCE(SUM(CAST([t].[Col1] AS bigint)) OVER(PARTITION BY [t].[Id] / 10 ), 0) AS int) AS [TotalCol1], MIN([t].[Col1]) OVER(PARTITION BY [t].[Id] / 10 ) AS [Min], MAX([t].[Id]) OVER(PARTITION BY [t].[Id] / 10 ) AS [Max]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]

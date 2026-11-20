@@ -42,8 +42,7 @@ public static class ExpressionVisitorExtensions
 
         if (windowFunctionExpression.NullHandling is { } nullHandling)
         {
-            _ = relationalCommandBuilder.Append(nullHandling == NullHandling.RespectNulls
-                ? "RESPECT NULLS " : "IGNORE NULLS ");
+            _ = relationalCommandBuilder.Append(nullHandling == NullHandling.RespectNulls ? "RESPECT NULLS " : "IGNORE NULLS ");
         }
 
         _ = relationalCommandBuilder.Append("OVER(");

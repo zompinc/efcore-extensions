@@ -74,15 +74,9 @@ public class NpgsqlBinaryTranslator(ISqlExpressionFactory sqlExpressionFactory, 
         var sizeOfType = Marshal.SizeOf(sqlExpression.Type);
 
         // Every byte is two characters in hex, thus multiply by 2
-#if !EF_CORE_8
         var byteSize = new SqlConstantExpression(sizeOfType * 2, null);
         var zero = new SqlConstantExpression("0", null);
         var hex = new SqlConstantExpression("hex", null);
-#else
-        var byteSize = new SqlConstantExpression(Expression.Constant(sizeOfType * 2), null);
-        var zero = new SqlConstantExpression(Expression.Constant("0"), null);
-        var hex = new SqlConstantExpression(Expression.Constant("hex"), null);
-#endif
         var lPad = sqlExpressionFactory.Function("LPAD", [toHex, byteSize, zero], true, LPadArgumentsPropagateNullability, typeof(string));
         var decode = sqlExpressionFactory.Function("decode", [lPad, hex], true, DecodeArgumentsPropagateNullabilityArray, typeof(string), byteArrayTypeMapping);
         return new SqlUnaryExpression(ExpressionType.Convert, decode, typeof(byte[]), byteArrayTypeMapping);

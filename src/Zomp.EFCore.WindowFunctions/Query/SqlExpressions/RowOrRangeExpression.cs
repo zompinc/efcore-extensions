@@ -45,10 +45,8 @@ public class RowOrRangeExpression(bool isRows, WindowFrame start, WindowFrame? e
         return hash.ToHashCode();
     }
 
-#if !EF_CORE_8
     /// <inheritdoc/>
     public override Expression Quote() => throw new NotImplementedException();
-#endif
 
     /// <inheritdoc/>
     protected override void Print(ExpressionPrinter expressionPrinter)

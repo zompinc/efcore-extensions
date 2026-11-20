@@ -88,6 +88,7 @@ jobs:
         with:
           dotnet-version: |
             10.0.x
+            11.0.x
 
       - uses: dotnet/nbgv@master
         id: nbgv
@@ -157,6 +158,7 @@ jobs:
         with:
           dotnet-version: |
             10.0.x
+            11.0.x
 
       - name: Sign
         env:
@@ -211,6 +213,7 @@ jobs:
         with:
           dotnet-version: |
             10.0.x
+            11.0.x
 
       - name: Push to MyGet
         if: ${{ env.MYGET_PUSH_KEY != '' }}

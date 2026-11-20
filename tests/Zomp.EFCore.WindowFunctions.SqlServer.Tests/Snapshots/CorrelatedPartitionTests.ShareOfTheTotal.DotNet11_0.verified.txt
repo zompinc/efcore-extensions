@@ -1,0 +1,3 @@
+﻿SELECT [t].[Id], CAST([t].[Id] AS float) / CAST(CAST(COALESCE(SUM(CAST([t].[Id] AS bigint)) OVER(), 0) AS int) AS float) AS [Share]
+FROM [TestRows] AS [t]
+ORDER BY [t].[Id]

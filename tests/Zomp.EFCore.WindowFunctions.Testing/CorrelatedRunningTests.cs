@@ -108,7 +108,7 @@ public partial class CorrelatedRunningTests
 
         await Assert.That(result.Select(x => (x.Id, x.RunningTotal, x.RunningMax, Math.Round(x.RunningAverage, 8))))
             .IsEquivalentTo(expected.Select(x => (x.Id, x.RunningTotal, x.RunningMax, Math.Round(x.RunningAverage, 8))), CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]
@@ -125,7 +125,7 @@ public partial class CorrelatedRunningTests
             .Select(r => new { r.Id, RunningTotal = TestRows.Where(t => t.Id / 10 == r.Id / 10 && r.Id >= t.Id).Sum(t => t.Id) });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]
@@ -161,6 +161,6 @@ public partial class CorrelatedRunningTests
             .Select(r => new { r.Id, Before = TestRows.Where(t => t.Id / 10 < r.Id / 10).Sum(t => t.Id) });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 }

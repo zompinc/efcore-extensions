@@ -14,9 +14,5 @@ public class WindowFunctionsSqliteQueryableMethodTranslatingExpressionVisitorFac
     /// <inheritdoc/>
     public override QueryableMethodTranslatingExpressionVisitor Create(QueryCompilationContext queryCompilationContext)
 
-#if !EF_CORE_8
         => new WindowFunctionsSqliteQueryableMethodTranslatingExpressionVisitor(dependencies, relationalDependencies, (RelationalQueryCompilationContext)queryCompilationContext);
-#else
-        => new WindowFunctionsSqliteQueryableMethodTranslatingExpressionVisitor(dependencies, relationalDependencies, queryCompilationContext);
-#endif
 }

@@ -16,6 +16,8 @@ public class WindowFunctionsSqliteQuerySqlGenerator : SqliteQuerySqlGenerator
     }
 
     /// <inheritdoc/>
+    [SuppressMessage("Naming", "CA1725:Parameter names should match base declaration", Justification = "EF Core 11 renamed the base parameter; one name serves both")]
+    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1315:Parameter names should match inherited names", Justification = "EF Core 11 renamed the base parameter; one name serves both")]
     protected override Expression VisitExtension(Expression extensionExpression)
         => extensionExpression switch
         {

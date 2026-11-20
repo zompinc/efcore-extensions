@@ -51,7 +51,7 @@ public partial class CorrelatedPartitionTests
             });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]
@@ -82,7 +82,7 @@ public partial class CorrelatedPartitionTests
             });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]
@@ -127,7 +127,7 @@ public partial class CorrelatedPartitionTests
             });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]
@@ -204,7 +204,7 @@ public partial class CorrelatedPartitionTests
 
         await Assert.That(result.Select(x => (x.Id, Math.Round(x.Share, 10))))
             .IsEquivalentTo(expected.Select(x => (x.Id, Math.Round(x.Share, 10))), CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]
@@ -258,7 +258,7 @@ public partial class CorrelatedPartitionTests
             .Select(r => new { r.Id, Total = TestRows.Sum(t => t.Id) });
 
         await Assert.That(result).IsEquivalentTo(expected, CollectionOrdering.Matching);
-        await Verify(query.ToQueryString());
+        await SnapshotSettings.VerifyPerFramework(query.ToQueryString());
     }
 
     [Test]

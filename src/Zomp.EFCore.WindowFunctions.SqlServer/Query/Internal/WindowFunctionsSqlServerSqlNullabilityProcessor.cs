@@ -6,44 +6,12 @@
 /// <remarks>
 /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerSqlNullabilityProcessor"/> class.
 /// </remarks>
-public class WindowFunctionsSqlServerSqlNullabilityProcessor : SqlServerSqlNullabilityProcessor
+/// <param name="dependencies">Relational Parameter Based Sql Processor Dependencies.</param>
+/// <param name="parameters">Relational parameters.</param>
+/// <param name="sqlServerSingletonOptions">The singleton option.</param>
+public class WindowFunctionsSqlServerSqlNullabilityProcessor(RelationalParameterBasedSqlProcessorDependencies dependencies, RelationalParameterBasedSqlProcessorParameters parameters, ISqlServerSingletonOptions sqlServerSingletonOptions)
+    : SqlServerSqlNullabilityProcessor(dependencies, parameters, sqlServerSingletonOptions)
 {
-#if !EF_CORE_8 && !EF_CORE_9
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerSqlNullabilityProcessor"/> class.
-    /// </summary>
-    /// <param name="dependencies">Relational Parameter Based Sql Processor Dependencies.</param>
-    /// <param name="parameters">Relational parameters.</param>
-    /// <param name="sqlServerSingletonOptions">The singleton option.</param>
-    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Conditional compilation")]
-    public WindowFunctionsSqlServerSqlNullabilityProcessor(RelationalParameterBasedSqlProcessorDependencies dependencies, RelationalParameterBasedSqlProcessorParameters parameters, ISqlServerSingletonOptions sqlServerSingletonOptions)
-        : base(dependencies, parameters, sqlServerSingletonOptions)
-    {
-    }
-#elif !EF_CORE_8 && EF_CORE_9
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerSqlNullabilityProcessor"/> class.
-    /// </summary>
-    /// <param name="dependencies">Relational Parameter Based Sql Processor Dependencies.</param>
-    /// <param name="parameters">Processor parameters.</param>
-    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "EF Core 8")]
-    public WindowFunctionsSqlServerSqlNullabilityProcessor(RelationalParameterBasedSqlProcessorDependencies dependencies, RelationalParameterBasedSqlProcessorParameters parameters)
-        : base(dependencies, parameters)
-    {
-    }
-#else
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WindowFunctionsSqlServerSqlNullabilityProcessor"/> class.
-    /// </summary>
-    /// <param name="dependencies">Relational Parameter Based Sql Processor Dependencies.</param>
-    /// <param name="useRelationalNulls">A bool value indicating if relational nulls should be used.</param>
-    [SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "EF Core 8")]
-    public WindowFunctionsSqlServerSqlNullabilityProcessor(RelationalParameterBasedSqlProcessorDependencies dependencies, bool useRelationalNulls)
-        : base(dependencies, useRelationalNulls)
-    {
-    }
-#endif
-
     /// <inheritdoc/>
     protected override SqlExpression VisitCustomSqlExpression(SqlExpression sqlExpression, bool allowOptimizedExpansion, out bool nullable)
     {
