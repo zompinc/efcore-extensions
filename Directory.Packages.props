@@ -4,6 +4,7 @@
     <NetRuntime>10.0.0</NetRuntime>
     <NetRuntime Condition="'$(TargetFramework)' == 'net11.0'">11.0.0</NetRuntime>
     <NpgsqlVersion>10.0.0</NpgsqlVersion>
+    <NpgsqlVersion Condition="'$(TargetFramework)' == 'net11.0'">11.0.0</NpgsqlVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Fody" Version="6.9.3" />
