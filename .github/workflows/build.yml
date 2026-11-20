@@ -220,7 +220,8 @@ jobs:
 
       - name: Push to NuGet
         if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master' }}
-        run: dotnet nuget push packages/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }}
+        # --skip-duplicate keeps a re-run of this job from failing on packages the first attempt already pushed.
+        run: dotnet nuget push packages/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_PUSH_KEY }} --skip-duplicate
 
       # Every package shares one version, so it is read off the base package. The digit in
       # the pattern keeps Zomp.EFCore.WindowFunctions.SqlServer and its siblings out.
@@ -242,7 +243,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }} # gh infers the repo from this when no checkout is present
+        # A re-run must not draft the release a second time: two drafts can share a tag name,
+        # and the second one would not have any notes added to the first by hand.
         run: |
+          if gh release view "v${{ steps.version.outputs.version }}" > /dev/null 2>&1; then
+            echo "The release is already drafted"
+            exit 0
+          fi
+
           gh release create "v${{ steps.version.outputs.version }}"             --draft             --target "$GITHUB_SHA"             --title "v${{ steps.version.outputs.version }}"             --generate-notes             packages/*.nupkg
 
       - name: Wait for NuGet to finish validating
@@ -250,7 +258,7 @@ jobs:
         run: |
           version="${{ steps.version.outputs.version }}"
 
-          for _ in $(seq 1 40); do
+          for _ in $(seq 1 80); do
             pending=""
             for file in packages/*.nupkg; do
               id=$(basename "$file" ".$version.nupkg")
@@ -267,7 +275,7 @@ jobs:
             sleep 30
           done
 
-          echo "::error::$version was accepted by NuGet but these packages have not become available within 20 minutes:$pending. The release is drafted and can be published once they appear."
+          echo "::error::$version was accepted by NuGet but these packages have not become available within 40 minutes:$pending. The release is drafted and can be published once they appear."
           exit 1
 
       # The packages are installable, so the release can be announced. This is also what
